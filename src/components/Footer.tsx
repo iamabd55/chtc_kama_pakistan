@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
-import kamaLogo from "@/assets/kama-logo.png";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div>
-            <img src={kamaLogo} alt="CHTC Kama" className="h-10 mb-4 brightness-0 invert" />
+            <Image src="/images/kama-logo.png" alt="CHTC Kama" width={120} height={40} className="h-10 w-auto mb-4 brightness-0 invert" />
             <p className="text-sm opacity-70 leading-relaxed">
               CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
             </p>
@@ -27,7 +27,7 @@ const Footer = () => {
                 { label: "Careers", href: "/careers" },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="hover:opacity-100 transition-opacity">
+                  <Link href={link.href} className="hover:opacity-100 transition-opacity">
                     {link.label}
                   </Link>
                 </li>
@@ -47,7 +47,7 @@ const Footer = () => {
                 { label: "Gallery", href: "/gallery" },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link to={link.href} className="hover:opacity-100 transition-opacity">
+                  <Link href={link.href} className="hover:opacity-100 transition-opacity">
                     {link.label}
                   </Link>
                 </li>
@@ -81,8 +81,8 @@ const Footer = () => {
         <div className="container py-4 flex flex-col md:flex-row items-center justify-between text-xs opacity-50">
           <p>© 2026 CHTC Kama Pakistan. All rights reserved.</p>
           <div className="flex gap-4 mt-2 md:mt-0">
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms of Service</Link>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
           </div>
         </div>
       </div>

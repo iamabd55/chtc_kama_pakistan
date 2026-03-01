@@ -1,3 +1,5 @@
+"use client";
+
 import { useCountUp } from "@/hooks/useCountUp";
 
 const statsData = [
@@ -13,9 +15,8 @@ const StatItem = ({ value, suffix, label }: { value: number; suffix: string; lab
   return (
     <div ref={ref} className="text-center px-4 py-6">
       <p
-        className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground mb-3 tracking-tight transition-opacity duration-500 ${
-          hasStarted ? "opacity-100" : "opacity-0"
-        }`}
+        className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground mb-3 tracking-tight transition-opacity duration-500 ${hasStarted ? "opacity-100" : "opacity-0"
+          }`}
       >
         {display}
       </p>

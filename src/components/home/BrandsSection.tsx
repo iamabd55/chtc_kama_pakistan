@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const brands = [
   { name: "Kama", desc: "Light & heavy commercial vehicles, the flagship brand of CHTC in Pakistan." },
@@ -21,7 +21,7 @@ const BrandsSection = () => {
           {brands.map((brand) => (
             <Link
               key={brand.name}
-              to={`/brands/${brand.name.toLowerCase()}`}
+              href={`/brands/${brand.name.toLowerCase()}`}
               className="bg-card border rounded-lg p-10 text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group"
             >
               <div className="w-24 h-24 bg-kama-gradient rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">

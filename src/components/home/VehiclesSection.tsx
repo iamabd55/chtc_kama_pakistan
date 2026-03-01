@@ -1,17 +1,13 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import vehicleLightTruck from "@/assets/vehicle-light-truck.jpg";
-import vehicleHeavyTruck from "@/assets/vehicle-heavy-truck.jpg";
-import vehicleVan from "@/assets/vehicle-van.jpg";
-import vehicleCargo from "@/assets/vehicle-cargo.jpg";
-import vehicleBus from "@/assets/vehicle-bus.jpg";
+import Image from "next/image";
 
 const vehicles = [
-  { name: "Light Trucks", image: vehicleLightTruck, href: "/products/light-trucks" },
-  { name: "Heavy Trucks", image: vehicleHeavyTruck, href: "/products/heavy-trucks" },
-  { name: "Vans", image: vehicleVan, href: "/products/vans" },
-  { name: "Cargo Vans", image: vehicleCargo, href: "/products/cargo-vans" },
-  { name: "Buses", image: vehicleBus, href: "/products/buses" },
+  { name: "Light Trucks", image: "/images/vehicle-light-truck.jpg", href: "/products/light-trucks" },
+  { name: "Heavy Trucks", image: "/images/vehicle-heavy-truck.jpg", href: "/products/heavy-trucks" },
+  { name: "Vans", image: "/images/vehicle-van.jpg", href: "/products/vans" },
+  { name: "Cargo Vans", image: "/images/vehicle-cargo.jpg", href: "/products/cargo-vans" },
+  { name: "Buses", image: "/images/vehicle-bus.jpg", href: "/products/buses" },
 ];
 
 const VehiclesSection = () => {
@@ -29,15 +25,16 @@ const VehiclesSection = () => {
           {vehicles.map((vehicle) => (
             <Link
               key={vehicle.name}
-              to={vehicle.href}
+              href={vehicle.href}
               className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-muted">
-                <img
+              <div className="aspect-[4/3] overflow-hidden bg-muted relative">
+                <Image
                   src={vehicle.image}
                   alt={vehicle.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  loading="lazy"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
                 />
               </div>
               <div className="p-4 flex items-center justify-between">

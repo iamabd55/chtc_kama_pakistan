@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const CTASection = () => {
@@ -19,14 +19,14 @@ const CTASection = () => {
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Link
-            to="/get-quote"
+            href="/get-quote"
             className="group inline-flex items-center gap-3 px-10 py-4 bg-accent text-accent-foreground font-display font-bold text-sm uppercase tracking-[0.15em] hover:opacity-90 transition-all duration-300"
           >
             Request a Quote
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link
-            to="/find-dealer"
+            href="/find-dealer"
             className="inline-flex items-center gap-3 px-10 py-4 border-2 border-primary-foreground/25 text-primary-foreground font-display font-bold text-sm uppercase tracking-[0.15em] hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all duration-300"
           >
             Find a Dealer

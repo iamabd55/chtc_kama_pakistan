@@ -1,7 +1,10 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
-import kamaLogo from "@/assets/kama-logo.png";
+import Image from "next/image";
 
 const navItems = [
   {
@@ -45,7 +48,7 @@ const navItems = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
@@ -63,17 +66,17 @@ const Header = () => {
             </a>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/get-quote" className="hover:opacity-80 transition-opacity font-medium">Get a Quote</Link>
+            <Link href="/get-quote" className="hover:opacity-80 transition-opacity font-medium">Get a Quote</Link>
             <span>|</span>
-            <Link to="/careers" className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
+            <Link href="/careers" className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
           </div>
         </div>
       </div>
 
       {/* Main nav */}
       <div className="container flex items-center justify-between py-3">
-        <Link to="/" className="flex-shrink-0">
-          <img src={kamaLogo} alt="CHTC Kama Pakistan" className="h-10 md:h-12" />
+        <Link href="/" className="flex-shrink-0">
+          <Image src="/images/kama-logo.png" alt="CHTC Kama Pakistan" width={120} height={48} className="h-10 md:h-12 w-auto" priority />
         </Link>
 
         {/* Desktop nav */}
@@ -86,9 +89,9 @@ const Header = () => {
               onMouseLeave={() => setOpenDropdown(null)}
             >
               <Link
-                to={item.href}
+                href={item.href}
                 className={`flex items-center gap-1 px-3 py-2 text-sm font-medium font-display transition-colors rounded-sm
-                  ${location.pathname.startsWith(item.href)
+                  ${pathname.startsWith(item.href)
                     ? "text-primary"
                     : "text-foreground hover:text-primary"
                   }`}
@@ -102,7 +105,7 @@ const Header = () => {
                   {item.children.map((child) => (
                     <Link
                       key={child.label}
-                      to={child.href}
+                      href={child.href}
                       className="block px-4 py-2 text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                     >
                       {child.label}
@@ -129,7 +132,7 @@ const Header = () => {
           {navItems.map((item) => (
             <div key={item.label}>
               <Link
-                to={item.href}
+                href={item.href}
                 className="block px-6 py-3 text-sm font-display font-medium text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
@@ -138,7 +141,7 @@ const Header = () => {
               {item.children?.map((child) => (
                 <Link
                   key={child.label}
-                  to={child.href}
+                  href={child.href}
                   className="block px-10 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
