@@ -2,10 +2,10 @@ import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
 
 const contactInfo = [
     { icon: MapPin, title: "Office Address", lines: ["CHTC Kama Pakistan", "Lahore, Punjab, Pakistan"] },
-    { icon: Phone, title: "Phone", lines: ["+92 111 526 200", "+92 42 1234 5678"] },
+    { icon: Phone, title: "Phone", lines: ["+92 300 8665 060"] },
     { icon: Mail, title: "Email", lines: ["info@chtckama.com.pk", "sales@chtckama.com.pk"] },
     { icon: Clock, title: "Business Hours", lines: ["Mon – Fri: 9:00 AM – 6:00 PM", "Sat: 9:00 AM – 2:00 PM"] },
-    { icon: MessageCircle, title: "WhatsApp", lines: ["+92 300 123 4567"] },
+    { icon: MessageCircle, title: "WhatsApp", lines: ["+92 300 8665 060"] },
 ];
 
 export default function ContactPage() {

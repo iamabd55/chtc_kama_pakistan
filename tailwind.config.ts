@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Rajdhani", "sans-serif"],
-        body: ["DM Sans", "sans-serif"],
+        display: ["var(--font-rajdhani)", "sans-serif"],
+        heading: ["var(--font-poppins)", "sans-serif"],
+        body: ["var(--font-dm-sans)", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -100,6 +101,10 @@ export default {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "ken-burns": {
+          from: { transform: "scale(1)" },
+          to: { transform: "scale(1.06)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -108,6 +113,7 @@ export default {
         "fade-in": "fade-in 0.6s ease-out forwards",
         "slide-in-right": "slide-in-right 0.8s ease-out forwards",
         "counter-up": "counter-up 0.6s ease-out forwards",
+        "ken-burns": "ken-burns 6s ease-out forwards",
       },
     },
   },

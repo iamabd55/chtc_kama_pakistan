@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+
+const ease = [0.25, 0.4, 0, 1] as const;
 
 const Footer = () => {
   return (
@@ -8,15 +13,32 @@ const Footer = () => {
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
-          <div>
-            <Image src="/images/kama-logo.png" alt="CHTC Kama" width={120} height={40} className="h-10 w-auto mb-4 brightness-0 invert" />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0, ease }}
+          >
+            <div className="relative w-48 md:w-56 h-16 md:h-20 mb-4 ml-2 overflow-hidden ">
+              <Image
+                src="/images/logo-white.png"
+                alt="CHTC Kama"
+                fill
+                className="object-cover object-center brightness-0 invert"
+              />
+            </div>
             <p className="text-sm opacity-70 leading-relaxed">
               CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
             </p>
-          </div>
+          </motion.div>
 
           {/* Quick Links */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.1, ease }}
+          >
             <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm opacity-70">
               {[
@@ -33,10 +55,15 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Company */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2, ease }}
+          >
             <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">Company</h4>
             <ul className="space-y-2 text-sm opacity-70">
               {[
@@ -53,10 +80,15 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Contact */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.3, ease }}
+          >
             <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">Contact Us</h4>
             <ul className="space-y-3 text-sm opacity-70">
               <li className="flex items-start gap-2">
@@ -65,14 +97,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 shrink-0" />
-                <a href="tel:+92111526200">+92 111 526 200</a>
+                <a href="tel:+923008665060">+92 300 8665 060</a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 shrink-0" />
                 <a href="mailto:info@chtckama.com.pk">info@chtckama.com.pk</a>
               </li>
             </ul>
-          </div>
+          </motion.div>
         </div>
       </div>
 
