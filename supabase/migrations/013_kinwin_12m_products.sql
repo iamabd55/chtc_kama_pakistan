@@ -1,0 +1,90 @@
+-- ══════════════════════════════════════════════════════
+-- Kinwin 12.5m Bus Products — HTK6124Y
+-- Run AFTER 010_kinwin_categories.sql
+-- NOTE: Upload product image to Supabase Storage:
+--   images/products/kinwin/bus-12m/bus-12m-main.png
+-- ══════════════════════════════════════════════════════
+
+INSERT INTO products (
+  name, slug, brand, category_id,
+  short_description, model_year,
+  thumbnail, images,
+  specs, features,
+  price_range, is_featured, is_active
+)
+SELECT
+  '12.5m Bus',
+  'bus-12m',
+  'kinwin',
+  id,
+  'Kinwin HTK6124Y — 12.5-metre luxury RHD bus. 49 passenger seats with 375hp YUCHAI Euro III engine, 6-airbag air suspension, WABCO ABS+ASR and 600L fuel tank.',
+  2024,
+  'products/kinwin/bus-12m/bus-12m-main.png',
+  '{}',
+  '{
+    "Model": "HTK6124Y",
+    "Drive Mode": "RHD",
+    "Overall Dimensions (mm)": "12500 × 2550 × 3860",
+    "Wheelbase (mm)": "6450",
+    "Front/Rear Tread (mm)": "2068 / 1860",
+    "Front/Rear Overhang (mm)": "2650 / 3400",
+    "Approach/Departure Angle (°)": "8 / 9",
+    "Curb Weight (kg)": "12800",
+    "Max Total Mass (kg)": "18000",
+    "Axle Load (kg)": "Front 6500 / Rear 13000",
+    "Maximum Passengers": "49+1+1",
+    "Max Speed (km/h)": "120",
+    "Max Gradeability": "≥30%",
+    "Min Ground Clearance (mm)": "≥180",
+    "Min Turning Radius (m)": "≤24",
+    "Cruise Mileage (km)": "≥500",
+    "Engine": "YC 6MK 375 — 375hp Euro III",
+    "Clutch": "φ430, SACHS",
+    "Transmission": "Fast manual transmission",
+    "Retarder": "Eddy current retarder",
+    "Front Axle": "6.5T, disc brake",
+    "Rear Axle": "13T, disc brake",
+    "Suspension": "6 air bags, air suspension",
+    "Tyre": "295/80R22.5",
+    "Steel Rim": "22.5×8.25, aluminum alloy",
+    "Steering": "Hydraulic power steering, φ480mm, hybrid power system",
+    "Braking System": "Independent dual-circuit pneumatic brake, front disc and rear drum, energy spring parking brake",
+    "ABS/EBS": "EBS+ABS+ASR (WABCO)",
+    "Cooling System": "Horizontal water tank, belt drive — ATS, 8 electric fans",
+    "Fuel Tank": "600L, aluminum alloy, diesel filling from both sides",
+    "Battery": "24V / 200Ah",
+    "Alternator": "2 × 120A",
+    "A/C": "Cooling 35000 Kcal (SANZ)",
+    "Heating": "Engine-powered heating",
+    "Defroster": "Water heating",
+    "Monitoring": "CCTV 5 cameras, 500G storage",
+    "Tachograph": "Standard",
+    "Audiovisual System": "One wired microphone, dashboard LCD front, 19-inch LCD above driver, 19-inch LCD above middle door — all Android with USB",
+    "Passenger Seats": "49 seats with three-point belt, 4-way adjustable (front/back/left/right)",
+    "Luggage Rack": "Luxury open-type interior luggage rack with seat numbers display",
+    "Floor": "PVC",
+    "Floor Cover": "Flame retardant and anti-slip",
+    "Side/Roof Panels": "PVC",
+    "Instruments": "Luxury type / CAN",
+    "Mini Car Fridge": "Refrigerator, water dispenser and coffee maker",
+    "Sleeping Cabin": "Standard",
+    "Front Windshield": "Laminated glass",
+    "Side Windows": "Fully closed hardened glass",
+    "Protection Bar": "Soft-wrapped handrail",
+    "Extinguisher": "2 × 4kg",
+    "Safety Hammer": "Anti-theft alarm safety hammer (without wire rope) + anti-theft alarm safety hammers (with wire rope)",
+    "Reading Lamp": "Reading light for each seat",
+    "Paint": "Solid color paint (metallic optional +1000 USD)"
+  }'::jsonb,
+  ARRAY[
+    '12.5-metre luxury long-distance bus with 49 passenger seats',
+    '375hp YUCHAI Euro III engine with eddy current retarder',
+    '6-airbag air suspension for premium ride comfort',
+    'WABCO EBS+ABS+ASR advanced braking and stability system',
+    'Full entertainment system with Android LCD screens and USB',
+    'RHD (Right-Hand Drive) configuration, sleeping cabin standard'
+  ],
+  'Contact for Price',
+  true,
+  true
+FROM categories WHERE slug = 'bus-12m';

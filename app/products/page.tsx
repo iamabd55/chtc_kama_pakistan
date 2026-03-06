@@ -1,42 +1,69 @@
-import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import type { Category, Product } from "@/lib/supabase/types";
+import ProductsExplorer from "@/components/products/ProductsExplorer";
 
-const categories = [
-    { name: "Light Trucks", image: "/images/vehicle-light-truck.jpg", desc: "Versatile workhorses for urban & intercity logistics.", href: "/products/light-trucks" },
-    { name: "Heavy Trucks", image: "/images/vehicle-heavy-truck.jpg", desc: "Powerful haulers built for Pakistan's toughest roads.", href: "/products/heavy-trucks" },
-    { name: "Vans", image: "/images/vehicle-van.jpg", desc: "Comfortable passenger transport from 6 to 18 seats.", href: "/products/vans" },
-    { name: "Cargo Vans", image: "/images/vehicle-cargo.jpg", desc: "Efficient cargo delivery for businesses of all sizes.", href: "/products/cargo-vans" },
-    { name: "Buses", image: "/images/vehicle-bus.jpg", desc: "Public and private transport with modern amenities.", href: "/products/buses" },
-];
+export const revalidate = 60;
 
-export default function ProductsPage() {
+export const metadata = {
+    title: "Products — CHTC Kama Pakistan",
+    description: "Browse our full range of commercial vehicles — trucks, buses, EVs and more.",
+};
+
+export default async function ProductsPage() {
+    const supabase = await createClient();
+
+    const [{ data: categories }, { data: products }] = await Promise.all([
+        supabase
+            .from("categories")
+            .select("*")
+            .eq("is_active", true)
+            .order("display_order", { ascending: true }),
+        supabase
+            .from("products")
+            .select("*, category:categories(*)")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false }),
+    ]);
+
+    const cats = (categories ?? []) as Category[];
+    const prods = (products ?? []) as (Product & { category?: Category })[];
+
     return (
         <>
-            <section className="py-16 bg-kama-gradient">
-                <div className="container text-center">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Our Products</h1>
-                    <p className="text-primary-foreground/70 max-w-xl mx-auto">Full vehicle catalog: Light Trucks, Heavy Trucks, Vans, Cargo Vans, Buses & Special Vehicles.</p>
+            {/* Hero */}
+            <section className="py-14 md:py-20 bg-kama-gradient relative overflow-hidden">
+                {/* Decorative circles */}
+                <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="container text-center relative z-10">
+                    <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.3em] mb-3">Full Lineup</p>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-4 tracking-tight">
+                        Our Products
+                    </h1>
+                    <p className="text-primary-foreground/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+                        Explore our complete range of commercial vehicles — from nimble mini trucks to
+                        heavy-duty dumpers, electric vehicles, and passenger buses.
+                    </p>
+                    <div className="flex items-center justify-center gap-6 mt-8 text-primary-foreground/60 text-sm">
+                        <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                            {cats.length} Categories
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                            {prods.length} Vehicles
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                            {new Set(prods.map((p) => p.brand)).size} Brands
+                        </span>
+                    </div>
                 </div>
             </section>
-            <section className="py-20">
-                <div className="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {categories.map((cat) => (
-                        <Link key={cat.name} href={cat.href} className="group bg-card rounded-lg border overflow-hidden hover:shadow-xl transition-all">
-                            <div className="aspect-video overflow-hidden bg-muted relative">
-                                <Image src={cat.image} alt={cat.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                            </div>
-                            <div className="p-6">
-                                <h3 className="font-display font-bold text-xl text-foreground mb-2 flex items-center justify-between">
-                                    {cat.name}
-                                    <ChevronRight className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </h3>
-                                <p className="text-muted-foreground text-sm">{cat.desc}</p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+
+            {/* Products explorer */}
+            <ProductsExplorer categories={cats} products={prods} />
         </>
     );
 }

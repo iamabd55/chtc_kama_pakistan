@@ -105,6 +105,10 @@ export default {
           from: { transform: "scale(1)" },
           to: { transform: "scale(1.06)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -114,6 +118,7 @@ export default {
         "slide-in-right": "slide-in-right 0.8s ease-out forwards",
         "counter-up": "counter-up 0.6s ease-out forwards",
         "ken-burns": "ken-burns 6s ease-out forwards",
+        shimmer: "shimmer 1.5s infinite linear",
       },
     },
   },
