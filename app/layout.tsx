@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "./providers";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import ScrollProgress from "@/components/ScrollProgress";
+import ConditionalLayout from "@/components/ConditionalLayout";
 import { Poppins, Rajdhani, DM_Sans } from "next/font/google";
 
 const poppins = Poppins({
@@ -49,12 +47,7 @@ export default function RootLayout({
                     <TooltipProvider>
                         <Toaster />
                         <Sonner />
-                        <div className="flex flex-col min-h-screen">
-                            <Header />
-                            <main className="flex-1 pt-[60px] md:pt-[88px]">{children}</main>
-                            <Footer />
-                        </div>
-                        <WhatsAppButton />
+                        <ConditionalLayout>{children}</ConditionalLayout>
                     </TooltipProvider>
                 </Providers>
             </body>
