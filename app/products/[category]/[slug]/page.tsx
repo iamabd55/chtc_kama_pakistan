@@ -38,6 +38,25 @@ const BRAND_LABELS: Record<string, string> = {
     joylong: "Joylong",
 };
 
+const STORAGE_GALLERY_BY_SLUG: Record<string, string> = {
+    "coaster-c7": "products/chtc/coaster-c7",
+    "labor-bus-9m": "products/kinwin/labor-bus-9m",
+};
+
+const SEAT_LAYOUT_BY_SLUG: Record<string, string> = {
+    "bus-12m": "products/kinwin/bus-12m",
+};
+
+function getImageLabel(path: string): string {
+    const filename = path.split("/").pop() ?? "image";
+    const withoutExt = filename.replace(/\.[^/.]+$/, "");
+    return withoutExt
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\b\w/g, (ch) => ch.toUpperCase());
+}
+
 export default async function ProductDetailPage({ params }: PageProps) {
     const { category: categorySlug, slug } = await params;
     const supabase = await createClient();
@@ -68,11 +87,51 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
     const related = (relatedData ?? []) as Pick<Product, "id" | "name" | "slug" | "brand" | "thumbnail" | "short_description" | "model_year" | "is_featured">[];
 
-    // Build gallery URLs
-    const galleryImages = [
-        getStorageUrl(product.thumbnail),
-        ...product.images.map((img) => getStorageUrl(img)),
-    ];
+    const dbExtraImages = Array.from(new Set((product.images ?? []).filter(Boolean)));
+    const storageGalleryPath = dbExtraImages.length === 0 ? STORAGE_GALLERY_BY_SLUG[product.slug] : undefined;
+
+    let storageExtraImagePaths: string[] = [];
+    if (storageGalleryPath) {
+        const thumbnailName = product.thumbnail.split("/").pop()?.toLowerCase();
+
+        const { data: storageFiles } = await supabase.storage
+            .from("images")
+            .list(storageGalleryPath, {
+                limit: 100,
+                sortBy: { column: "name", order: "asc" },
+            });
+
+        storageExtraImagePaths = (storageFiles ?? [])
+            .map((file) => file.name)
+            .filter((name) => {
+                const lower = name.toLowerCase();
+                if (thumbnailName && lower === thumbnailName) return false;
+                if (/-main\.(png|jpe?g|webp|avif)$/i.test(lower)) return false;
+                return /\.(png|jpe?g|webp|avif)$/i.test(name);
+            })
+            .map((name) => `${storageGalleryPath}/${name}`);
+    }
+
+    const seatLayoutFolder = SEAT_LAYOUT_BY_SLUG[product.slug];
+    let seatLayoutImagePath: string | null = null;
+    if (seatLayoutFolder) {
+        const { data: layoutFiles } = await supabase.storage
+            .from("images")
+            .list(seatLayoutFolder, {
+                limit: 100,
+                sortBy: { column: "name", order: "asc" },
+            });
+
+        const seatLayoutFile = (layoutFiles ?? []).find((file) =>
+            /seat-layout-diagram\.(png|jpe?g|webp|avif)$/i.test(file.name)
+        );
+
+        if (seatLayoutFile) {
+            seatLayoutImagePath = `${seatLayoutFolder}/${seatLayoutFile.name}`;
+        }
+    }
+
+    const galleryExtraImages = dbExtraImages.length > 0 ? dbExtraImages : storageExtraImagePaths;
 
     return (
         <>
@@ -117,8 +176,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         <div className="lg:col-span-3">
                             <ProductGallery
                                 thumbnail={getStorageUrl(product.thumbnail)}
-                                images={product.images.map((img) => getStorageUrl(img))}
+                                images={galleryExtraImages.map((img) => getStorageUrl(img))}
                                 name={product.name}
+                                preserveMainImage={product.slug === "coaster-c7"}
                             />
                         </div>
 
@@ -181,6 +241,65 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             )}
                         </div>
                     </div>
+
+                    {galleryExtraImages.length > 0 && (
+                        <div className="mt-14 md:mt-20">
+                            <div className="mb-7">
+                                <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.25em] mb-2">Visual Tour</p>
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">Interior, Driving & Exterior Gallery</h2>
+                                <p className="text-muted-foreground mt-2 text-sm md:text-base max-w-3xl">
+                                    Explore detailed interior, driving and exterior views of the {product.name}.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                                {galleryExtraImages.map((path, index) => (
+                                    <figure
+                                        key={path}
+                                        className={`group relative overflow-hidden rounded-xl border bg-muted ${
+                                            index === 0 ? "md:col-span-2 aspect-[16/8]" : "aspect-[16/10]"
+                                        }`}
+                                    >
+                                        <Image
+                                            src={getStorageUrl(path)}
+                                            alt={`${product.name} ${getImageLabel(path)}`}
+                                            fill
+                                            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                                            sizes={index === 0 ? "(max-width: 768px) 100vw, 80vw" : "(max-width: 768px) 100vw, 40vw"}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent opacity-85" />
+                                        <figcaption className="absolute bottom-3 left-3 right-3 text-white text-xs md:text-sm font-medium tracking-wide">
+                                            {getImageLabel(path)}
+                                        </figcaption>
+                                    </figure>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {seatLayoutImagePath && (
+                        <div className="mt-14 md:mt-20">
+                            <div className="mb-7">
+                                <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.25em] mb-2">Planning & Comfort</p>
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">12.5m Bus Seat Layout Diagram</h2>
+                                <p className="text-muted-foreground mt-2 text-sm md:text-base max-w-3xl">
+                                    A clear top-view layout to understand cabin flow, seating distribution and entry zones.
+                                </p>
+                            </div>
+
+                            <div className="rounded-2xl border bg-gradient-to-b from-muted/40 to-background p-4 md:p-6 shadow-sm">
+                                <div className="relative w-full aspect-[21/8] rounded-xl overflow-hidden bg-card border">
+                                    <Image
+                                        src={getStorageUrl(seatLayoutImagePath)}
+                                        alt={`${product.name} seat layout diagram`}
+                                        fill
+                                        className="object-contain"
+                                        sizes="100vw"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Specifications table */}
                     {specEntries.length > 0 && (

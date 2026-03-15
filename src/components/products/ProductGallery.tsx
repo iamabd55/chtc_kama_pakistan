@@ -9,9 +9,10 @@ interface ProductGalleryProps {
     thumbnail: string;
     images: string[];
     name: string;
+    preserveMainImage?: boolean;
 }
 
-export default function ProductGallery({ thumbnail, images, name }: ProductGalleryProps) {
+export default function ProductGallery({ thumbnail, images, name, preserveMainImage = false }: ProductGalleryProps) {
     const allImages = [thumbnail, ...images];
     const [activeIndex, setActiveIndex] = useState(0);
     const [lightbox, setLightbox] = useState(false);
@@ -41,7 +42,7 @@ export default function ProductGallery({ thumbnail, images, name }: ProductGalle
                                 src={allImages[activeIndex]}
                                 alt={`${name} — image ${activeIndex + 1}`}
                                 fill
-                                className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                                className={`${preserveMainImage && activeIndex === 0 ? "object-contain bg-black/5" : "object-cover group-hover:scale-[1.02]"} transition-transform duration-500`}
                                 sizes="(max-width: 1024px) 100vw, 60vw"
                                 priority={activeIndex === 0}
                             />

@@ -81,6 +81,7 @@ const AdminDealers = () => {
             phone: editing.phone,
             whatsapp: editing.whatsapp || null,
             email: editing.email || null,
+            google_maps_url: editing.google_maps_url || null,
             lat: editing.lat || null,
             lng: editing.lng || null,
             dealer_type: editing.dealer_type || "both",
@@ -285,6 +286,16 @@ const AdminDealers = () => {
                                     onChange={(e) =>
                                         setEditing({ ...editing, email: e.target.value })
                                     }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Google Maps URL</label>
+                                <Input
+                                    value={editing.google_maps_url || ""}
+                                    onChange={(e) =>
+                                        setEditing({ ...editing, google_maps_url: e.target.value })
+                                    }
+                                    placeholder="https://www.google.com/maps/place/..."
                                 />
                             </div>
                             <div>

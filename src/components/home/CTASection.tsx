@@ -38,6 +38,17 @@ const CTASection = () => {
       </div>
 
       <div className="container relative text-center">
+        <motion.p
+          className="font-display font-semibold text-xs uppercase tracking-[0.3em] text-accent mb-4"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5, ease }}
+        >
+          Drive Smart, Drive{" "}
+          <span className="slogan-kama text-sm">KAMA</span>
+        </motion.p>
+
         <motion.h2
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-5 tracking-tight leading-tight"
           initial={{ opacity: 0, y: 40 }}

@@ -17,6 +17,7 @@ export default {
         display: ["var(--font-rajdhani)", "sans-serif"],
         heading: ["var(--font-poppins)", "sans-serif"],
         body: ["var(--font-dm-sans)", "sans-serif"],
+        kama: ["var(--font-orbitron)", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -78,6 +78,7 @@ export interface Dealer {
     phone: string;
     whatsapp: string | null;
     email: string | null;
+    google_maps_url: string | null;
     lat: number | null;
     lng: number | null;
     dealer_type: "sales" | "service" | "both";

@@ -13,7 +13,11 @@ export default function AboutPage() {
             <section className="py-16 bg-kama-gradient">
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">About CHTC Kama</h1>
-                    <p className="text-primary-foreground/70 max-w-xl mx-auto">Company story, CHTC Group background, mission, and values.</p>
+                    <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Company story, CHTC Group background, mission, and values.</p>
+                    <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
+                        Drive Smart, Drive{" "}
+                        <span className="slogan-kama text-xs">KAMA</span>
+                    </p>
                 </div>
             </section>
             <section className="py-20">

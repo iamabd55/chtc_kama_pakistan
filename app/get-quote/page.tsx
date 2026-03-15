@@ -6,7 +6,11 @@ export default function GetQuotePage() {
             <section className="py-16 bg-kama-gradient">
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Get a Quote</h1>
-                    <p className="text-primary-foreground/70 max-w-xl mx-auto">Fill out the form below and our sales team will contact you with a personalized quote.</p>
+                    <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Fill out the form below and our sales team will contact you with a personalized quote.</p>
+                    <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
+                        Drive Smart, Drive{" "}
+                        <span className="slogan-kama text-xs">KAMA</span>
+                    </p>
                 </div>
             </section>
             <section className="py-20">

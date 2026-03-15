@@ -19,6 +19,14 @@ import type { Product, Category } from "@/lib/supabase/types";
 
 const brands = ["kama", "kinwin", "joylong", "chtc"] as const;
 
+const serializeImages = (images?: string[]) => (images ?? []).join("\n");
+
+const parseImages = (value: string): string[] =>
+    value
+        .split(/\r?\n|,/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+
 const AdminProducts = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -333,6 +341,22 @@ const AdminProducts = () => {
                                             thumbnail: e.target.value,
                                         })
                                     }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Extra Images (one path per line)
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
+                                    value={serializeImages(editingProduct.images)}
+                                    onChange={(e) =>
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            images: parseImages(e.target.value),
+                                        })
+                                    }
+                                    placeholder={"products/kinwin/labor-bus-9m/interior.png\nproducts/kinwin/labor-bus-9m/exterior-front.png"}
                                 />
                             </div>
                             <div className="col-span-2">

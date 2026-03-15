@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
-import { Poppins, Rajdhani, DM_Sans } from "next/font/google";
+import { Poppins, Rajdhani, DM_Sans, Orbitron } from "next/font/google";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -28,6 +28,13 @@ const dmSans = DM_Sans({
     display: "swap",
 });
 
+const orbitron = Orbitron({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800", "900"],
+    variable: "--font-orbitron",
+    display: "swap",
+});
+
 export const metadata: Metadata = {
     title: "CHTC Kama Pakistan — Commercial Vehicles",
     description:
@@ -40,7 +47,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable}`}>
+        <html lang="en" className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable}`}>
             <body>
                 <Providers>
                     <ScrollProgress />

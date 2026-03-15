@@ -85,6 +85,16 @@
   .bg-kama-gradient-gold {
     background: linear-gradient(135deg, hsl(27 63% 43%), hsl(35 70% 50%));
   }
+
+  /* Slogan "KAMA" word emphasis */
+  .slogan-kama {
+    font-family: var(--font-orbitron), sans-serif;
+    font-weight: 800;
+    background: linear-gradient(135deg, hsl(35 80% 55%), hsl(27 63% 50%), hsl(35 90% 60%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.06em;
+  }
 }
 
 /* Custom scrollbar */

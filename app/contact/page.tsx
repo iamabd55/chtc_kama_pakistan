@@ -14,7 +14,11 @@ export default function ContactPage() {
             <section className="py-16 bg-kama-gradient">
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Contact Us</h1>
-                    <p className="text-primary-foreground/70 max-w-xl mx-auto">Get in touch with our team via form, phone, email, or WhatsApp.</p>
+                    <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Get in touch with our team via form, phone, email, or WhatsApp.</p>
+                    <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
+                        Drive Smart, Drive{" "}
+                        <span className="slogan-kama text-xs">KAMA</span>
+                    </p>
                 </div>
             </section>
             <section className="py-20">

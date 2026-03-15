@@ -27,15 +27,14 @@ export default function HeroSlideshow() {
                     src={src}
                     alt={`Al-Bashir Fabrication ${i + 1}`}
                     fill
-                    className={`object-cover transition-opacity duration-1000 ease-in-out ${
-                        i === current ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`object-cover transition-opacity duration-1000 ease-in-out ${i === current ? "opacity-100" : "opacity-0"
+                        }`}
                     priority={i === 0}
                     sizes="100vw"
                 />
             ))}
-            {/* Dark overlay + blur for text readability */}
-            <div className="absolute inset-0 bg-kama-navy/70 backdrop-blur-[2px]" />
+            {/* Subtle dark overlay for contrast — no blur */}
+            <div className="absolute inset-0 bg-kama-navy/30" />
         </div>
     );
 }

@@ -19,7 +19,7 @@ const services = [
   {
     icon: MapPin,
     title: "Dealer Network",
-    desc: "100+ authorized dealers across Pakistan ensuring you're never far from sales and service support.",
+    desc: "Authorized dealers across 5 major cities in Pakistan — Lahore, Karachi, Faisalabad, Multan & Rawalpindi — with a growing network.",
   },
 ];
 

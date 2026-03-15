@@ -41,6 +41,10 @@ export default async function ProductsPage() {
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-4 tracking-tight">
                         Our Products
                     </h1>
+                    <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40 mb-4">
+                        Drive Smart, Drive{" "}
+                        <span className="slogan-kama text-xs">KAMA</span>
+                    </p>
                     <p className="text-primary-foreground/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
                         Explore our complete range of commercial vehicles — from nimble mini trucks to
                         heavy-duty dumpers, electric vehicles, and passenger buses.

@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { adminDb } from "@/lib/supabase/adminClient";
 import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { SiteSettings } from "@/lib/supabase/types";
+
+const ease = [0.25, 0.4, 0, 1] as const;
 
 const AdminSettings = () => {
     const [settings, setSettings] = useState<Partial<SiteSettings>>({});
@@ -57,8 +61,62 @@ const AdminSettings = () => {
                 title="Site Settings"
                 subtitle="Manage global configuration"
             >
-                <div className="flex items-center justify-center py-20">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                <div className="max-w-2xl space-y-8">
+                    {/* Contact Information skeleton */}
+                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                        <Skeleton className="h-6 w-44 mb-4" />
+                        <div className="grid grid-cols-2 gap-4">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i}>
+                                    <Skeleton className="h-4 w-28 mb-1" />
+                                    <Skeleton className="h-10 w-full rounded-md" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Location skeleton */}
+                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                        <Skeleton className="h-6 w-24 mb-4" />
+                        <div className="space-y-4">
+                            <div>
+                                <Skeleton className="h-4 w-28 mb-1" />
+                                <Skeleton className="h-10 w-full rounded-md" />
+                            </div>
+                            <div>
+                                <Skeleton className="h-4 w-44 mb-1" />
+                                <Skeleton className="h-10 w-full rounded-md" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Branding skeleton */}
+                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                        <Skeleton className="h-6 w-24 mb-4" />
+                        <div className="space-y-4">
+                            <div>
+                                <Skeleton className="h-4 w-32 mb-1" />
+                                <Skeleton className="h-10 w-full rounded-md" />
+                            </div>
+                            <div>
+                                <Skeleton className="h-4 w-24 mb-1" />
+                                <Skeleton className="h-[60px] w-full rounded-md" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Social Links skeleton */}
+                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                        <Skeleton className="h-6 w-28 mb-4" />
+                        <div className="grid grid-cols-2 gap-4">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i}>
+                                    <Skeleton className="h-4 w-20 mb-1" />
+                                    <Skeleton className="h-10 w-full rounded-md" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </AdminLayout>
         );
@@ -81,7 +139,12 @@ const AdminSettings = () => {
         >
             <div className="max-w-2xl space-y-8">
                 {/* Contact Information */}
-                <div className="bg-card rounded-xl border p-6 shadow-sm">
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease }}
+                >
                     <h2 className="font-display text-lg font-bold text-foreground mb-4">
                         Contact Information
                     </h2>
@@ -131,10 +194,15 @@ const AdminSettings = () => {
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Location */}
-                <div className="bg-card rounded-xl border p-6 shadow-sm">
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1, ease }}
+                >
                     <h2 className="font-display text-lg font-bold text-foreground mb-4">
                         Location
                     </h2>
@@ -162,10 +230,15 @@ const AdminSettings = () => {
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Branding */}
-                <div className="bg-card rounded-xl border p-6 shadow-sm">
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2, ease }}
+                >
                     <h2 className="font-display text-lg font-bold text-foreground mb-4">
                         Branding
                     </h2>
@@ -192,10 +265,15 @@ const AdminSettings = () => {
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Social Links */}
-                <div className="bg-card rounded-xl border p-6 shadow-sm">
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3, ease }}
+                >
                     <h2 className="font-display text-lg font-bold text-foreground mb-4">
                         Social Links
                     </h2>
@@ -227,7 +305,7 @@ const AdminSettings = () => {
                             )
                         )}
                     </div>
-                </div>
+                </motion.div>
             </div>
         </AdminLayout>
     );

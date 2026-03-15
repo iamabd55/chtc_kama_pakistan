@@ -27,6 +27,10 @@ const Footer = () => {
                 className="object-cover object-center brightness-0 invert"
               />
             </div>
+            <p className="text-sm font-display font-semibold uppercase tracking-[0.15em] text-white/50 mb-3 italic">
+              Drive Smart, Drive{" "}
+              <span className="slogan-kama not-italic text-[15px]">KAMA</span>
+            </p>
             <p className="text-sm opacity-70 leading-relaxed">
               CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
             </p>
