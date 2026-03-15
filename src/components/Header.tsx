@@ -150,8 +150,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
       {/* Top bar — original solid blue */}
-      <div className="bg-primary">
-        <div className="container flex items-center justify-between py-1.5 text-xs text-primary-foreground">
+      <div className="bg-primary h-8">
+        <div className="container h-full flex items-center justify-between text-xs text-primary-foreground">
           <div className="flex items-center gap-4">
             <a href="tel:+923008665060" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
               <Phone className="w-3 h-3" />
@@ -171,7 +171,7 @@ const Header = () => {
       </div>
 
       {/* Main nav — original solid white */}
-      <div className="container flex items-center justify-between py-3">
+      <div className="container h-16 md:h-20 flex items-center justify-between">
         <Link href="/" className="flex-shrink-0">
           <Image src="/images/logo.png" alt="CHTC Kama Pakistan" width={150} height={64} unoptimized className="h-12 md:h-16 w-auto" priority />
         </Link>
