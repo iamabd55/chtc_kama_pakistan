@@ -64,6 +64,10 @@ type BrandProduct = Pick<
     category: { name: string; slug: string } | null;
 };
 
+type RawBrandProduct = Omit<BrandProduct, "category"> & {
+    category: { name: string; slug: string } | { name: string; slug: string }[] | null;
+};
+
 export async function generateMetadata({ params }: PageProps) {
     const { brand } = await params;
     const key = brand as BrandSlug;
@@ -96,7 +100,10 @@ export default async function BrandDetailPage({ params }: PageProps) {
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false });
 
-    const products = (data ?? []) as BrandProduct[];
+    const products: BrandProduct[] = ((data ?? []) as RawBrandProduct[]).map((product) => ({
+        ...product,
+        category: Array.isArray(product.category) ? (product.category[0] ?? null) : (product.category ?? null),
+    }));
     const categoryCount = new Set(products.map((p) => p.category?.slug).filter(Boolean)).size;
 
     return (

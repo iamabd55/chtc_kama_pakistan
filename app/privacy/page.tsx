@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/seo";
 
 type Section = {
     title: string;
@@ -107,8 +108,31 @@ const sections: Section[] = [
 ];
 
 export const metadata: Metadata = {
-    title: "Privacy Policy | CHTC Kama Pakistan",
+    title: "Privacy Policy",
     description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+    alternates: {
+        canonical: "/privacy",
+    },
+    openGraph: {
+        title: "Privacy Policy | CHTC Kama Pakistan",
+        description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+        url: "/privacy",
+        type: "article",
+        images: [
+            {
+                url: absoluteUrl("/privacy/opengraph-image"),
+                width: 1200,
+                height: 630,
+                alt: "CHTC Kama Pakistan Privacy Policy",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Privacy Policy | CHTC Kama Pakistan",
+        description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+        images: [absoluteUrl("/privacy/opengraph-image")],
+    },
 };
 
 export default function PrivacyPage() {
