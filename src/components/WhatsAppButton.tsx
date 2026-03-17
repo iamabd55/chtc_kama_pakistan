@@ -1,14 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
+import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 
 const WHATSAPP_NUMBER = "923008665060";
 const DEFAULT_MESSAGE = "Hello! I'm interested in CHTC Kama Pakistan vehicles. Can you help me?";
 
-export default function WhatsAppButton() {
+interface WhatsAppButtonProps {
+    settings?: PublicSiteSettings;
+}
+
+export default function WhatsAppButton({ settings }: WhatsAppButtonProps) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
+    const whatsappRaw = settings?.whatsappNumber ?? WHATSAPP_NUMBER;
+    const whatsappNumber = whatsappRaw.replace(/[^\d]/g, "") || WHATSAPP_NUMBER;
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
 
     return (
         <a

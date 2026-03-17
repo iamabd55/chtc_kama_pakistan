@@ -4,10 +4,30 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
-const Footer = () => {
+interface FooterProps {
+  settings?: PublicSiteSettings;
+}
+
+const Footer = ({ settings }: FooterProps) => {
+  const phone = settings?.officePhone ?? "+92 300 8665 060";
+  const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
+  const email = settings?.supportEmail ?? "info@chtckama.com.pk";
+  const officeAddress = settings?.officeAddress ?? "CHTC Kama Pakistan, Lahore, Punjab, Pakistan";
+  const tagline = settings?.companyTagline ?? "Drive Smart, Drive KAMA";
+  const [taglinePrefix, taglineHighlight] = tagline.split("KAMA");
+  const footerText = settings?.footerText ?? "© 2026 CHTC Kama Pakistan. All rights reserved.";
+  const socialLinks = settings?.socialLinks ?? {};
+  const socialItems = [
+    { key: "facebook", label: "Facebook" },
+    { key: "instagram", label: "Instagram" },
+    { key: "linkedin", label: "LinkedIn" },
+    { key: "youtube", label: "YouTube" },
+  ].filter((item) => Boolean(socialLinks[item.key]));
+
   return (
     <footer className="bg-kama-navy text-primary-foreground">
       <div className="container py-16">
@@ -28,8 +48,10 @@ const Footer = () => {
               />
             </div>
             <p className="text-sm font-display font-semibold uppercase tracking-[0.15em] text-white/50 mb-3 italic">
-              Drive Smart, Drive{" "}
-              <span className="slogan-kama not-italic text-[15px]">KAMA</span>
+              {taglineHighlight ? taglinePrefix : tagline}
+              {taglineHighlight ? (
+                <span className="slogan-kama not-italic text-[15px]">KAMA</span>
+              ) : null}
             </p>
             <p className="text-sm opacity-70 leading-relaxed">
               CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
@@ -97,17 +119,36 @@ const Footer = () => {
             <ul className="space-y-3 text-sm opacity-70">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>Lahore, Pakistan</span>
+                <span>{officeAddress}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 shrink-0" />
-                <a href="tel:+923008665060">+92 300 8665 060</a>
+                <a href={phoneHref}>{phone}</a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 shrink-0" />
-                <a href="mailto:info@chtckama.com.pk">info@chtckama.com.pk</a>
+                <a href={`mailto:${email}`}>{email}</a>
               </li>
             </ul>
+
+            {socialItems.length > 0 && (
+              <div className="mt-5 pt-4 border-t border-primary-foreground/10">
+                <p className="text-xs uppercase tracking-wider text-primary-foreground/60 mb-2">Follow Us</p>
+                <div className="flex flex-wrap gap-3 text-xs">
+                  {socialItems.map((item) => (
+                    <a
+                      key={item.key}
+                      href={socialLinks[item.key]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-100 opacity-75 transition-opacity"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
@@ -115,7 +156,7 @@ const Footer = () => {
       {/* Bottom bar */}
       <div className="border-t border-primary-foreground/10">
         <div className="container py-4 flex flex-col md:flex-row items-center justify-between text-xs opacity-50">
-          <p>© 2026 CHTC Kama Pakistan. All rights reserved.</p>
+          <p>{footerText}</p>
           <div className="flex gap-4 mt-2 md:mt-0">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>

@@ -7,7 +7,7 @@ import StatusBadge from "@/components/admin/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminDb } from "@/lib/supabase/adminClient";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
     Dialog,
@@ -24,9 +24,18 @@ const jobTypes = [
     "internship",
 ] as const;
 
+const serializeList = (items?: string[]) => (items ?? []).join("\n");
+
+const parseList = (value: string): string[] =>
+    value
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
 const AdminCareers = () => {
     const [posts, setPosts] = useState<CareerPost[]>([]);
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Partial<CareerPost> | null>(null);
     const [saving, setSaving] = useState(false);
@@ -44,6 +53,13 @@ const AdminCareers = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const filteredPosts = posts.filter(
+        (p) =>
+            p.title.toLowerCase().includes(search.toLowerCase()) ||
+            p.department.toLowerCase().includes(search.toLowerCase()) ||
+            p.location.toLowerCase().includes(search.toLowerCase())
+    );
 
     const openNew = () => {
         setEditing({
@@ -189,7 +205,17 @@ const AdminCareers = () => {
                 </Button>
             }
         >
-            <DataTable columns={columns} data={posts} loading={loading} />
+            <div className="mb-6 max-w-sm relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search positions..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-10"
+                />
+            </div>
+
+            <DataTable columns={columns} data={filteredPosts} loading={loading} />
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -269,6 +295,36 @@ const AdminCareers = () => {
                                     value={editing.description || ""}
                                     onChange={(e) =>
                                         setEditing({ ...editing, description: e.target.value })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Requirements (one per line)
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[90px]"
+                                    value={serializeList(editing.requirements)}
+                                    onChange={(e) =>
+                                        setEditing({
+                                            ...editing,
+                                            requirements: parseList(e.target.value),
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Responsibilities (one per line)
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[90px]"
+                                    value={serializeList(editing.responsibilities)}
+                                    onChange={(e) =>
+                                        setEditing({
+                                            ...editing,
+                                            responsibilities: parseList(e.target.value),
+                                        })
                                     }
                                 />
                             </div>

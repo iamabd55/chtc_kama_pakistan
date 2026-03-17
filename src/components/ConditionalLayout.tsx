@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BackNavigation from "@/components/BackNavigation";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import type { PublicSiteSettings } from "@/lib/siteSettings";
 
 /**
  * Conditionally renders the public Header/Footer/WhatsApp for main site routes.
@@ -13,12 +15,15 @@ import BackNavigation from "@/components/BackNavigation";
  */
 export default function ConditionalLayout({
     children,
+    initialSettings,
 }: {
     children: React.ReactNode;
+    initialSettings?: PublicSiteSettings;
 }) {
     const pathname = usePathname();
     const isAdmin = pathname?.startsWith("/admin");
     const isHome = pathname === "/";
+    const { data: siteSettings } = useSiteSettings(initialSettings);
 
     useEffect(() => {
         if (typeof window === "undefined" || isAdmin) {
@@ -61,7 +66,7 @@ export default function ConditionalLayout({
 
     return (
         <>
-            <Header />
+            <Header settings={siteSettings} />
             <main className="relative flex-1 pt-24 md:pt-28">
                 {!isHome ? (
                     <div className="absolute left-0 right-0 top-[104px] md:top-[120px] z-20 pointer-events-none">
@@ -72,8 +77,8 @@ export default function ConditionalLayout({
                 ) : null}
                 {children}
             </main>
-            <Footer />
-            <WhatsAppButton />
+            <Footer settings={siteSettings} />
+            <WhatsAppButton settings={siteSettings} />
         </>
     );
 }

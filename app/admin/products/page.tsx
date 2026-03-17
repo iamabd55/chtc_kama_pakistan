@@ -16,6 +16,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { Product, Category } from "@/lib/supabase/types";
+import { getStorageUrl } from "@/lib/supabase/storage";
 
 const brands = ["kama", "kinwin", "joylong", "chtc"] as const;
 
@@ -26,6 +27,45 @@ const parseImages = (value: string): string[] =>
         .split(/\r?\n|,/)
         .map((s) => s.trim())
         .filter(Boolean);
+
+const serializeList = (items?: string[]) => (items ?? []).join("\n");
+
+const parseList = (value: string): string[] =>
+    value
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+const serializeSpecs = (specs?: Record<string, string | number>) =>
+    Object.entries(specs ?? {})
+        .map(([key, val]) => `${key}: ${val}`)
+        .join("\n");
+
+const parseSpecs = (value: string): Record<string, string> => {
+    const pairs = value
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+            const idx = line.indexOf(":");
+            if (idx === -1) return null;
+            const key = line.slice(0, idx).trim().replace(/\s+/g, "_").toLowerCase();
+            const val = line.slice(idx + 1).trim();
+            if (!key || !val) return null;
+            return [key, val] as const;
+        })
+        .filter((entry): entry is readonly [string, string] => entry !== null);
+
+    return Object.fromEntries(pairs);
+};
+
+const toSlug = (value: string): string =>
+    value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
 
 const AdminProducts = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -154,7 +194,7 @@ const AdminProducts = () => {
                 <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                        src={row.thumbnail}
+                        src={getStorageUrl(row.thumbnail)}
                         alt={row.name}
                         className="w-12 h-12 rounded-lg object-cover bg-muted"
                     />
@@ -259,9 +299,18 @@ const AdminProducts = () => {
                                 <label className="text-sm font-medium mb-1 block">Name *</label>
                                 <Input
                                     value={editingProduct.name || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({ ...editingProduct, name: e.target.value })
-                                    }
+                                    onChange={(e) => {
+                                        const name = e.target.value;
+                                        const previousAutoSlug = toSlug(editingProduct.name || "");
+                                        const shouldAutoSlug =
+                                            !editingProduct.id &&
+                                            (!editingProduct.slug || editingProduct.slug === previousAutoSlug);
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            name,
+                                            slug: shouldAutoSlug ? toSlug(name) : editingProduct.slug,
+                                        });
+                                    }}
                                 />
                             </div>
                             <div>
@@ -374,6 +423,38 @@ const AdminProducts = () => {
                                     }
                                 />
                             </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Features (one per line)
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[110px]"
+                                    value={serializeList(editingProduct.features)}
+                                    onChange={(e) =>
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            features: parseList(e.target.value),
+                                        })
+                                    }
+                                    placeholder={"High torque engine\nLow maintenance cost\nComfortable cabin"}
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Specifications (format: key: value)
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[130px] font-mono"
+                                    value={serializeSpecs(editingProduct.specs as Record<string, string | number>)}
+                                    onChange={(e) =>
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            specs: parseSpecs(e.target.value),
+                                        })
+                                    }
+                                    placeholder={"engine_power: 120 HP\npayload: 5 Ton\ntransmission: Manual"}
+                                />
+                            </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block">
                                     Price Range
@@ -398,6 +479,35 @@ const AdminProducts = () => {
                                         setEditingProduct({
                                             ...editingProduct,
                                             brochure_url: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Meta Title
+                                </label>
+                                <Input
+                                    value={editingProduct.meta_title || ""}
+                                    onChange={(e) =>
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            meta_title: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">
+                                    Meta Description
+                                </label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
+                                    value={editingProduct.meta_desc || ""}
+                                    onChange={(e) =>
+                                        setEditingProduct({
+                                            ...editingProduct,
+                                            meta_desc: e.target.value,
                                         })
                                     }
                                 />

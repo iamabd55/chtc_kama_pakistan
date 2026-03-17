@@ -72,11 +72,95 @@ const AdminInquiries = () => {
         }
     };
 
+    const updateAssignedTo = async (id: string, assignedTo: string) => {
+        const { error } = await adminDb
+            .from("inquiries")
+            .update({
+                assigned_to: assignedTo || null,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", id);
+
+        if (error) {
+            toast({ title: "Error", description: error.message, variant: "destructive" });
+            return;
+        }
+
+        toast({ title: "Assignment updated" });
+    };
+
+    const exportCsv = () => {
+        const headers = [
+            "full_name",
+            "phone",
+            "email",
+            "city",
+            "inquiry_type",
+            "status",
+            "assigned_to",
+            "follow_up_date",
+            "source",
+            "created_at",
+            "message",
+        ];
+
+        const escapeCell = (value: string | null | undefined) =>
+            `"${(value ?? "").replace(/"/g, '""')}"`;
+
+        const rows = filtered.map((item) => [
+            item.full_name,
+            item.phone,
+            item.email,
+            item.city,
+            item.inquiry_type,
+            item.status,
+            item.assigned_to,
+            item.follow_up_date,
+            item.source,
+            item.created_at,
+            item.message,
+        ]);
+
+        const csv = [
+            headers.join(","),
+            ...rows.map((row) => row.map((cell) => escapeCell(cell || "")).join(",")),
+        ].join("\n");
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `inquiries-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
     const updateNotes = async (id: string, notes: string) => {
-        await adminDb
+        const { error } = await adminDb
             .from("inquiries")
             .update({ notes, updated_at: new Date().toISOString() })
             .eq("id", id);
+        if (error) {
+            toast({ title: "Error", description: error.message, variant: "destructive" });
+            return;
+        }
+        toast({ title: "Notes saved" });
+    };
+
+    const updateFollowUpDate = async (id: string, followUpDate: string) => {
+        const { error } = await adminDb
+            .from("inquiries")
+            .update({
+                follow_up_date: followUpDate || null,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", id);
+
+        if (error) {
+            toast({ title: "Error", description: error.message, variant: "destructive" });
+            return;
+        }
+        toast({ title: "Follow-up date updated" });
     };
 
     const columns = [
@@ -150,6 +234,9 @@ const AdminInquiries = () => {
                     />
                 </div>
                 <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" variant="outline" onClick={exportCsv}>
+                        Export CSV
+                    </Button>
                     <Button
                         size="sm"
                         variant={filterStatus === "all" ? "default" : "outline"}
@@ -244,6 +331,30 @@ const AdminInquiries = () => {
                                     defaultValue={selected.notes || ""}
                                     onBlur={(e) => updateNotes(selected.id, e.target.value)}
                                     placeholder="Add internal notes..."
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Assigned To (User UUID)</label>
+                                <Input
+                                    value={selected.assigned_to || ""}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setSelected({ ...selected, assigned_to: value || null });
+                                        updateAssignedTo(selected.id, value);
+                                    }}
+                                    placeholder="Enter auth user UUID"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Follow-up Date</label>
+                                <Input
+                                    type="date"
+                                    value={selected.follow_up_date || ""}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setSelected({ ...selected, follow_up_date: value || null });
+                                        updateFollowUpDate(selected.id, value);
+                                    }}
                                 />
                             </div>
                         </div>

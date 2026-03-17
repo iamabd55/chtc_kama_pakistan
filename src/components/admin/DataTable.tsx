@@ -31,59 +31,61 @@ function DataTable<T extends { id: string }>({
 }: DataTableProps<T>) {
     if (loading) {
         return (
-            <div className="bg-card rounded-xl border overflow-hidden">
-                <div className="p-12 text-center text-muted-foreground">
+            <div className="bg-white/85 rounded-2xl border border-slate-200 overflow-hidden shadow-[0_10px_24px_rgba(11,29,58,0.08)]">
+                <div className="p-12 text-center text-slate-500">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
-                    Loading...
+                    Loading records...
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-card rounded-xl border overflow-hidden shadow-sm">
-            <Table>
-                <TableHeader>
-                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+        <div className="bg-white/90 rounded-2xl border border-slate-200 overflow-hidden shadow-[0_10px_24px_rgba(11,29,58,0.08)]">
+            <div className="max-h-[72vh] overflow-auto">
+                <Table>
+                    <TableHeader className="sticky top-0 z-10 backdrop-blur bg-slate-50/95">
+                        <TableRow className="hover:bg-transparent border-b border-slate-200">
                         {columns.map((col, i) => (
                             <TableHead
                                 key={i}
-                                className={`font-display font-semibold text-foreground ${col.className || ""}`}
+                                className={`font-display font-semibold text-slate-700 uppercase tracking-[0.08em] text-[11px] ${col.className || ""}`}
                             >
                                 {col.header}
                             </TableHead>
                         ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {data.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={columns.length}
-                                className="text-center py-12 text-muted-foreground"
-                            >
-                                {emptyMessage}
-                            </TableCell>
                         </TableRow>
-                    ) : (
-                        data.map((row) => (
-                            <TableRow
-                                key={row.id}
-                                className={onRowClick ? "cursor-pointer" : ""}
-                                onClick={() => onRowClick?.(row)}
-                            >
-                                {columns.map((col, i) => (
-                                    <TableCell key={i} className={col.className}>
-                                        {typeof col.accessor === "function"
-                                            ? col.accessor(row)
-                                            : (row[col.accessor] as ReactNode)}
-                                    </TableCell>
-                                ))}
+                    </TableHeader>
+                    <TableBody>
+                        {data.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="text-center py-14 text-slate-500"
+                                >
+                                    {emptyMessage}
+                                </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : (
+                            data.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    className={`${onRowClick ? "cursor-pointer" : ""} border-slate-100 hover:bg-primary/5 transition-colors`}
+                                    onClick={() => onRowClick?.(row)}
+                                >
+                                    {columns.map((col, i) => (
+                                        <TableCell key={i} className={`${col.className || ""} text-slate-800`}>
+                                            {typeof col.accessor === "function"
+                                                ? col.accessor(row)
+                                                : (row[col.accessor] as ReactNode)}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     );
 }

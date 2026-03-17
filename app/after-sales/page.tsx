@@ -8,7 +8,15 @@ const services = [
     { icon: Phone, title: "Service Appointment", desc: "Book a service appointment online or call our helpline." },
 ];
 
-export default function AfterSalesPage() {
+interface AfterSalesPageProps {
+    searchParams?: Promise<{ submitted?: string; error?: string }>;
+}
+
+export default async function AfterSalesPage({ searchParams }: AfterSalesPageProps) {
+    const resolved = searchParams ? await searchParams : undefined;
+    const isSubmitted = resolved?.submitted === "1";
+    const hasError = resolved?.error === "1";
+
     return (
         <>
             <section className="py-16 bg-kama-gradient">
@@ -32,6 +40,49 @@ export default function AfterSalesPage() {
                             <p className="text-muted-foreground text-sm">{item.desc}</p>
                         </div>
                     ))}
+                </div>
+            </section>
+            <section className="py-16">
+                <div className="container max-w-3xl">
+                    <div className="bg-card border rounded-xl p-8">
+                        <h2 className="font-display font-bold text-2xl text-foreground mb-4">Service & Parts Request</h2>
+
+                        {isSubmitted && (
+                            <div className="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700">
+                                Your request has been submitted. Our after-sales team will contact you shortly.
+                            </div>
+                        )}
+
+                        {hasError && (
+                            <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700">
+                                We could not submit your request. Please try again.
+                            </div>
+                        )}
+
+                        <form method="post" action="/api/inquiries/after-sales" className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input name="full_name" type="text" required placeholder="Full Name *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+                                <input name="phone" type="tel" required placeholder="Phone Number *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input name="email" type="email" placeholder="Email" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+                                <input name="city" type="text" required placeholder="City *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <select name="request_type" required defaultValue="" className="w-full px-4 py-3 border rounded-md bg-background text-foreground">
+                                    <option value="" disabled>Request Type *</option>
+                                    <option value="service">Service Request</option>
+                                    <option value="parts">Spare Parts Inquiry</option>
+                                </select>
+                                <input name="product" type="text" placeholder="Vehicle / Model" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+                            </div>
+                            <textarea name="message" rows={4} placeholder="Issue / Parts Needed" className="w-full px-4 py-3 border rounded-md bg-background text-foreground" />
+
+                            <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors">
+                                Submit Request
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </section>
             <section className="py-16 bg-muted">

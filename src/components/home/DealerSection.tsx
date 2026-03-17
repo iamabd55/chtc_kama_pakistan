@@ -7,14 +7,6 @@ import mapData from "@/components/find-dealer/mapdata.js";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
-type MapLocation = {
-  name?: string;
-  lat?: string | number;
-  lng?: string | number;
-  description?: string;
-  url?: string;
-};
-
 type MapLabel = {
   name?: string;
   x?: string | number;
@@ -24,6 +16,7 @@ type MapLabel = {
 };
 
 type ProjectedDealer = {
+  name: string;
   city: string;
   province: string;
   x: number;
@@ -75,35 +68,63 @@ const latLngToMapPoint = (lat: number, lng: number) => {
   return { x, y };
 };
 
-const dealers: ProjectedDealer[] = Object.values((mapData as { locations?: Record<string, MapLocation> }).locations ?? {})
-  .map((entry) => {
-    const lat = Number(entry.lat);
-    const lng = Number(entry.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      return null;
-    }
+type DealerSectionDealer = {
+  name: string;
+  city: string;
+  province: string;
+  lat: number | null;
+  lng: number | null;
+  google_maps_url: string | null;
+};
 
-    const normalizedCity = (entry.name ?? "").trim();
-    const meta = cityMeta[normalizedCity];
-    if (!meta) {
-      return null;
-    }
+interface DealerSectionProps {
+  dealers: DealerSectionDealer[];
+}
 
-    const point = mapLabelByCity[normalizedCity] ?? latLngToMapPoint(lat, lng);
-    return {
-      city: normalizedCity,
-      province: meta.province,
-      x: point.x,
-      y: point.y,
-      labelX: meta.labelX,
-      labelY: meta.labelY,
-      mapUrl: entry.url,
-    };
-  })
-  .filter((dealer): dealer is ProjectedDealer => dealer !== null)
-  .sort((a, b) => a.city.localeCompare(b.city));
+const buildProjectedDealers = (input: DealerSectionDealer[]): ProjectedDealer[] => {
+  const byCity = new Map<string, DealerSectionDealer>();
 
-const DealerSection = () => {
+  for (const dealer of input) {
+    const city = dealer.city.trim();
+    if (!city || byCity.has(city)) continue;
+    byCity.set(city, dealer);
+  }
+
+  return Array.from(byCity.values())
+    .map((entry) => {
+      const normalizedCity = entry.city.trim();
+      const meta = cityMeta[normalizedCity] ?? { province: entry.province, labelX: 12, labelY: -12 };
+
+      const lat = Number(entry.lat);
+      const lng = Number(entry.lng);
+      let point = mapLabelByCity[normalizedCity];
+
+      if (!point && Number.isFinite(lat) && Number.isFinite(lng)) {
+        point = latLngToMapPoint(lat, lng);
+      }
+
+      if (!point) {
+        return null;
+      }
+
+      return {
+        name: entry.name,
+        city: normalizedCity,
+        province: meta.province,
+        x: point.x,
+        y: point.y,
+        labelX: meta.labelX,
+        labelY: meta.labelY,
+        mapUrl: entry.google_maps_url ?? undefined,
+      };
+    })
+    .filter((dealer): dealer is ProjectedDealer => dealer !== null)
+    .sort((a, b) => a.city.localeCompare(b.city));
+};
+
+const DealerSection = ({ dealers: dealerRows }: DealerSectionProps) => {
+  const dealers = buildProjectedDealers(dealerRows);
+
   return (
     <section className="relative py-20 md:py-28 bg-background overflow-hidden">
       {/* Subtle background accents */}
@@ -168,7 +189,7 @@ const DealerSection = () => {
 
             <p className="text-muted-foreground text-[15px] sm:text-base leading-relaxed max-w-lg mb-8">
               With authorized dealerships across{" "}
-              <span className="text-foreground font-medium">5 major cities</span>,
+              <span className="text-foreground font-medium">{dealers.length} major cities</span>,
               expert service teams and genuine parts are always within reach. Visit your nearest KAMA dealer for sales, test drives, and after-sales support.
             </p>
 

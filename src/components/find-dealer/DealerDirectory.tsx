@@ -1,9 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
 import { MapPin, Phone, MessageCircle, ExternalLink, Search } from "lucide-react";
 import type { Dealer } from "@/lib/supabase/types";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+
+const LeafletMapContainer = MapContainer as unknown as ComponentType<Record<string, unknown>>;
+const LeafletTileLayer = TileLayer as unknown as ComponentType<Record<string, unknown>>;
+const LeafletCircleMarker = CircleMarker as unknown as ComponentType<Record<string, unknown>>;
+const LeafletPopup = Popup as unknown as ComponentType<Record<string, unknown>>;
 
 interface DealerDirectoryProps {
     dealers: Dealer[];
@@ -14,11 +20,13 @@ const PROVINCES: Dealer["province"][] = ["Punjab", "Sindh", "KPK", "Balochistan"
 export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
     const [query, setQuery] = useState("");
     const [province, setProvince] = useState<string>("all");
+    const [dealerType, setDealerType] = useState<string>("all");
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
         return dealers.filter((d) => {
             if (province !== "all" && d.province !== province) return false;
+            if (dealerType !== "all" && d.dealer_type !== dealerType) return false;
             if (!q) return true;
             return (
                 d.name.toLowerCase().includes(q) ||
@@ -26,7 +34,7 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
                 d.province.toLowerCase().includes(q)
             );
         });
-    }, [dealers, province, query]);
+    }, [dealers, province, dealerType, query]);
 
     const cityStats = useMemo(() => {
         const counts = new Map<string, number>();
@@ -35,6 +43,18 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
         }
         return Array.from(counts.entries()).sort((a, b) => a[0].localeCompare(b[0]));
     }, [filtered]);
+
+    const mappableDealers = useMemo(
+        () => filtered.filter((d) => d.lat != null && d.lng != null),
+        [filtered]
+    );
+
+    const mapCenter: [number, number] = useMemo(() => {
+        if (mappableDealers.length === 0) return [30.3753, 69.3451];
+        const lat = mappableDealers.reduce((sum, d) => sum + Number(d.lat), 0) / mappableDealers.length;
+        const lng = mappableDealers.reduce((sum, d) => sum + Number(d.lng), 0) / mappableDealers.length;
+        return [lat, lng];
+    }, [mappableDealers]);
 
     return (
         <section className="py-12">
@@ -63,6 +83,17 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
                                     <option key={p} value={p}>{p}</option>
                                 ))}
                             </select>
+
+                            <select
+                                value={dealerType}
+                                onChange={(e) => setDealerType(e.target.value)}
+                                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm mt-3"
+                            >
+                                <option value="all">All Dealer Types</option>
+                                <option value="sales">Sales</option>
+                                <option value="service">Service</option>
+                                <option value="both">Sales + Service</option>
+                            </select>
                         </div>
 
                         <div className="bg-card border rounded-xl p-5">
@@ -82,6 +113,36 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
                     </aside>
 
                     <div>
+                        <div className="mb-5 rounded-xl border overflow-hidden bg-card">
+                            <div className="px-4 py-3 border-b">
+                                <h2 className="font-display font-bold text-foreground">Dealer Map</h2>
+                            </div>
+                            <div className="h-[320px]">
+                                <LeafletMapContainer center={mapCenter} zoom={6} scrollWheelZoom className="h-full w-full z-0">
+                                    <LeafletTileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    {mappableDealers.map((dealer) => (
+                                        <LeafletCircleMarker
+                                            key={dealer.id}
+                                            center={[Number(dealer.lat), Number(dealer.lng)]}
+                                            radius={7}
+                                            pathOptions={{ color: "#0b4ea2", fillColor: "#0b4ea2", fillOpacity: 0.8 }}
+                                        >
+                                            <LeafletPopup>
+                                                <div className="text-sm">
+                                                    <p className="font-semibold">{dealer.name}</p>
+                                                    <p>{dealer.city}, {dealer.province}</p>
+                                                    <p>{dealer.phone}</p>
+                                                </div>
+                                            </LeafletPopup>
+                                        </LeafletCircleMarker>
+                                    ))}
+                                </LeafletMapContainer>
+                            </div>
+                        </div>
+
                         <div className="mb-4 text-sm text-muted-foreground">
                             {filtered.length} dealer{filtered.length !== 1 ? "s" : ""} found
                         </div>

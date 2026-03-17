@@ -155,3 +155,73 @@ export interface SiteSettings {
     footer_text: string | null;
     updated_at: string;
 }
+
+export interface TeamMember {
+    id: string;
+    name: string;
+    role: string;
+    photo_url: string | null;
+    bio: string | null;
+    display_order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ClientLogo {
+    id: string;
+    name: string;
+    logo_url: string;
+    website_url: string | null;
+    display_order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface GalleryItem {
+    id: string;
+    title: string;
+    image_url: string;
+    category: "product" | "event" | "facility" | "delivery";
+    display_order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Certification {
+    id: string;
+    title: string;
+    thumbnail_url: string | null;
+    document_url: string | null;
+    description: string | null;
+    display_order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Testimonial {
+    id: string;
+    customer_name: string;
+    customer_title: string | null;
+    company: string | null;
+    content: string;
+    rating: number | null;
+    status: "pending" | "approved" | "rejected";
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface AdminProfile {
+    id: string;
+    user_id: string;
+    email: string;
+    full_name: string | null;
+    role: "super_admin" | "editor" | "sales" | "hr";
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}

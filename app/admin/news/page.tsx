@@ -16,6 +16,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { NewsPost } from "@/lib/supabase/types";
+import { getStorageUrl } from "@/lib/supabase/storage";
 
 const newsCategories = [
     "news",
@@ -23,6 +24,22 @@ const newsCategories = [
     "product-launch",
     "press-release",
 ] as const;
+
+const serializeTags = (tags?: string[]) => (tags ?? []).join(", ");
+
+const parseTags = (value: string): string[] =>
+    value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+
+const toSlug = (value: string): string =>
+    value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
 
 const AdminNews = () => {
     const [posts, setPosts] = useState<NewsPost[]>([]);
@@ -130,7 +147,7 @@ const AdminNews = () => {
                 <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                        src={r.thumbnail}
+                        src={getStorageUrl(r.thumbnail)}
                         alt={r.title}
                         className="w-14 h-10 rounded-lg object-cover bg-muted"
                     />
@@ -222,9 +239,18 @@ const AdminNews = () => {
                                 <label className="text-sm font-medium mb-1 block">Title *</label>
                                 <Input
                                     value={editing.title || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, title: e.target.value })
-                                    }
+                                    onChange={(e) => {
+                                        const title = e.target.value;
+                                        const previousAutoSlug = toSlug(editing.title || "");
+                                        const shouldAutoSlug =
+                                            !editing.id &&
+                                            (!editing.slug || editing.slug === previousAutoSlug);
+                                        setEditing({
+                                            ...editing,
+                                            title,
+                                            slug: shouldAutoSlug ? toSlug(title) : editing.slug,
+                                        });
+                                    }}
                                 />
                             </div>
                             <div>
@@ -310,6 +336,35 @@ const AdminNews = () => {
                                     value={editing.author || ""}
                                     onChange={(e) =>
                                         setEditing({ ...editing, author: e.target.value })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Tags (comma separated)</label>
+                                <Input
+                                    value={serializeTags(editing.tags)}
+                                    onChange={(e) =>
+                                        setEditing({ ...editing, tags: parseTags(e.target.value) })
+                                    }
+                                    placeholder="launch, truck, technology"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Meta Title</label>
+                                <Input
+                                    value={editing.meta_title || ""}
+                                    onChange={(e) =>
+                                        setEditing({ ...editing, meta_title: e.target.value })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Meta Description</label>
+                                <textarea
+                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[70px]"
+                                    value={editing.meta_desc || ""}
+                                    onChange={(e) =>
+                                        setEditing({ ...editing, meta_desc: e.target.value })
                                     }
                                 />
                             </div>

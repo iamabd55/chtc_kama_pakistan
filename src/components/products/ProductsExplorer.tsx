@@ -39,6 +39,15 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
     const [sort, setSort] = useState<SortOption>("featured");
     const [page, setPage] = useState(1);
     const [showFilters, setShowFilters] = useState(false);
+    const [compareIds, setCompareIds] = useState<string[]>([]);
+
+    const toggleCompare = (id: string) => {
+        setCompareIds((prev) => {
+            if (prev.includes(id)) return prev.filter((item) => item !== id);
+            if (prev.length >= 3) return prev;
+            return [...prev, id];
+        });
+    };
 
     // Derive available brands from products
     const brands = useMemo(() => {
@@ -130,6 +139,7 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
     };
 
     return (
+        <>
         <section className="py-12 md:py-20">
             <div className="container">
                 {/* ── Toolbar ── */}
@@ -313,6 +323,22 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                                                     <span className="absolute bottom-3 left-3 bg-background/90 backdrop-blur-sm text-foreground text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">
                                                         {product.category?.name ?? categories.find(c => c.id === product.category_id)?.name}
                                                     </span>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            toggleCompare(product.id);
+                                                        }}
+                                                        className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-sm transition-colors ${
+                                                            compareIds.includes(product.id)
+                                                                ? "bg-primary text-primary-foreground border-primary"
+                                                                : "bg-background/85 text-foreground border-border hover:border-primary/40"
+                                                        }`}
+                                                    >
+                                                        {compareIds.includes(product.id) ? "Selected" : "Compare"}
+                                                    </button>
                                                 </div>
 
                                                 {/* Content */}
@@ -391,5 +417,38 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                 )}
             </div>
         </section>
+
+        {compareIds.length > 0 && (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,780px)] rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-xl shadow-[0_14px_40px_rgba(10,27,55,0.18)] px-4 py-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                            {compareIds.length} vehicle{compareIds.length > 1 ? "s" : ""} selected for comparison
+                        </p>
+                        <p className="text-xs text-slate-500">Select up to 3 vehicles from the catalog.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCompareIds([])}
+                            className="px-3 py-2 text-xs font-semibold rounded-lg border hover:bg-muted transition-colors"
+                        >
+                            Clear
+                        </button>
+                        <Link
+                            href={`/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
+                            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
+                                compareIds.length >= 2
+                                    ? "bg-primary text-primary-foreground hover:bg-kama-blue-dark"
+                                    : "bg-slate-200 text-slate-500 pointer-events-none"
+                            }`}
+                        >
+                            Compare Now
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }

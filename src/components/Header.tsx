@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -138,10 +139,17 @@ const navItems: NavItem[] = [
 ];
 
 
-const Header = () => {
+interface HeaderProps {
+  settings?: PublicSiteSettings;
+}
+
+const Header = ({ settings }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  const phone = settings?.officePhone ?? "+92 300 8665 060";
+  const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
+  const email = settings?.supportEmail ?? "info@chtckama.com.pk";
 
   useEffect(() => {
     setMobileOpen(false);
@@ -153,13 +161,13 @@ const Header = () => {
       <div className="bg-primary h-8">
         <div className="container h-full flex items-center justify-between text-xs text-primary-foreground">
           <div className="flex items-center gap-4">
-            <a href="tel:+923008665060" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+            <a href={phoneHref} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
               <Phone className="w-3 h-3" />
-              <span>+92 300 8665 060</span>
+              <span>{phone}</span>
             </a>
             <span className="hidden sm:inline">|</span>
-            <a href="mailto:info@chtckama.com.pk" className="hidden sm:inline hover:opacity-80 transition-opacity">
-              info@chtckama.com.pk
+            <a href={`mailto:${email}`} className="hidden sm:inline hover:opacity-80 transition-opacity">
+              {email}
             </a>
           </div>
           <div className="flex items-center gap-3">

@@ -23,7 +23,40 @@ export function getStorageUrl(
     path: string,
     bucket: string = DEFAULT_BUCKET
 ): string {
-    // If already a full URL, return as-is
-    if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+    if (!path) return "";
+
+    // If already a full URL, return as-is (except duplicate bucket paths).
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        try {
+            const url = new URL(path);
+            const marker = `/storage/v1/object/public/${bucket}/`;
+            const markerIndex = url.pathname.indexOf(marker);
+
+            if (markerIndex !== -1) {
+                const objectPath = decodeURIComponent(
+                    url.pathname.slice(markerIndex + marker.length)
+                );
+
+                // Protect against legacy values like "images/products/x.png"
+                const normalized = objectPath.startsWith(`${bucket}/`)
+                    ? objectPath.slice(bucket.length + 1)
+                    : objectPath;
+
+                return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${normalized}`;
+            }
+        } catch {
+            // Fall through and return input when URL parsing fails.
+        }
+
+        return path;
+    }
+
+    const trimmed = path.replace(/^\/+/, "");
+
+    // Accept both "products/x.png" and legacy "images/products/x.png".
+    const normalized = trimmed.startsWith(`${bucket}/`)
+        ? trimmed.slice(bucket.length + 1)
+        : trimmed;
+
+    return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${normalized}`;
 }

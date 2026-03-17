@@ -1,6 +1,18 @@
-import { Briefcase, Mail, Users } from "lucide-react";
+import Link from "next/link";
+import { Briefcase, MapPin, CalendarDays, Users } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import type { CareerPost } from "@/lib/supabase/types";
 
-export default function CareersPage() {
+export default async function CareersPage() {
+    const supabase = await createClient();
+    const { data } = await supabase
+        .from("career_posts")
+        .select("*")
+        .eq("is_active", true)
+        .order("deadline", { ascending: true });
+
+    const jobs = (data ?? []) as CareerPost[];
+
     return (
         <>
             <section className="py-16 bg-kama-gradient">
@@ -18,50 +30,55 @@ export default function CareersPage() {
 
             <section className="py-20">
                 <div className="container max-w-4xl space-y-8">
-                    <div className="bg-card border rounded-lg p-7 sm:p-8">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                                <Briefcase className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                                <h2 className="font-display font-bold text-2xl text-foreground mb-2">No Current Openings</h2>
-                                <p className="text-muted-foreground leading-relaxed">
-                                    We do not have any active vacancies at the moment. New opportunities are announced here as soon as positions
-                                    become available across our commercial, technical, and support teams.
-                                </p>
+                    {jobs.length === 0 ? (
+                        <div className="bg-card border rounded-lg p-7 sm:p-8">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                    <Briefcase className="w-6 h-6 text-primary" />
+                                </div>
+                                <div>
+                                    <h2 className="font-display font-bold text-2xl text-foreground mb-2">No Current Openings</h2>
+                                    <p className="text-muted-foreground leading-relaxed">
+                                        We do not have active vacancies right now. New opportunities will be listed here once posted by HR.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {jobs.map((job) => (
+                                <article key={job.id} className="bg-card border rounded-xl p-6 hover:shadow-md transition-shadow">
+                                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                        <div>
+                                            <h2 className="font-display font-bold text-2xl text-foreground mb-1">{job.title}</h2>
+                                            <p className="text-sm text-muted-foreground">{job.department}</p>
+                                            <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-muted-foreground">
+                                                <span className="inline-flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{job.location}</span>
+                                                <span className="inline-flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" />Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+                                                <span className="uppercase tracking-wide font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">{job.job_type}</span>
+                                            </div>
+                                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-card border rounded-lg p-6">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Users className="w-5 h-5 text-primary" />
-                                <h3 className="font-display font-bold text-lg text-foreground">Why Join CHTC Kama Pakistan</h3>
-                            </div>
-                            <p className="text-muted-foreground text-sm leading-relaxed">
-                                At CHTC Kama Pakistan, we value ownership, teamwork, and continuous learning. Our people work on meaningful
-                                projects that support businesses and transport networks across Pakistan. As we expand, we seek professionals
-                                who are committed to quality, customer service, and long-term impact.
-                            </p>
+                                        <Link
+                                            href={`/careers/${job.id}`}
+                                            className="inline-flex px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
+                                        >
+                                            View & Apply
+                                        </Link>
+                                    </div>
+                                </article>
+                            ))}
                         </div>
+                    )}
 
-                        <div className="bg-card border rounded-lg p-6">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Mail className="w-5 h-5 text-primary" />
-                                <h3 className="font-display font-bold text-lg text-foreground">Share Your Profile</h3>
-                            </div>
-                            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                                You can still send your CV to our HR team for future consideration. When a suitable role opens, shortlisted
-                                candidates will be contacted.
-                            </p>
-                            <a
-                                href="mailto:info@chtckama.com.pk?subject=Career%20Application%20-%20CHTC%20Kama"
-                                className="inline-flex px-5 py-2.5 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors"
-                            >
-                                Email Your CV
-                            </a>
+                    <div className="bg-card border rounded-lg p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Users className="w-5 h-5 text-primary" />
+                            <h3 className="font-display font-bold text-lg text-foreground">Why Join CHTC Kama Pakistan</h3>
                         </div>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                            Our teams work on commercial transport solutions across Pakistan, with a strong focus on quality, ownership, and customer impact.
+                        </p>
                     </div>
                 </div>
             </section>

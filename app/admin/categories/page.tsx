@@ -16,6 +16,15 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { Category } from "@/lib/supabase/types";
+import { getStorageUrl } from "@/lib/supabase/storage";
+
+const toSlug = (value: string): string =>
+    value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -111,7 +120,7 @@ const AdminCategories = () => {
                     {r.image && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                            src={r.image}
+                            src={getStorageUrl(r.image)}
                             alt={r.name}
                             className="w-10 h-10 rounded-lg object-cover bg-muted"
                         />
@@ -185,9 +194,18 @@ const AdminCategories = () => {
                                 <label className="text-sm font-medium mb-1 block">Name *</label>
                                 <Input
                                     value={editing.name || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, name: e.target.value })
-                                    }
+                                    onChange={(e) => {
+                                        const name = e.target.value;
+                                        const previousAutoSlug = toSlug(editing.name || "");
+                                        const shouldAutoSlug =
+                                            !editing.id &&
+                                            (!editing.slug || editing.slug === previousAutoSlug);
+                                        setEditing({
+                                            ...editing,
+                                            name,
+                                            slug: shouldAutoSlug ? toSlug(name) : editing.slug,
+                                        });
+                                    }}
                                 />
                             </div>
                             <div>

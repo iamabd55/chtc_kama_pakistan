@@ -28,6 +28,14 @@ const provinces = [
 ] as const;
 const dealerTypes = ["sales", "service", "both"] as const;
 
+const serializeBrands = (brands?: string[]) => (brands ?? []).join(", ");
+
+const parseBrands = (value: string): string[] =>
+    value
+        .split(",")
+        .map((b) => b.trim())
+        .filter(Boolean);
+
 const AdminDealers = () => {
     const [dealers, setDealers] = useState<Dealer[]>([]);
     const [loading, setLoading] = useState(true);
@@ -316,6 +324,44 @@ const AdminDealers = () => {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Latitude</label>
+                                <Input
+                                    type="number"
+                                    step="any"
+                                    value={editing.lat ?? ""}
+                                    onChange={(e) =>
+                                        setEditing({
+                                            ...editing,
+                                            lat: e.target.value === "" ? null : Number(e.target.value),
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-1 block">Longitude</label>
+                                <Input
+                                    type="number"
+                                    step="any"
+                                    value={editing.lng ?? ""}
+                                    onChange={(e) =>
+                                        setEditing({
+                                            ...editing,
+                                            lng: e.target.value === "" ? null : Number(e.target.value),
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Brands (comma separated)</label>
+                                <Input
+                                    value={serializeBrands(editing.brands)}
+                                    onChange={(e) =>
+                                        setEditing({ ...editing, brands: parseBrands(e.target.value) })
+                                    }
+                                    placeholder="kama, kinwin, chtc"
+                                />
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block">

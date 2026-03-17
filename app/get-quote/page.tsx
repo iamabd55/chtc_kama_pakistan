@@ -1,6 +1,19 @@
 import { ArrowRight } from "lucide-react";
 
-export default function GetQuotePage() {
+interface GetQuotePageProps {
+    searchParams?: Promise<{
+        submitted?: string;
+        error?: string;
+        product?: string;
+    }>;
+}
+
+export default async function GetQuotePage({ searchParams }: GetQuotePageProps) {
+    const resolved = searchParams ? await searchParams : undefined;
+    const isSubmitted = resolved?.submitted === "1";
+    const hasError = resolved?.error === "1";
+    const requestedProduct = resolved?.product?.trim() ?? "";
+
     return (
         <>
             <section className="py-16 bg-kama-gradient">
@@ -16,26 +29,37 @@ export default function GetQuotePage() {
             <section className="py-20">
                 <div className="container max-w-2xl">
                     <div className="bg-card border rounded-lg p-8">
-                        <form className="space-y-5">
+                        {isSubmitted && (
+                            <div className="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700">
+                                Your quote request has been submitted. Our sales team will contact you shortly.
+                            </div>
+                        )}
+                        {hasError && (
+                            <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700">
+                                We could not submit your quote request right now. Please try again.
+                            </div>
+                        )}
+                        <form className="space-y-5" method="post" action="/api/inquiries/quote">
+                            {requestedProduct && <input type="hidden" name="requested_product" value={requestedProduct} />}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" placeholder="Full Name *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                                <input type="text" placeholder="Company Name" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                                <input name="full_name" type="text" placeholder="Full Name *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                                <input name="company_name" type="text" placeholder="Company Name" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="email" placeholder="Email *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                                <input type="tel" placeholder="Phone *" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                                <input name="email" type="email" placeholder="Email" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                                <input name="phone" type="tel" placeholder="Phone *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                             </div>
-                            <select className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="">Vehicle Category *</option>
-                                <option>Light Trucks</option>
-                                <option>Heavy Trucks</option>
-                                <option>Vans</option>
-                                <option>Cargo Vans</option>
-                                <option>Buses</option>
-                                <option>Special Vehicles</option>
+                            <select name="vehicle_category" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" defaultValue="">
+                                <option value="" disabled>Vehicle Category *</option>
+                                <option value="Mini Trucks">Mini Trucks</option>
+                                <option value="Light Trucks">Light Trucks</option>
+                                <option value="Dumper Trucks">Dumper Trucks</option>
+                                <option value="EV Trucks">EV Trucks</option>
+                                <option value="Buses">Buses</option>
+                                <option value="Special Vehicles">Special Vehicles</option>
                             </select>
-                            <input type="text" placeholder="City / Province" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                            <textarea rows={4} placeholder="Additional Requirements" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
+                            <input name="city" type="text" placeholder="City / Province *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                            <textarea name="requirements" rows={4} placeholder="Additional Requirements" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
                             <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors flex items-center justify-center gap-2">
                                 Submit Quote Request
                                 <ArrowRight className="w-4 h-4" />

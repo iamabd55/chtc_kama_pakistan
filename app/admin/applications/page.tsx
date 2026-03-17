@@ -31,6 +31,7 @@ const AdminApplications = () => {
     const [apps, setApps] = useState<ApplicationWithTitle[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [filterStatus, setFilterStatus] = useState<string>("all");
     const [detailOpen, setDetailOpen] = useState(false);
     const [selected, setSelected] = useState<ApplicationWithTitle | null>(null);
 
@@ -54,9 +55,16 @@ const AdminApplications = () => {
     }, []);
 
     const filtered = apps.filter(
-        (a) =>
-            a.applicant_name.toLowerCase().includes(search.toLowerCase()) ||
-            a.email.toLowerCase().includes(search.toLowerCase())
+        (a) => {
+            if (filterStatus !== "all" && a.status !== filterStatus) return false;
+            const query = search.toLowerCase();
+            return (
+                a.applicant_name.toLowerCase().includes(query) ||
+                a.email.toLowerCase().includes(query) ||
+                a.phone.toLowerCase().includes(query) ||
+                (a.career_title || "").toLowerCase().includes(query)
+            );
+        }
     );
 
     const updateStatus = async (id: string, status: string) => {
@@ -139,14 +147,36 @@ const AdminApplications = () => {
             title="Job Applications"
             subtitle={`${apps.length} applications`}
         >
-            <div className="mb-6 max-w-sm relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search applicants..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
-                />
+            <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                <div className="relative max-w-sm w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Search applicants..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-10"
+                    />
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                    <Button
+                        size="sm"
+                        variant={filterStatus === "all" ? "default" : "outline"}
+                        onClick={() => setFilterStatus("all")}
+                    >
+                        All
+                    </Button>
+                    {appStatuses.map((status) => (
+                        <Button
+                            key={status}
+                            size="sm"
+                            variant={filterStatus === status ? "default" : "outline"}
+                            onClick={() => setFilterStatus(status)}
+                            className="capitalize"
+                        >
+                            {status}
+                        </Button>
+                    ))}
+                </div>
             </div>
 
             <DataTable columns={columns} data={filtered} loading={loading} />

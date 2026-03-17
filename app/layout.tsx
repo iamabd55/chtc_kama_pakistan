@@ -8,6 +8,9 @@ import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import { Poppins, Rajdhani, DM_Sans, Orbitron } from "next/font/google";
+import { createClient } from "@/lib/supabase/server";
+import type { SiteSettings } from "@/lib/supabase/types";
+import { normalizeSiteSettings } from "@/lib/siteSettings";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -90,25 +93,35 @@ export const metadata: Metadata = {
     },
 };
 
-const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "CHTC Kama Pakistan",
-    url: SITE_URL,
-    logo: absoluteUrl("/images/logo.png"),
-    email: "info@chtckama.com.pk",
-    telephone: "+92 300 8665 060",
-    address: {
-        "@type": "PostalAddress",
-        addressCountry: "PK",
-    },
-};
-
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const supabase = await createClient();
+    const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
+    const initialSettings = normalizeSiteSettings((data as SiteSettings | null) ?? null);
+
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "CHTC Kama Pakistan",
+        url: SITE_URL,
+        logo: absoluteUrl("/images/logo.png"),
+        email: initialSettings.supportEmail,
+        telephone: initialSettings.officePhone,
+        address: {
+            "@type": "PostalAddress",
+            streetAddress: initialSettings.officeAddress,
+            addressCountry: "PK",
+        },
+    };
+
     return (
         <html lang="en" className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable}`}>
             <body>
@@ -121,7 +134,7 @@ export default function RootLayout({
                     <TooltipProvider>
                         <Toaster />
                         <Sonner />
-                        <ConditionalLayout>{children}</ConditionalLayout>
+                        <ConditionalLayout initialSettings={initialSettings}>{children}</ConditionalLayout>
                     </TooltipProvider>
                 </Providers>
             </body>

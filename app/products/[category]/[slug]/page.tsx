@@ -11,6 +11,7 @@ export const revalidate = 60;
 
 interface PageProps {
     params: Promise<{ category: string; slug: string }>;
+    searchParams?: Promise<{ submitted?: string; error?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
@@ -57,8 +58,11 @@ function getImageLabel(path: string): string {
         .replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
-export default async function ProductDetailPage({ params }: PageProps) {
+export default async function ProductDetailPage({ params, searchParams }: PageProps) {
     const { category: categorySlug, slug } = await params;
+    const resolved = searchParams ? await searchParams : undefined;
+    const isSubmitted = resolved?.submitted === "1";
+    const hasError = resolved?.error === "1";
     const supabase = await createClient();
 
     // Fetch product with category
@@ -71,6 +75,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
     if (!productData) notFound();
 
     const product = productData as Product & { category: Category };
+
+    const { data: siteSettingsData } = await supabase
+        .from("site_settings")
+        .select("whatsapp_number")
+        .eq("id", 1)
+        .single();
+
+    const whatsappNumber = String(siteSettingsData?.whatsapp_number ?? "923008665060").replace(/[^\d]/g, "") || "923008665060";
 
     // Parse specs
     const specs = product.specs as Record<string, string | number>;
@@ -203,7 +215,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                         Get a Quote
                                     </Link>
                                     <a
-                                        href="https://wa.me/923008665060"
+                                        href={`https://wa.me/${whatsappNumber}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-center gap-2 w-full py-3 bg-green-600 text-white font-display font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-green-700 transition-colors"
@@ -239,6 +251,36 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                     </ul>
                                 </div>
                             )}
+
+                            <div className="bg-card border rounded-xl p-6 shadow-sm">
+                                <h3 className="font-display font-bold text-lg text-foreground mb-4">Send Product Inquiry</h3>
+
+                                {isSubmitted && (
+                                    <div className="mb-3 rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-700">
+                                        Your inquiry has been submitted.
+                                    </div>
+                                )}
+
+                                {hasError && (
+                                    <div className="mb-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-700">
+                                        Could not submit inquiry. Please try again.
+                                    </div>
+                                )}
+
+                                <form method="post" action="/api/inquiries/product" className="space-y-2.5">
+                                    <input type="hidden" name="product_id" value={product.id} />
+                                    <input type="hidden" name="product_slug" value={product.slug} />
+                                    <input type="hidden" name="return_url" value={`/products/${categorySlug}/${product.slug}`} />
+                                    <input name="full_name" type="text" required placeholder="Full Name *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
+                                    <input name="phone" type="tel" required placeholder="Phone *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
+                                    <input name="email" type="email" placeholder="Email" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
+                                    <input name="city" type="text" required placeholder="City *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
+                                    <textarea name="message" rows={3} placeholder="Your requirement" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
+                                    <button type="submit" className="w-full py-2.5 bg-primary text-primary-foreground font-display font-semibold text-xs uppercase tracking-wider rounded-md hover:bg-kama-blue-dark transition-colors">
+                                        Submit Inquiry
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
 

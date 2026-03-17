@@ -17,6 +17,7 @@ const AdminSettings = () => {
     const [settings, setSettings] = useState<Partial<SiteSettings>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [heroSlidesJson, setHeroSlidesJson] = useState("[]");
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -25,13 +26,32 @@ const AdminSettings = () => {
                 .select("*")
                 .eq("id", 1)
                 .single();
-            if (data) setSettings(data as SiteSettings);
+            if (data) {
+                const typed = data as SiteSettings;
+                setSettings(typed);
+                setHeroSlidesJson(JSON.stringify(typed.hero_slides ?? [], null, 2));
+            }
             setLoading(false);
         };
         fetchSettings();
     }, []);
 
     const handleSave = async () => {
+        let parsedHeroSlides: SiteSettings["hero_slides"] = [];
+        try {
+            parsedHeroSlides = JSON.parse(heroSlidesJson || "[]");
+            if (!Array.isArray(parsedHeroSlides)) {
+                throw new Error("Hero slides must be a JSON array");
+            }
+        } catch {
+            toast({
+                title: "Invalid Hero Slides JSON",
+                description: "Please provide a valid JSON array for hero slides.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setSaving(true);
         const payload = {
             whatsapp_number: settings.whatsapp_number || "",
@@ -41,6 +61,7 @@ const AdminSettings = () => {
             office_address: settings.office_address || null,
             google_maps_embed: settings.google_maps_embed || null,
             social_links: settings.social_links || {},
+            hero_slides: parsedHeroSlides,
             company_tagline: settings.company_tagline || null,
             footer_text: settings.footer_text || null,
             updated_at: new Date().toISOString(),
@@ -305,6 +326,26 @@ const AdminSettings = () => {
                             )
                         )}
                     </div>
+                </motion.div>
+
+                {/* Hero Slides */}
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4, ease }}
+                >
+                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                        Hero Slides
+                    </h2>
+                    <p className="text-xs text-muted-foreground mb-3">
+                        JSON array with fields: imageUrl, title, subtitle, ctaText, ctaLink
+                    </p>
+                    <textarea
+                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[220px] font-mono"
+                        value={heroSlidesJson}
+                        onChange={(e) => setHeroSlidesJson(e.target.value)}
+                    />
                 </motion.div>
             </div>
         </AdminLayout>

@@ -41,6 +41,31 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
 
+    if (isAdminRoute && !isLoginPage && user) {
+        const { data: profile, error: profileError } = await supabase
+            .from("admin_profiles")
+            .select("role, is_active")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        // If RBAC table is not yet migrated, do not block access.
+        const tableMissing = Boolean(profileError && /admin_profiles/i.test(profileError.message));
+
+        if (!tableMissing) {
+            if (!profile || profile.is_active !== true) {
+                const loginUrl = new URL("/admin/login", request.url);
+                loginUrl.searchParams.set("error", "unauthorized");
+                return NextResponse.redirect(loginUrl);
+            }
+
+            if (pathname.startsWith("/admin/users") && profile.role !== "super_admin") {
+                const dashboardUrl = new URL("/admin/dashboard", request.url);
+                dashboardUrl.searchParams.set("error", "forbidden");
+                return NextResponse.redirect(dashboardUrl);
+            }
+        }
+    }
+
     // Redirect already-authenticated users away from the login page
     if (isLoginPage && user) {
         const dashboardUrl = new URL("/admin/dashboard", request.url);
