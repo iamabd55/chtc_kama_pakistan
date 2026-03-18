@@ -9,6 +9,8 @@ import {
     type PublicSiteSettings,
 } from "@/lib/siteSettings";
 
+export type { PublicSiteSettings } from "@/lib/siteSettings";
+
 export function useSiteSettings(initialSettings?: PublicSiteSettings) {
     return useQuery({
         queryKey: ["site_settings_public"],
