@@ -110,13 +110,12 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-white/55 font-semibold mb-2">Control Center</p>
                     <Image
-                        src="/images/logo-white.png"
-                        alt="CHTC Kama"
+                        src="/images/al-nasir-logo-white.png"
+                        alt="Al Nasir Motors"
                         width={170}
                         height={52}
                         className="h-8 w-auto object-contain"
                     />
-                    <p className="text-xs text-white/70 mt-2 tracking-[0.08em] uppercase">CHTC Kama Pakistan</p>
                     <p className="font-display text-lg font-bold tracking-wide mt-2">Admin Workspace</p>
                 </div>
 
@@ -188,3 +187,4 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 };
 
 export default AdminSidebar;
+

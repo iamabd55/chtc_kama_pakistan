@@ -13,12 +13,12 @@ export type PublicSiteSettings = {
 
 export const DEFAULT_PUBLIC_SETTINGS: PublicSiteSettings = {
     whatsappNumber: "+923008665060",
-    salesEmail: "sales@chtckama.com.pk",
-    supportEmail: "info@chtckama.com.pk",
+    salesEmail: "sales@alnasirmotors.com.pk",
+    supportEmail: "info@alnasirmotors.com.pk",
     officePhone: "+92 300 8665 060",
-    officeAddress: "CHTC Kama Pakistan, Lahore, Punjab, Pakistan",
-    companyTagline: "Drive Smart, Drive KAMA",
-    footerText: "© 2026 CHTC Kama Pakistan. All rights reserved.",
+    officeAddress: "Al Nasir Motors Pakistan, Lahore, Punjab, Pakistan",
+    companyTagline: "Driven by Al Nasir Motors",
+    footerText: "© 2026 Al Nasir Motors Pakistan. All rights reserved.",
     socialLinks: {},
 };
 
@@ -45,3 +45,4 @@ export function normalizeSiteSettings(data: SiteSettings | null): PublicSiteSett
         socialLinks,
     };
 }
+

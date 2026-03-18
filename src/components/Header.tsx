@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
@@ -128,9 +128,9 @@ const navItems: NavItem[] = [
     label: "About Us",
     href: "/about",
     children: [
-      { label: "About CHTC Kama", href: "/about" },
+      { label: "About Al Nasir Motors", href: "/about" },
       { label: "Leadership & Team", href: "/about/leadership" },
-      { label: "Quality & Certifications", href: "/about/quality" },
+      { label: "Quality & Certifications", href: "/about/certifications" },
       { label: "Valued Clients", href: "/about/clients" },
     ],
   },
@@ -146,20 +146,59 @@ interface HeaderProps {
 const Header = ({ settings }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [showTopBar, setShowTopBar] = useState(true);
+  const lastScrollY = useRef(0);
   const pathname = usePathname();
   const phone = settings?.officePhone ?? "+92 300 8665 060";
   const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
-  const email = settings?.supportEmail ?? "info@chtckama.com.pk";
+  const email = settings?.supportEmail ?? "info@alnasirmotors.com.pk";
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
+
+      if (Math.abs(delta) < 4) {
+        return;
+      }
+
+      if (currentScrollY <= 16) {
+        setShowTopBar(true);
+      } else if (delta > 0 && currentScrollY > 80) {
+        setShowTopBar(false);
+      } else if (delta < 0) {
+        setShowTopBar(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    lastScrollY.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
-      {/* Top bar — original solid blue */}
-      <div className="bg-primary h-8">
-        <div className="container h-full flex items-center justify-between text-xs text-primary-foreground">
+    <header className="fixed top-[3px] left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
+      {/* Top bar — hides on scroll down and returns on scroll up */}
+      <motion.div
+        className="bg-primary overflow-hidden"
+        initial={false}
+        animate={showTopBar ? "visible" : "hidden"}
+        variants={{
+          visible: { height: 32, opacity: 1, y: 0 },
+          hidden: { height: 0, opacity: 0, y: -8 },
+        }}
+        transition={{ duration: 0.25, ease }}
+      >
+        <div className="container h-8 flex items-center justify-between text-xs text-primary-foreground">
           <div className="flex items-center gap-4">
             <a href={phoneHref} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
               <Phone className="w-3 h-3" />
@@ -176,12 +215,12 @@ const Header = ({ settings }: HeaderProps) => {
             <Link href="/careers" className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main nav — original solid white */}
-      <div className="container h-16 md:h-20 flex items-center justify-between">
-        <Link href="/" className="flex-shrink-0">
-          <Image src="/images/logo.png" alt="CHTC Kama Pakistan" width={150} height={64} unoptimized className="h-12 md:h-16 w-auto" priority />
+      <div className="container h-[4.25rem] md:h-[5.25rem] flex items-center justify-between lg:justify-center lg:gap-8">
+        <Link href="/" className="flex-shrink-0 py-1 md:py-2">
+          <Image src="/images/al-nasir-logo.png" alt="Al Nasir Motors" width={150} height={64} unoptimized className="h-10 md:h-12 w-auto" priority />
         </Link>
 
         {/* Desktop nav */}

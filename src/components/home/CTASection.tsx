@@ -45,8 +45,7 @@ const CTASection = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.5, ease }}
         >
-          Drive Smart, Drive{" "}
-          <span className="slogan-kama text-sm">KAMA</span>
+          Driven by Al Nasir Motors
         </motion.p>
 
         <motion.h2

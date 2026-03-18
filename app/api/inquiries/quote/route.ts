@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 
 const safeTrim = (value: FormDataEntryValue | null) =>
     typeof value === "string" ? value.trim() : "";
@@ -12,9 +13,13 @@ export async function POST(request: Request) {
     const email = safeTrim(form.get("email"));
     const phone = safeTrim(form.get("phone"));
     const city = safeTrim(form.get("city"));
+    const requestTypeRaw = safeTrim(form.get("request_type"));
     const vehicleCategory = safeTrim(form.get("vehicle_category"));
     const requirements = safeTrim(form.get("requirements"));
-    const requestedProduct = safeTrim(form.get("requested_product"));
+    const selectedProductId = safeTrim(form.get("selected_product_id"));
+    const requestedProductSlug = safeTrim(form.get("requested_product_slug"));
+
+    const inquiryType = requestTypeRaw === "brochure" ? "brochure" : "quote";
 
     if (!fullName || !phone || !city || !vehicleCategory) {
         return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
@@ -22,8 +27,10 @@ export async function POST(request: Request) {
 
     const messageParts = [
         companyName ? `Company: ${companyName}` : "",
+        `Request Type: ${inquiryType === "brochure" ? "Brochure" : "Quote"}`,
         vehicleCategory ? `Vehicle Category: ${vehicleCategory}` : "",
-        requestedProduct ? `Requested Product Slug: ${requestedProduct}` : "",
+        selectedProductId ? `Selected Product ID: ${selectedProductId}` : "",
+        requestedProductSlug ? `Requested Product Slug: ${requestedProductSlug}` : "",
         requirements,
     ].filter(Boolean);
 
@@ -33,7 +40,8 @@ export async function POST(request: Request) {
         phone,
         email: email || null,
         city,
-        inquiry_type: "quote",
+        product_id: selectedProductId || null,
+        inquiry_type: inquiryType,
         message: messageParts.join("\n") || null,
         source: "web-form",
     });
@@ -42,28 +50,15 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
     }
 
-    const webhook = process.env.INQUIRY_WEBHOOK_URL;
-    if (webhook) {
-        try {
-            await fetch(webhook, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    source: "quote",
-                    fullName,
-                    phone,
-                    email: email || null,
-                    city,
-                    vehicleCategory,
-                    requestedProduct: requestedProduct || null,
-                    requirements: requirements || null,
-                    createdAt: new Date().toISOString(),
-                }),
-            });
-        } catch {
-            // Notification failure should not break quote submission.
-        }
-    }
+    await sendInquiryNotification({
+        source: "quote",
+        inquiryType,
+        fullName,
+        phone,
+        email: email || null,
+        city,
+        message: messageParts.join("\n") || null,
+    });
 
     return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
 }

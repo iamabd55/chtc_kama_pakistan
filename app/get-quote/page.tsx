@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 interface GetQuotePageProps {
     searchParams?: Promise<{
@@ -13,6 +14,21 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
     const isSubmitted = resolved?.submitted === "1";
     const hasError = resolved?.error === "1";
     const requestedProduct = resolved?.product?.trim() ?? "";
+    const supabase = await createClient();
+
+    const { data: productsData } = await supabase
+        .from("products")
+        .select("id, name, slug")
+        .eq("is_active", true)
+        .order("name", { ascending: true });
+
+    const products = (productsData ?? []) as Array<{
+        id: string;
+        name: string;
+        slug: string;
+    }>;
+    const preselectedProductId =
+        products.find((product) => product.slug === requestedProduct)?.id ?? "";
 
     return (
         <>
@@ -21,8 +37,7 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Get a Quote</h1>
                     <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Fill out the form below and our sales team will contact you with a personalized quote.</p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive{" "}
-                        <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>
@@ -40,7 +55,7 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
                             </div>
                         )}
                         <form className="space-y-5" method="post" action="/api/inquiries/quote">
-                            {requestedProduct && <input type="hidden" name="requested_product" value={requestedProduct} />}
+                            {requestedProduct && <input type="hidden" name="requested_product_slug" value={requestedProduct} />}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input name="full_name" type="text" placeholder="Full Name *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                                 <input name="company_name" type="text" placeholder="Company Name" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
@@ -49,6 +64,10 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
                                 <input name="email" type="email" placeholder="Email" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                                 <input name="phone" type="tel" placeholder="Phone *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                             </div>
+                            <select name="request_type" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" defaultValue="quote">
+                                <option value="quote">Quote Request</option>
+                                <option value="brochure">Brochure Request</option>
+                            </select>
                             <select name="vehicle_category" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" defaultValue="">
                                 <option value="" disabled>Vehicle Category *</option>
                                 <option value="Mini Trucks">Mini Trucks</option>
@@ -58,10 +77,22 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
                                 <option value="Buses">Buses</option>
                                 <option value="Special Vehicles">Special Vehicles</option>
                             </select>
+                            <select
+                                name="selected_product_id"
+                                className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                defaultValue={preselectedProductId}
+                            >
+                                <option value="">Select Product (Optional)</option>
+                                {products.map((product) => (
+                                    <option key={product.id} value={product.id}>
+                                        {product.name}
+                                    </option>
+                                ))}
+                            </select>
                             <input name="city" type="text" placeholder="City / Province *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                             <textarea name="requirements" rows={4} placeholder="Additional Requirements" className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
                             <button type="submit" className="w-full py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors flex items-center justify-center gap-2">
-                                Submit Quote Request
+                                Submit Request
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         </form>

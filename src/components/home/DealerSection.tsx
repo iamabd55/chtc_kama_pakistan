@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MapPin, ArrowRight, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import mapData from "@/components/find-dealer/mapdata.js";
+import { dealerCityLabelOverrides } from "./dealerCityLabelOverrides";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -24,14 +25,6 @@ type ProjectedDealer = {
   labelX: number;
   labelY: number;
   mapUrl: string | undefined;
-};
-
-const cityMeta: Record<string, { province: string; labelX: number; labelY: number }> = {
-  Lahore: { province: "Punjab", labelX: 12, labelY: -8 },
-  Islamabad: { province: "Punjab", labelX: -80, labelY: -18 },
-  Faisalabad: { province: "Punjab", labelX: -55 , labelY: -45 },
-  Multan: { province: "Punjab", labelX: 16, labelY: -20 },
-  Karachi: { province: "Sindh", labelX: -60, labelY: -10 },
 };
 
 const MAP_VIEWBOX_WIDTH = 312.8;
@@ -93,11 +86,14 @@ const buildProjectedDealers = (input: DealerSectionDealer[]): ProjectedDealer[] 
   return Array.from(byCity.values())
     .map((entry) => {
       const normalizedCity = entry.city.trim();
-      const meta = cityMeta[normalizedCity] ?? { province: entry.province, labelX: 12, labelY: -12 };
+      const override = dealerCityLabelOverrides[normalizedCity];
 
       const lat = Number(entry.lat);
       const lng = Number(entry.lng);
-      let point = mapLabelByCity[normalizedCity];
+      let point =
+        override?.mapX != null && override?.mapY != null
+          ? { x: override.mapX, y: override.mapY }
+          : mapLabelByCity[normalizedCity];
 
       if (!point && Number.isFinite(lat) && Number.isFinite(lng)) {
         point = latLngToMapPoint(lat, lng);
@@ -110,11 +106,11 @@ const buildProjectedDealers = (input: DealerSectionDealer[]): ProjectedDealer[] 
       return {
         name: entry.name,
         city: normalizedCity,
-        province: meta.province,
+        province: entry.province,
         x: point.x,
         y: point.y,
-        labelX: meta.labelX,
-        labelY: meta.labelY,
+        labelX: override?.labelX ?? 12,
+        labelY: override?.labelY ?? -12,
         mapUrl: entry.google_maps_url ?? undefined,
       };
     })

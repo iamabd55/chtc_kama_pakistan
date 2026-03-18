@@ -15,11 +15,10 @@ interface FooterProps {
 const Footer = ({ settings }: FooterProps) => {
   const phone = settings?.officePhone ?? "+92 300 8665 060";
   const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
-  const email = settings?.supportEmail ?? "info@chtckama.com.pk";
-  const officeAddress = settings?.officeAddress ?? "CHTC Kama Pakistan, Lahore, Punjab, Pakistan";
-  const tagline = settings?.companyTagline ?? "Drive Smart, Drive KAMA";
-  const [taglinePrefix, taglineHighlight] = tagline.split("KAMA");
-  const footerText = settings?.footerText ?? "© 2026 CHTC Kama Pakistan. All rights reserved.";
+  const email = settings?.supportEmail ?? "info@alnasirmotors.com.pk";
+  const officeAddress = settings?.officeAddress ?? "Al Nasir Motors Pakistan, Lahore, Punjab, Pakistan";
+  const tagline = settings?.companyTagline ?? "Driven by Al Nasir Motors";
+  const footerText = settings?.footerText ?? "© 2026 Al Nasir Motors Pakistan. All rights reserved.";
   const socialLinks = settings?.socialLinks ?? {};
   const socialItems = [
     { key: "facebook", label: "Facebook" },
@@ -41,20 +40,17 @@ const Footer = ({ settings }: FooterProps) => {
           >
             <div className="relative w-48 md:w-56 h-16 md:h-20 mb-4 ml-2 overflow-hidden ">
               <Image
-                src="/images/logo-white.png"
-                alt="CHTC Kama"
+                src="/images/al-nasir-logo-white.png"
+                alt="Al Nasir Motors"
                 fill
-                className="object-cover object-center brightness-0 invert"
+                className="object-contain object-left"
               />
             </div>
             <p className="text-sm font-display font-semibold uppercase tracking-[0.15em] text-white/50 mb-3 italic">
-              {taglineHighlight ? taglinePrefix : tagline}
-              {taglineHighlight ? (
-                <span className="slogan-kama not-italic text-[15px]">KAMA</span>
-              ) : null}
+              {tagline}
             </p>
             <p className="text-sm opacity-70 leading-relaxed">
-              CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
+              Al Nasir Motors Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses & special vehicles.
             </p>
           </motion.div>
 
@@ -93,9 +89,9 @@ const Footer = ({ settings }: FooterProps) => {
             <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">Company</h4>
             <ul className="space-y-2 text-sm opacity-70">
               {[
-                { label: "About CHTC Kama", href: "/about" },
+                { label: "About Al Nasir Motors", href: "/about" },
                 { label: "CHTC Brands", href: "/brands" },
-                { label: "Quality & Certifications", href: "/about/quality" },
+                { label: "Quality & Certifications", href: "/about/certifications" },
                 { label: "News & Events", href: "/news" },
                 { label: "Gallery", href: "/gallery" },
               ].map((link) => (
@@ -168,3 +164,4 @@ const Footer = ({ settings }: FooterProps) => {
 };
 
 export default Footer;
+

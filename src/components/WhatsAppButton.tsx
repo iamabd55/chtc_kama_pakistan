@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 
 const WHATSAPP_NUMBER = "923008665060";
-const DEFAULT_MESSAGE = "Hello! I'm interested in CHTC Kama Pakistan vehicles. Can you help me?";
+const DEFAULT_MESSAGE = "Hello! I'm interested in Al Nasir Motors Pakistan vehicles. Can you help me?";
 
 interface WhatsAppButtonProps {
     settings?: PublicSiteSettings;
@@ -81,3 +81,4 @@ export default function WhatsAppButton({ settings }: WhatsAppButtonProps) {
         </a>
     );
 }
+

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps) {
     if (!category) return { title: "Category Not Found" };
 
     return {
-        title: `${category.name} — CHTC Kama Pakistan`,
+        title: `${category.name} — Al Nasir Motors Pakistan`,
         description: category.description ?? `Browse our ${category.name} range.`,
     };
 }

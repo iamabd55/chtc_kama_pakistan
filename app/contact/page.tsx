@@ -33,7 +33,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             icon: MapPin,
             title: "Office Address",
             lines: [
-                "CHTC Kama Pakistan",
+                "Al Nasir Motors Pakistan",
                 settings?.office_address || "Lahore, Punjab, Pakistan",
             ],
         },
@@ -46,8 +46,8 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             icon: Mail,
             title: "Email",
             lines: [
-                settings?.support_email || "info@chtckama.com.pk",
-                settings?.sales_email || "sales@chtckama.com.pk",
+                settings?.support_email || "info@alnasirmotors.com.pk",
+                settings?.sales_email || "sales@alnasirmotors.com.pk",
             ],
         },
         {
@@ -69,8 +69,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Contact Us</h1>
                     <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Get in touch with our team via form, phone, email, or WhatsApp.</p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive{" "}
-                        <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>
@@ -99,6 +98,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                                 <input name="city" type="text" placeholder="City *" required className="w-full px-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                                 <select name="subject" className="w-full px-4 py-3 border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary" defaultValue="other">
                                     <option value="product">Product Inquiry</option>
+                                    <option value="brochure">Brochure Request</option>
                                     <option value="service">After Sales Support</option>
                                     <option value="dealer">Dealer Inquiry</option>
                                     <option value="career">Career Inquiry</option>
@@ -167,3 +167,4 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         </>
     );
 }
+

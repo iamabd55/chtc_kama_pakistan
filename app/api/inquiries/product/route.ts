@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 
 const safeTrim = (value: FormDataEntryValue | null) =>
     typeof value === "string" ? value.trim() : "";
@@ -44,6 +45,16 @@ export async function POST(request: Request) {
     if (error) {
         return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
     }
+
+    await sendInquiryNotification({
+        source: "product",
+        inquiryType: "purchase",
+        fullName,
+        phone,
+        email: email || null,
+        city,
+        message: compiledMessage || null,
+    });
 
     return NextResponse.redirect(new URL(`${safeReturnUrl}?submitted=1`, request.url), 303);
 }

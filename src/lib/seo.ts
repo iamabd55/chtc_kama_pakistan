@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = "https://www.chtckama.com.pk";
+const FALLBACK_SITE_URL = "https://www.alnasirmotors.com.pk";
 
 function normalizeSiteUrl(url: string): string {
     const trimmed = url.trim();

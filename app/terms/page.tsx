@@ -10,13 +10,13 @@ const sections: Section[] = [
         title: "Acceptance of Terms",
         paragraphs: [
             "By accessing or using this website (the Site), you agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, please do not use this Site.",
-            "These terms govern your relationship with CHTC Kama Pakistan (the Company, we, us, or our) in connection with your use of this Site.",
+            "These terms govern your relationship with Al Nasir Motors Pakistan (the Company, we, us, or our) in connection with your use of this Site.",
         ],
     },
     {
         title: "Site Operator",
         paragraphs: [
-            "This Site is operated by CHTC Kama Pakistan for users in Pakistan. Product specifications, pricing, and availability may vary and may be updated without prior notice.",
+            "This Site is operated by Al Nasir Motors Pakistan for users in Pakistan. Product specifications, pricing, and availability may vary and may be updated without prior notice.",
             "For official correspondence regarding these terms, please use the contact channels listed on our Contact page.",
         ],
     },
@@ -61,8 +61,8 @@ const sections: Section[] = [
 ];
 
 export const metadata: Metadata = {
-    title: "Terms of Service | CHTC Kama Pakistan",
-    description: "Read the Terms of Service for CHTC Kama Pakistan website usage, intellectual property, disclaimers, and governing law.",
+    title: "Terms of Service | Al Nasir Motors Pakistan",
+    description: "Read the Terms of Service for Al Nasir Motors Pakistan website usage, intellectual property, disclaimers, and governing law.",
 };
 
 export default function TermsPage() {
@@ -72,10 +72,10 @@ export default function TermsPage() {
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Terms of Service</h1>
                     <p className="text-primary-foreground/75 max-w-2xl mx-auto mb-3">
-                        Please review these terms carefully before using the CHTC Kama Pakistan website.
+                        Please review these terms carefully before using the Al Nasir Motors Pakistan website.
                     </p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>

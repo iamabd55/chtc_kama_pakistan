@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 
-const SUBJECT_TO_TYPE: Record<string, "purchase" | "service" | "general"> = {
+const SUBJECT_TO_TYPE: Record<string, "purchase" | "service" | "brochure" | "general"> = {
     product: "purchase",
+    brochure: "brochure",
     service: "service",
     dealer: "general",
     career: "general",
@@ -46,27 +48,15 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL("/contact?error=1", request.url), 303);
     }
 
-    const webhook = process.env.INQUIRY_WEBHOOK_URL;
-    if (webhook) {
-        try {
-            await fetch(webhook, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    source: "contact",
-                    fullName,
-                    phone,
-                    email: email || null,
-                    city,
-                    inquiryType,
-                    message: prefixedMessage || null,
-                    createdAt: new Date().toISOString(),
-                }),
-            });
-        } catch {
-            // Notifications should not block the user-facing form flow.
-        }
-    }
+    await sendInquiryNotification({
+        source: "contact",
+        inquiryType,
+        fullName,
+        phone,
+        email: email || null,
+        city,
+        message: prefixedMessage || null,
+    });
 
     return NextResponse.redirect(new URL("/contact?submitted=1", request.url), 303);
 }

@@ -122,7 +122,7 @@ const AdminLayout = ({
                                     </button>
                                 </div>
                                 <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-primary">
-                                    CHTC Kama Pakistan
+                                    Al Nasir Motors Pakistan
                                 </div>
                                 <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold mb-1">{sectionLabel}</p>
                                 <h1 className="font-display text-3xl md:text-4xl font-black text-slate-900 leading-tight">
@@ -163,3 +163,4 @@ const AdminLayout = ({
 };
 
 export default AdminLayout;
+

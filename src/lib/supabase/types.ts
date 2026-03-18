@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Database type definitions for CHTC Kama Pakistan
+// Database type definitions for Al Nasir Motors Pakistan
 // These mirror the Supabase tables
 // ─────────────────────────────────────────────
 
@@ -225,3 +225,4 @@ export interface AdminProfile {
     created_at: string;
     updated_at: string;
 }
+

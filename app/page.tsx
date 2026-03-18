@@ -37,7 +37,7 @@ export default async function HomePage() {
         .filter((slide) => Boolean(slide?.imageUrl))
         .map((slide, idx) => ({
             src: resolveHeroImage(String(slide.imageUrl)),
-            alt: slide.title || `CHTC Kama Hero Slide ${idx + 1}`,
+            alt: slide.title || `Al Nasir Motors Hero Slide ${idx + 1}`,
         }));
 
     // Dynamically list ALL files in images/hero/ — no code changes needed when adding/removing images
@@ -49,7 +49,7 @@ export default async function HomePage() {
         .filter((f) => !f.name.startsWith("."))  // exclude hidden/placeholder files
         .map((f) => ({
             src: getStorageUrl(`hero/${f.name}`),
-            alt: `CHTC Kama — ${f.name.replace(/\.[^.]+$/, "").replace(/-/g, " ")}`,
+            alt: `Al Nasir Motors — ${f.name.replace(/\.[^.]+$/, "").replace(/-/g, " ")}`,
         }));
 
     const heroSlides = heroSlidesFromSettings.length > 0 ? heroSlidesFromSettings : heroSlidesFromStorage;

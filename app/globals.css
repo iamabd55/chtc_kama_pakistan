@@ -74,6 +74,55 @@
 }
 
 @layer utilities {
+  .hero-headline-clean {
+    letter-spacing: -0.03em;
+    text-shadow: 0 10px 30px rgba(2, 6, 23, 0.5);
+  }
+
+  @keyframes wordmark-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  .wordmark-aurora {
+    background: linear-gradient(
+      112deg,
+      hsl(211 99% 32%) 0%,
+      hsl(211 96% 42%) 24%,
+      hsl(205 96% 63%) 46%,
+      hsl(0 0% 100%) 56%,
+      hsl(31 92% 62%) 78%,
+      hsl(211 99% 32%) 100%
+    );
+    background-size: 260% 100%;
+    animation: wordmark-shift 6.5s ease-in-out infinite alternate;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.22);
+    filter: saturate(1.2) contrast(1.08);
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4),
+      0 10px 24px rgba(15, 23, 42, 0.38),
+      0 0 26px rgba(56, 189, 248, 0.2);
+  }
+
+  @media (max-width: 640px) {
+    .wordmark-aurora {
+      background: none;
+      animation: none;
+      -webkit-text-fill-color: hsl(205 96% 68%);
+      color: hsl(205 96% 68%);
+      -webkit-text-stroke: 0;
+      filter: none;
+      text-shadow: 0 6px 14px rgba(2, 6, 23, 0.38);
+    }
+  }
+
   .text-gradient-gold {
     background: linear-gradient(135deg, hsl(27 63% 43%), hsl(35 80% 55%));
     -webkit-background-clip: text;
@@ -86,16 +135,6 @@
 
   .bg-kama-gradient-gold {
     background: linear-gradient(135deg, hsl(27 63% 43%), hsl(35 70% 50%));
-  }
-
-  /* Slogan "KAMA" word emphasis */
-  .slogan-kama {
-    font-family: var(--font-orbitron), sans-serif;
-    font-weight: 800;
-    background: linear-gradient(135deg, hsl(35 80% 55%), hsl(27 63% 50%), hsl(35 90% 60%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 0.06em;
   }
 }
 

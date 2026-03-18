@@ -35,7 +35,7 @@ const WhyKamaSection = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.7, ease }}
         >
-          <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.3em] mb-3">Why CHTC Kama</p>
+          <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.3em] mb-3">Why Al Nasir Motors</p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground tracking-tight">
             Built for Pakistan
           </h2>

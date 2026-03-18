@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps) {
     if (!product) return { title: "Product Not Found" };
 
     return {
-        title: product.meta_title ?? `${product.name} — CHTC Kama Pakistan`,
+        title: product.meta_title ?? `${product.name} — Al Nasir Motors Pakistan`,
         description: product.meta_desc ?? product.short_description ?? `Learn more about the ${product.name}.`,
     };
 }

@@ -1,15 +1,20 @@
 "use client";
 
-import { useMemo, useState, type ComponentType } from "react";
+import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { MapPin, Phone, MessageCircle, ExternalLink, Search } from "lucide-react";
 import type { Dealer } from "@/lib/supabase/types";
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 
-const LeafletMapContainer = MapContainer as unknown as ComponentType<Record<string, unknown>>;
-const LeafletTileLayer = TileLayer as unknown as ComponentType<Record<string, unknown>>;
-const LeafletCircleMarker = CircleMarker as unknown as ComponentType<Record<string, unknown>>;
-const LeafletPopup = Popup as unknown as ComponentType<Record<string, unknown>>;
+const DealerLeafletMap = dynamic(() => import("@/components/find-dealer/DealerLeafletMap"), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-muted animate-pulse" aria-label="Loading map" />,
+});
+
+const DealerGoogleMap = dynamic(() => import("@/components/find-dealer/DealerGoogleMap"), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-muted animate-pulse" aria-label="Loading map" />,
+});
 
 interface DealerDirectoryProps {
     dealers: Dealer[];
@@ -18,6 +23,7 @@ interface DealerDirectoryProps {
 const PROVINCES: Dealer["province"][] = ["Punjab", "Sindh", "KPK", "Balochistan", "AJK", "GB", "ICT"];
 
 export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
+    const hasGoogleMapsKey = Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
     const [query, setQuery] = useState("");
     const [province, setProvince] = useState<string>("all");
     const [dealerType, setDealerType] = useState<string>("all");
@@ -118,28 +124,11 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
                                 <h2 className="font-display font-bold text-foreground">Dealer Map</h2>
                             </div>
                             <div className="h-[320px]">
-                                <LeafletMapContainer center={mapCenter} zoom={6} scrollWheelZoom className="h-full w-full z-0">
-                                    <LeafletTileLayer
-                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    />
-                                    {mappableDealers.map((dealer) => (
-                                        <LeafletCircleMarker
-                                            key={dealer.id}
-                                            center={[Number(dealer.lat), Number(dealer.lng)]}
-                                            radius={7}
-                                            pathOptions={{ color: "#0b4ea2", fillColor: "#0b4ea2", fillOpacity: 0.8 }}
-                                        >
-                                            <LeafletPopup>
-                                                <div className="text-sm">
-                                                    <p className="font-semibold">{dealer.name}</p>
-                                                    <p>{dealer.city}, {dealer.province}</p>
-                                                    <p>{dealer.phone}</p>
-                                                </div>
-                                            </LeafletPopup>
-                                        </LeafletCircleMarker>
-                                    ))}
-                                </LeafletMapContainer>
+                                {hasGoogleMapsKey ? (
+                                    <DealerGoogleMap mapCenter={mapCenter} dealers={mappableDealers} />
+                                ) : (
+                                    <DealerLeafletMap mapCenter={mapCenter} dealers={mappableDealers} />
+                                )}
                             </div>
                         </div>
 

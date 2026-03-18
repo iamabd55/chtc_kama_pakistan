@@ -5,7 +5,7 @@ import ProductsExplorer from "@/components/products/ProductsExplorer";
 export const revalidate = 60;
 
 export const metadata = {
-    title: "Products — CHTC Kama Pakistan",
+    title: "Products — Al Nasir Motors Pakistan",
     description: "Browse our full range of commercial vehicles — trucks, buses, EVs and more.",
 };
 
@@ -42,8 +42,7 @@ export default async function ProductsPage() {
                         Our Products
                     </h1>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40 mb-4">
-                        Drive Smart, Drive{" "}
-                        <span className="slogan-kama text-xs">KAMA</span>
+                            Driven by Al Nasir Motors
                     </p>
                     <p className="text-primary-foreground/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
                         Explore our complete range of commercial vehicles — from nimble mini trucks to
@@ -71,3 +70,4 @@ export default async function ProductsPage() {
         </>
     );
 }
+

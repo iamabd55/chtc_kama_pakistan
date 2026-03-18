@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Shield, Wrench, Phone, Calendar } from "lucide-react";
 
 const services = [
-    { icon: Wrench, title: "Spare Parts", desc: "Genuine CHTC Kama spare parts available at all authorized service centers nationwide." },
+    { icon: Wrench, title: "Spare Parts", desc: "Genuine spare parts available at all authorized Al Nasir Motors service centers nationwide." },
     { icon: Calendar, title: "Scheduled Maintenance", desc: "Regular maintenance schedules to keep your vehicle running at peak performance." },
-    { icon: Shield, title: "Warranty", desc: "Comprehensive warranty coverage on all new CHTC Kama vehicles." },
+    { icon: Shield, title: "Warranty", desc: "Comprehensive warranty coverage on all new Al Nasir Motors vehicles." },
     { icon: Phone, title: "Service Appointment", desc: "Book a service appointment online or call our helpline." },
 ];
 
@@ -24,8 +24,7 @@ export default async function AfterSalesPage({ searchParams }: AfterSalesPagePro
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">After Sales</h1>
                     <p className="text-primary-foreground/70 max-w-xl mx-auto mb-3">Spare parts, scheduled maintenance, warranty information, and service appointments.</p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive{" "}
-                        <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>

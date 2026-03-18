@@ -19,11 +19,11 @@ export default async function CareersPage() {
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Careers</h1>
                     <p className="text-primary-foreground/70 max-w-2xl mx-auto mb-3">
-                        Build your future with CHTC Kama Pakistan. We are always looking for passionate professionals in sales, after-sales,
+                        Build your future with Al Nasir Motors Pakistan. We are always looking for passionate professionals in sales, after-sales,
                         technical operations, and customer support.
                     </p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>
@@ -74,7 +74,7 @@ export default async function CareersPage() {
                     <div className="bg-card border rounded-lg p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <Users className="w-5 h-5 text-primary" />
-                            <h3 className="font-display font-bold text-lg text-foreground">Why Join CHTC Kama Pakistan</h3>
+                            <h3 className="font-display font-bold text-lg text-foreground">Why Join Al Nasir Motors Pakistan</h3>
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed">
                             Our teams work on commercial transport solutions across Pakistan, with a strong focus on quality, ownership, and customer impact.
@@ -85,3 +85,4 @@ export default async function CareersPage() {
         </>
     );
 }
+

@@ -72,7 +72,7 @@ const AdminNews = () => {
             category: "news",
             status: "draft",
             tags: [],
-            author: "CHTC Kama Pakistan",
+            author: "Al Nasir Motors Pakistan",
         });
         setDialogOpen(true);
     };
@@ -99,7 +99,7 @@ const AdminNews = () => {
             excerpt: editing.excerpt || null,
             category: editing.category || "news",
             thumbnail: editing.thumbnail,
-            author: editing.author || "CHTC Kama Pakistan",
+            author: editing.author || "Al Nasir Motors Pakistan",
             tags: editing.tags || [],
             status: editing.status || "draft",
             meta_title: editing.meta_title || null,
@@ -388,3 +388,4 @@ const AdminNews = () => {
 };
 
 export default AdminNews;
+

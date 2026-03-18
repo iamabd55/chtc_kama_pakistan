@@ -34,7 +34,7 @@ export default function OpenGraphImage() {
                         marginBottom: 24,
                     }}
                 >
-                    CHTC Kama Pakistan
+                    Al Nasir Motors Pakistan
                 </div>
                 <div
                     style={{
@@ -65,3 +65,4 @@ export default function OpenGraphImage() {
         }
     );
 }
+

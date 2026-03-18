@@ -11,7 +11,7 @@ const sections: Section[] = [
     {
         title: "Scope and Commitment",
         paragraphs: [
-            "This Privacy Policy explains how CHTC Kama Pakistan (we, us, or our) collects, uses, stores, and protects personal information when you use this website (the Site).",
+            "This Privacy Policy explains how Al Nasir Motors Pakistan (we, us, or our) collects, uses, stores, and protects personal information when you use this website (the Site).",
             "This policy should be read together with our Terms of Service available on this Site.",
             "We are committed to handling your personal information in accordance with applicable laws of Pakistan.",
         ],
@@ -56,7 +56,7 @@ const sections: Section[] = [
             "We do not sell your personal information. We may share personal information only when necessary and legally permitted.",
         ],
         bullets: [
-            "Within CHTC Kama Pakistan and affiliated entities for customer support and operational purposes.",
+            "Within Al Nasir Motors Pakistan and affiliated entities for customer support and operational purposes.",
             "With authorized dealers, distributors, and service partners to fulfill your requests.",
             "With technology, hosting, analytics, and communication service providers acting on our instructions.",
             "With legal, tax, audit, and professional advisors where required.",
@@ -109,13 +109,13 @@ const sections: Section[] = [
 
 export const metadata: Metadata = {
     title: "Privacy Policy",
-    description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+    description: "Read how Al Nasir Motors Pakistan collects, uses, protects, and manages your personal information.",
     alternates: {
         canonical: "/privacy",
     },
     openGraph: {
-        title: "Privacy Policy | CHTC Kama Pakistan",
-        description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+        title: "Privacy Policy | Al Nasir Motors Pakistan",
+        description: "Read how Al Nasir Motors Pakistan collects, uses, protects, and manages your personal information.",
         url: "/privacy",
         type: "article",
         images: [
@@ -123,14 +123,14 @@ export const metadata: Metadata = {
                 url: absoluteUrl("/privacy/opengraph-image"),
                 width: 1200,
                 height: 630,
-                alt: "CHTC Kama Pakistan Privacy Policy",
+                alt: "Al Nasir Motors Pakistan Privacy Policy",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Privacy Policy | CHTC Kama Pakistan",
-        description: "Read how CHTC Kama Pakistan collects, uses, protects, and manages your personal information.",
+        title: "Privacy Policy | Al Nasir Motors Pakistan",
+        description: "Read how Al Nasir Motors Pakistan collects, uses, protects, and manages your personal information.",
         images: [absoluteUrl("/privacy/opengraph-image")],
     },
 };
@@ -142,10 +142,10 @@ export default function PrivacyPage() {
                 <div className="container text-center">
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">Privacy Policy</h1>
                     <p className="text-primary-foreground/75 max-w-2xl mx-auto mb-3">
-                        Learn how CHTC Kama Pakistan handles your information when you use our website.
+                        Learn how Al Nasir Motors Pakistan handles your information when you use our website.
                     </p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>

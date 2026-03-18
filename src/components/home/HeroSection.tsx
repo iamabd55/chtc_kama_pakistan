@@ -63,7 +63,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               src={slide.src}
               alt={slide.alt}
               fill
-              className="object-cover"
+              className="object-cover object-[60%_72%] sm:object-center"
               priority={i === 0}
             />
           </motion.div>
@@ -104,8 +104,9 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <span className="w-5 sm:w-10 h-[1.5px] bg-gradient-to-l from-transparent to-accent rounded-full" />
           </motion.div>
 
-          {/* ── THE SLOGAN — Big on ALL screens ── */}
+          {/* ── THE SLOGAN ── */}
           <div className="mb-4 sm:mb-7">
+
             {/* Line 1: "Drive Smart," */}
             <motion.div
               className="overflow-hidden"
@@ -114,7 +115,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               transition={{ duration: 0.4, delay: 0.3 }}
             >
               <motion.h1
-                className="text-[3rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-display font-extrabold text-white leading-[1] sm:leading-[0.95] tracking-tight"
+                className="text-[3.2rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-heading font-semibold text-white leading-[0.98] sm:leading-[0.95] hero-headline-clean"
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.9, delay: 0.35, ease }}
@@ -123,7 +124,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               </motion.h1>
             </motion.div>
 
-            {/* Line 2: "Drive KAMA" */}
+            {/* Line 2: mobile splits "With Al Nasir" / "Motors", desktop keeps it all one line */}
             <motion.div
               className="overflow-hidden"
               initial={{ opacity: 0 }}
@@ -131,14 +132,24 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               transition={{ duration: 0.4, delay: 0.55 }}
             >
               <motion.h1
-                className="text-[3rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-display font-extrabold text-white leading-[1] sm:leading-[0.95] tracking-tight"
+                className="text-[3rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-heading font-semibold text-white leading-[0.98] sm:leading-[0.95] hero-headline-clean"
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.9, delay: 0.6, ease }}
               >
-                Drive{" "}
-                <span className="font-kama font-black text-gradient-gold inline-block tracking-wide">
-                  KAMA
+                {/* ── Mobile only: "With Al Nasir" then "Motors" on new line ── */}
+                <span className="sm:hidden">
+                  {"With\u00A0"}
+                  <span style={{ color: "#ffffff" }}>Al Nasir</span>
+                  <br />
+                  <span style={{ color: "#E8821A" }}>Motors</span>
+                </span>
+
+                {/* ── Desktop (sm+): everything on one line ── */}
+                <span className="hidden sm:inline">
+                  {"With\u00A0"}
+                  <span style={{ color: "#ffffff" }}>Al Nasir</span>
+                  <span style={{ color: "#E8821A" }}>{"\u00A0Motors"}</span>
                 </span>
               </motion.h1>
             </motion.div>
@@ -155,7 +166,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <span className="text-white/65 font-medium">30+ models built for Pakistani roads.</span>
           </motion.p>
 
-          {/* ── CTA Buttons — compact, side by side even on mobile ── */}
+          {/* ── CTA Buttons ── */}
           <motion.div
             className="flex flex-row gap-2.5 sm:gap-4 mb-8 sm:mb-14"
             initial={{ opacity: 0, y: 25 }}
@@ -180,9 +191,9 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             </Link>
           </motion.div>
 
-          {/* ── Stats — inline glass pills ── */}
+          {/* ── Stats ── */}
           <motion.div
-            className="flex items-center gap-2 sm:gap-4"
+            className="flex w-full flex-wrap items-center justify-center gap-2 sm:gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.35, ease }}
@@ -211,7 +222,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
         </div>
       </motion.div>
 
-      {/* ── Slide indicators — desktop: vertical, mobile: horizontal dots ── */}
+      {/* ── Slide indicators — desktop: vertical ── */}
       {slides.length > 1 && (
         <motion.div
           className="absolute right-8 top-1/2 -translate-y-1/2 z-10 hidden sm:flex flex-col gap-1.5"
@@ -223,16 +234,18 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`w-1.5 transition-all duration-500 rounded-full ${i === currentSlide
+              className={`w-1.5 transition-all duration-500 rounded-full ${
+                i === currentSlide
                   ? "h-8 bg-accent shadow-sm shadow-accent/50"
                   : "h-1.5 bg-white/25 hover:bg-white/50"
-                }`}
+              }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}
         </motion.div>
       )}
 
+      {/* ── Slide indicators — mobile: horizontal dots ── */}
       {slides.length > 1 && (
         <motion.div
           className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 flex sm:hidden gap-1.5"
@@ -244,10 +257,9 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`h-1.5 transition-all duration-500 rounded-full ${i === currentSlide
-                  ? "w-6 bg-accent"
-                  : "w-1.5 bg-white/25"
-                }`}
+              className={`h-1.5 transition-all duration-500 rounded-full ${
+                i === currentSlide ? "w-6 bg-accent" : "w-1.5 bg-white/25"
+              }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}

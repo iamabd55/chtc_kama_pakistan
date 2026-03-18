@@ -66,20 +66,75 @@ export default function AboutPage() {
         <>
             <section className="py-16 bg-kama-gradient">
                 <div className="container text-center">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">About CHTC Kama</h1>
+                    <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mb-4">About Al Nasir Motors</h1>
                     <p className="text-primary-foreground/75 max-w-3xl mx-auto mb-3 text-base md:text-lg">
                         Discover excellence with KAMA Auto, a globally recognized force in commercial vehicles, built on engineering depth,
                         strategic vision, and decades of manufacturing leadership.
                     </p>
                     <p className="font-display font-semibold text-[11px] uppercase tracking-[0.25em] text-white/40">
-                        Drive Smart, Drive{" "}
-                        <span className="slogan-kama text-xs">KAMA</span>
+                        Driven by Al Nasir Motors
                     </p>
                 </div>
             </section>
 
             <section className="py-20">
                 <div className="container max-w-5xl space-y-14">
+                    <div className="bg-card border rounded-lg p-7 md:p-10">
+                        <h2 className="font-display font-bold text-3xl text-foreground mb-5">Founding Legacy in Pakistan</h2>
+                        <div className="space-y-4 text-muted-foreground leading-relaxed">
+                            <p>
+                                Al-Bashir Group has been in the automotive business for more than half a century. Our chairman,
+                                Mr. Bashir Uddin Malik (Basheeruddin Malik), began his journey in spare parts sales under
+                                Al-Nasir Motors, a name known for quality and excellence.
+                            </p>
+                            <p>
+                                His strong reputation helped build a rapid national footprint in parts sales, and he later became
+                                one of the first preferred partners for Toyota and Hino as a pioneer dealer.
+                            </p>
+                            <p>
+                                With consistent year-on-year growth and strong operational performance, the group developed one of
+                                the largest dealership footprints in the Toyota network (Toyota Faisalabad, Sargodha, Lyallpur,
+                                and Chenab) and grew into one of the largest dealership groups in the country across passenger and
+                                commercial vehicle segments.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-card border rounded-lg p-7 md:p-10">
+                        <h2 className="font-display font-bold text-3xl text-foreground mb-6">Leadership Spotlight</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <article className="rounded-xl border bg-background p-5">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/images/al-bcf/core-team/founder.png"
+                                    alt="Mr. Bashir Uddin Malik, Founder"
+                                    className="w-full max-w-[280px] aspect-[4/5] object-cover rounded-lg mb-4"
+                                />
+                                <h3 className="font-display font-bold text-xl text-foreground">Mr. Bashir Uddin Malik</h3>
+                                <p className="text-sm text-primary font-semibold mt-1">Founder</p>
+                                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+                                    A pioneer in Pakistan&apos;s automotive dealership ecosystem whose long-standing market reputation,
+                                    disciplined expansion strategy, and customer-first approach shaped the foundation of Al-Bashir Group.
+                                </p>
+                            </article>
+
+                            <article className="rounded-xl border bg-background p-5">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.png"
+                                    alt="Mr. M. Izhar Ul Haq, Director Sales and Marketing"
+                                    className="w-full max-w-[280px] aspect-[4/5] object-cover rounded-lg mb-4"
+                                />
+                                <h3 className="font-display font-bold text-xl text-foreground">Mr. M. Izhar Ul Haq</h3>
+                                <p className="text-sm text-primary font-semibold mt-1">Director Sales & Marketing</p>
+                                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+                                    Leads sales and marketing with a strong focus on network growth, customer engagement, and
+                                    commercial mobility adoption across Pakistan.
+                                </p>
+                            </article>
+                        </div>
+                    </div>
+
                     <div className="bg-card border rounded-lg p-7 md:p-10">
                         <h2 className="font-display font-bold text-3xl text-foreground mb-5">A Legacy of Growth and Global Confidence</h2>
                         <div className="space-y-4 text-muted-foreground leading-relaxed">
@@ -176,7 +231,7 @@ export default function AboutPage() {
                     </div>
 
                     <div className="text-center bg-kama-gradient rounded-lg p-8 md:p-10">
-                        <h2 className="font-display font-bold text-2xl md:text-3xl text-primary-foreground mb-3">CHTC Kama Pakistan</h2>
+                        <h2 className="font-display font-bold text-2xl md:text-3xl text-primary-foreground mb-3">Al Nasir Motors Pakistan</h2>
                         <p className="text-primary-foreground/80 max-w-3xl mx-auto leading-relaxed">
                             In Pakistan, we bring this global legacy to local businesses through reliable products, strong after-sales support,
                             and a long-term commitment to transport excellence. Our mission is simple: deliver vehicles that move businesses
@@ -188,3 +243,4 @@ export default function AboutPage() {
         </>
     );
 }
+

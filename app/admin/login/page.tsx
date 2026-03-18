@@ -55,8 +55,8 @@ const AdminLogin = () => {
                     {/* Logo */}
                     <div className="text-center mb-8">
                         <Image
-                            src="/images/logo.png"
-                            alt="CHTC Kama Pakistan"
+                            src="/images/al-nasir-logo.png"
+                            alt="Al Nasir Motors Pakistan"
                             width={120}
                             height={56}
                             className="h-14 w-auto mx-auto mb-4"
@@ -78,7 +78,7 @@ const AdminLogin = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="admin@chtckama.com.pk"
+                                placeholder="admin@alnasirmotors.com.pk"
                                 required
                                 className="h-11"
                             />
@@ -128,7 +128,7 @@ const AdminLogin = () => {
                     </form>
 
                     <p className="text-xs text-center text-muted-foreground mt-6">
-                        CHTC Kama Pakistan — Internal Use Only
+                        Al Nasir Motors Pakistan — Internal Use Only
                     </p>
                 </div>
             </div>
@@ -137,3 +137,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+

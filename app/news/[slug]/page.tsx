@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps) {
 
     return {
         title: data.meta_title ?? `${data.title} — News`,
-        description: data.meta_desc ?? data.excerpt ?? "Latest update from CHTC Kama Pakistan.",
+        description: data.meta_desc ?? data.excerpt ?? "Latest update from Al Nasir Motors Pakistan.",
     };
 }
 

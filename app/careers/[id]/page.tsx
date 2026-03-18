@@ -120,10 +120,15 @@ export default async function CareerDetailPage({ params, searchParams }: CareerD
                                 className="w-full px-4 py-2.5 border rounded-md bg-background text-foreground"
                             />
                             <input
+                                name="cv_file"
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                className="w-full px-4 py-2.5 border rounded-md bg-background text-foreground"
+                            />
+                            <input
                                 name="cv_url"
                                 type="url"
-                                required
-                                placeholder="CV URL (Drive/Dropbox/etc) *"
+                                placeholder="CV URL (optional if file uploaded)"
                                 className="w-full px-4 py-2.5 border rounded-md bg-background text-foreground"
                             />
                             <textarea

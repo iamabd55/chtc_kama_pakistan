@@ -41,15 +41,23 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
-    title: {
-        default: "CHTC Kama Pakistan — Commercial Vehicles",
-        template: "%s | CHTC Kama Pakistan",
+    icons: {
+        icon: [
+            { url: "/images/al-nasir-logo.png", type: "image/png" },
+            { url: "/favicon.ico", sizes: "any" },
+        ],
+        shortcut: ["/images/al-nasir-logo.png"],
+        apple: [{ url: "/images/al-nasir-logo.png", type: "image/png" }],
     },
-    description: "CHTC Kama Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses and special vehicles.",
-    applicationName: "CHTC Kama Pakistan",
+    title: {
+        default: "Al Nasir Motors Pakistan — Commercial Vehicles",
+        template: "%s | Al Nasir Motors Pakistan",
+    },
+    description: "Al Nasir Motors Pakistan — your trusted partner for commercial vehicles. Light trucks, heavy trucks, vans, buses and special vehicles.",
+    applicationName: "Al Nasir Motors Pakistan",
     category: "Automotive",
     keywords: [
-        "CHTC Kama Pakistan",
+        "Al Nasir Motors Pakistan",
         "commercial vehicles Pakistan",
         "mini truck Pakistan",
         "light truck Pakistan",
@@ -62,22 +70,22 @@ export const metadata: Metadata = {
         type: "website",
         locale: "en_PK",
         url: "/",
-        siteName: "CHTC Kama Pakistan",
-        title: "CHTC Kama Pakistan — Commercial Vehicles",
-        description: "Explore CHTC Kama Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
+        siteName: "Al Nasir Motors Pakistan",
+        title: "Al Nasir Motors Pakistan — Commercial Vehicles",
+        description: "Explore Al Nasir Motors Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
         images: [
             {
                 url: absoluteUrl("/images/hero/kama-hero.png"),
                 width: 1200,
                 height: 630,
-                alt: "CHTC Kama Pakistan commercial vehicles",
+                alt: "Al Nasir Motors Pakistan commercial vehicles",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "CHTC Kama Pakistan — Commercial Vehicles",
-        description: "Explore CHTC Kama Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
+        title: "Al Nasir Motors Pakistan — Commercial Vehicles",
+        description: "Explore Al Nasir Motors Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
         images: [absoluteUrl("/images/hero/kama-hero.png")],
     },
     robots: {
@@ -110,7 +118,7 @@ export default async function RootLayout({
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
-        name: "CHTC Kama Pakistan",
+        name: "Al Nasir Motors Pakistan",
         url: SITE_URL,
         logo: absoluteUrl("/images/logo.png"),
         email: initialSettings.supportEmail,
@@ -141,3 +149,4 @@ export default async function RootLayout({
         </html>
     );
 }
+

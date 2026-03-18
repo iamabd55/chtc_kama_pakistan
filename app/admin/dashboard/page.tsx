@@ -29,7 +29,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({
         products: 0,
         inquiries: 0,
-        newInquiries: 0,
+        inquiriesToday: 0,
         news: 0,
         dealers: 0,
         careers: 0,
@@ -41,10 +41,13 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const fetchStats = async () => {
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
+
             const [
                 products,
                 inquiries,
-                newInq,
+                todayInquiries,
                 news,
                 dealers,
                 careers,
@@ -57,7 +60,7 @@ const AdminDashboard = () => {
                 adminDb
                     .from("inquiries")
                     .select("id", { count: "exact", head: true })
-                    .eq("status", "new"),
+                    .gte("created_at", startOfToday.toISOString()),
                 adminDb
                     .from("news_posts")
                     .select("id", { count: "exact", head: true }),
@@ -81,7 +84,7 @@ const AdminDashboard = () => {
             setStats({
                 products: products.count || 0,
                 inquiries: inquiries.count || 0,
-                newInquiries: newInq.count || 0,
+                inquiriesToday: todayInquiries.count || 0,
                 news: news.count || 0,
                 dealers: dealers.count || 0,
                 careers: careers.count || 0,
@@ -106,12 +109,12 @@ const AdminDashboard = () => {
                         <p className="text-[10px] uppercase tracking-[0.25em] text-white/70 font-semibold mb-2">Operations Cockpit</p>
                         <h2 className="font-display text-2xl md:text-3xl font-black leading-tight mb-3">Everything important. One command surface.</h2>
                         <p className="text-white/75 max-w-2xl text-sm md:text-base mb-2">Track new leads, update product catalog, publish company updates, and monitor hiring from a single workspace.</p>
-                        <p className="text-white/90 text-sm md:text-base font-semibold mb-6">For CHTC Kama Pakistan nationwide operations.</p>
+                        <p className="text-white/90 text-sm md:text-base font-semibold mb-6">For Al Nasir Motors Pakistan nationwide operations.</p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-3">
                                 <p className="text-white/70 text-[11px] uppercase tracking-[0.12em]">Lead Queue</p>
-                                <p className="text-xl font-black mt-1">{stats.newInquiries}</p>
+                                <p className="text-xl font-black mt-1">{stats.inquiriesToday}</p>
                             </div>
                             <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-3">
                                 <p className="text-white/70 text-[11px] uppercase tracking-[0.12em]">Published News</p>
@@ -157,8 +160,8 @@ const AdminDashboard = () => {
                     color="blue"
                 />
                 <StatsCard
-                    title="New Inquiries"
-                    value={stats.newInquiries}
+                    title="Inquiries Today"
+                    value={stats.inquiriesToday}
                     icon={MessageSquare}
                     color="gold"
                     trend={`${stats.inquiries} total`}
@@ -281,3 +284,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
