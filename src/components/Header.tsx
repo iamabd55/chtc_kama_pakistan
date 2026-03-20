@@ -218,9 +218,9 @@ const Header = ({ settings }: HeaderProps) => {
       </motion.div>
 
       {/* Main nav — original solid white */}
-      <div className="container h-[4.25rem] md:h-[5.25rem] flex items-center justify-between lg:justify-center lg:gap-8">
-        <Link href="/" className="flex-shrink-0 py-1 md:py-2">
-          <Image src="/images/al-nasir-logo.png" alt="Al Nasir Motors" width={150} height={64} unoptimized className="h-10 md:h-12 w-auto" priority />
+      <div className="container h-[5rem] md:h-[6rem] flex items-center justify-between lg:justify-center lg:gap-8">
+        <Link href="/" className="flex-shrink-0 py-1 md:py-2 rounded-md transition-transform duration-200 hover:scale-[1.01]">
+          <Image src="/images/al-nasir-logo.png" alt="Al Nasir Motors" width={340} height={200} unoptimized className="h-14 md:h-16 lg:h-[4.5rem] w-auto drop-shadow-[0_1px_1px_rgba(0,0,0,0.12)]" priority />
         </Link>
 
         {/* Desktop nav */}
