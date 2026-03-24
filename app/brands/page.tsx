@@ -19,7 +19,7 @@ const brands = [
         name: "Joylong",
         slug: "joylong",
         logo: "/images/joylong-logo.png",
-        desc: "Passenger mobility brand with comfort-oriented configurations for commercial use.",
+        desc: "Joylong has a dedicated official Pakistan website for complete product information and updates.",
     },
 ];
 
@@ -55,7 +55,7 @@ export default function BrandsPage() {
                                 <p className="text-muted-foreground leading-relaxed">{brand.desc}</p>
                             </div>
                             <div className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover:translate-x-0.5 transition-transform">
-                                Explore
+                                {brand.slug === "joylong" ? "Visit Official Website" : "Explore"}
                                 <ArrowRight className="w-4 h-4" />
                             </div>
                         </Link>

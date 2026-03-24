@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
+import { createClient } from "@/lib/supabase/client";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -138,6 +139,11 @@ const navItems: NavItem[] = [
   { label: "Contact Us", href: "/contact" },
 ];
 
+const getSeriesSlugFromHref = (href: string) => {
+  const segments = href.split("/").filter(Boolean);
+  return segments[segments.length - 1] || "";
+};
+
 
 interface HeaderProps {
   settings?: PublicSiteSettings;
@@ -147,6 +153,7 @@ const Header = ({ settings }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [showTopBar, setShowTopBar] = useState(true);
+  const [activeProductSlugs, setActiveProductSlugs] = useState<Set<string> | null>(null);
   const lastScrollY = useRef(0);
   const pathname = usePathname();
   const phone = settings?.officePhone ?? "+92 300 8665 060";
@@ -185,6 +192,78 @@ const Header = ({ settings }: HeaderProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadActiveProductSlugs = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("products")
+          .select("slug")
+          .eq("is_active", true)
+          .neq("brand", "joylong");
+
+        if (cancelled) return;
+
+        const slugs = (data ?? [])
+          .map((entry) => entry.slug)
+          .filter((slug): slug is string => typeof slug === "string" && slug.length > 0);
+        setActiveProductSlugs(new Set(slugs));
+      } catch {
+        if (!cancelled) {
+          // If client fetch fails, keep static menu as fallback.
+          setActiveProductSlugs(null);
+        }
+      }
+    };
+
+    void loadActiveProductSlugs();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filteredNavItems = useMemo(() => {
+    if (!activeProductSlugs) return navItems;
+
+    return navItems
+      .map((item) => {
+        if (!item.megamenu || !item.brandGroups) return item;
+
+        const filteredBrandGroups = item.brandGroups
+          .map((group) => {
+            const filteredCategories = group.categories
+              .map((category) => {
+                if (!category.series || category.series.length === 0) return category;
+
+                const filteredSeries = category.series.filter((seriesItem) =>
+                  activeProductSlugs.has(getSeriesSlugFromHref(seriesItem.href))
+                );
+
+                return {
+                  ...category,
+                  series: filteredSeries,
+                };
+              })
+              .filter((category) => !category.series || category.series.length > 0);
+
+            return {
+              ...group,
+              categories: filteredCategories,
+            };
+          })
+          .filter((group) => group.categories.length > 0);
+
+        return {
+          ...item,
+          brandGroups: filteredBrandGroups,
+        };
+      })
+      .filter((item) => !item.megamenu || !item.brandGroups || item.brandGroups.length > 0);
+  }, [activeProductSlugs]);
+
   return (
     <header className="fixed top-[3px] left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
       {/* Top bar — hides on scroll down and returns on scroll up */}
@@ -220,12 +299,20 @@ const Header = ({ settings }: HeaderProps) => {
       {/* Main nav — original solid white */}
       <div className="container h-[5rem] md:h-[6rem] flex items-center justify-between lg:justify-center lg:gap-8">
         <Link href="/" className="flex-shrink-0 py-1 md:py-2 rounded-md transition-transform duration-200 hover:scale-[1.01]">
-          <Image src="/images/al-nasir-logo.png" alt="Al Nasir Motors" width={340} height={200} unoptimized className="h-14 md:h-16 lg:h-[4.5rem] w-auto drop-shadow-[0_1px_1px_rgba(0,0,0,0.12)]" priority />
+          <Image
+            src="/images/al-nasir-logo.png"
+            alt="Al Nasir Motors"
+            width={3334}
+            height={1042}
+            sizes="(max-width: 768px) 220px, (max-width: 1280px) 300px, 360px"
+            className="h-16 md:h-[4.5rem] lg:h-20 w-auto"
+            priority
+          />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <div
               key={item.label}
               className="relative group"
@@ -433,7 +520,7 @@ const Header = ({ settings }: HeaderProps) => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease }}
           >
-            {navItems.map((item, i) => (
+            {filteredNavItems.map((item, i) => (
               <motion.div
                 key={item.label}
                 initial={{ opacity: 0, x: -15 }}

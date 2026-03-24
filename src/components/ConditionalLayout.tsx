@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import BackNavigation from "@/components/BackNavigation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { PublicSiteSettings } from "@/lib/siteSettings";
 
@@ -22,7 +21,6 @@ export default function ConditionalLayout({
 }) {
     const pathname = usePathname();
     const isAdmin = pathname?.startsWith("/admin");
-    const isHome = pathname === "/";
     const { data: siteSettings } = useSiteSettings(initialSettings);
 
     useEffect(() => {
@@ -68,13 +66,6 @@ export default function ConditionalLayout({
         <>
             <Header settings={siteSettings} />
             <main className="relative flex-1 pt-24 md:pt-28">
-                {!isHome ? (
-                    <div className="absolute left-0 right-0 top-[104px] md:top-[120px] z-20 pointer-events-none">
-                        <div className="container pointer-events-auto">
-                            <BackNavigation />
-                        </div>
-                    </div>
-                ) : null}
                 {children}
             </main>
             <Footer settings={siteSettings} />

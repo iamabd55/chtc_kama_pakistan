@@ -98,6 +98,7 @@ export interface NewsPost {
     thumbnail: string;
     author: string;
     tags: string[];
+    related_product_id: string | null;
     status: "draft" | "published";
     meta_title: string | null;
     meta_desc: string | null;

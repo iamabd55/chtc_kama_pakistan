@@ -54,6 +54,7 @@ const BRAND_CONFIG: Record<BrandSlug, BrandConfig> = {
         summary:
             "Joylong is positioned for premium passenger mobility. Local product availability may vary by shipment and current allocation.",
         highlights: ["Passenger comfort-first platform", "Commercial and institutional utility", "Lead capture for upcoming availability"],
+        officialUrl: "https://www.joylongpakistan.com/",
     },
 };
 
@@ -89,6 +90,72 @@ export default async function BrandDetailPage({ params }: PageProps) {
     const config = BRAND_CONFIG[key];
 
     if (!config) notFound();
+
+    if (key === "joylong") {
+        return (
+            <>
+                <section className="py-16 md:py-24 bg-kama-gradient relative overflow-hidden">
+                    <div className="absolute -top-24 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-24 -left-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="container relative z-10">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.3em] mb-4">Official Brand Website</p>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground tracking-tight mb-4">
+                                Joylong Pakistan
+                            </h1>
+                            <p className="text-primary-foreground/75 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                                Joylong operates through its dedicated official platform. To keep the customer journey clear, Joylong products are not listed on this website.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="py-14 md:py-20 bg-background">
+                    <div className="container max-w-4xl">
+                        <div className="rounded-2xl border bg-card p-8 md:p-10 shadow-sm">
+                            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+                                <div className="mx-auto md:mx-0 w-36 h-20 rounded-xl border bg-muted flex items-center justify-center p-3">
+                                    <Image
+                                        src={config.logo}
+                                        alt="Joylong logo"
+                                        width={140}
+                                        height={56}
+                                        className="w-auto h-10 object-contain"
+                                        unoptimized
+                                    />
+                                </div>
+
+                                <div className="flex-1 text-center md:text-left">
+                                    <h2 className="text-2xl font-display font-bold text-foreground mb-2">Continue to Joylong Official Website</h2>
+                                    <p className="text-muted-foreground mb-5">
+                                        Browse complete Joylong lineup, announcements, and latest details directly from their official Pakistan website.
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                                        <a
+                                            href={config.officialUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-kama-blue-dark transition-colors"
+                                        >
+                                            Visit Joylong Pakistan
+                                            <ExternalLink className="w-4 h-4" />
+                                        </a>
+                                        <Link
+                                            href="/brands"
+                                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border font-semibold text-foreground hover:bg-muted transition-colors"
+                                        >
+                                            Explore Other Brands
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </>
+        );
+    }
 
     const supabase = await createClient();
 

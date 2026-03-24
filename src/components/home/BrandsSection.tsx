@@ -8,7 +8,7 @@ const ease = [0.25, 0.4, 0, 1] as const;
 
 const brands = [
   { name: "Kama", logo: "/images/kama-round.png", desc: "Light & heavy commercial vehicles, the flagship brand of CHTC in Pakistan." },
-  { name: "Joylong", logo: "/images/joylong-logo.png", desc: "Premium passenger vans and buses designed for comfort and durability." },
+  { name: "Joylong", logo: "/images/joylong-logo.png", desc: "Dedicated official Pakistan website for complete Joylong product details." },
   { name: "Kinwin", logo: "/images/kinwin logo.jpg", desc: "Specialized vehicles and custom solutions for specific industry needs." },
 ];
 
@@ -35,6 +35,7 @@ const BrandsSection = () => {
           {brands.map((brand, i) => (
             <motion.div
               key={brand.name}
+              className="h-full"
               initial={{ opacity: 0, scale: 0.85, y: 30 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -42,13 +43,27 @@ const BrandsSection = () => {
             >
               <Link
                 href={`/brands/${brand.name.toLowerCase()}`}
-                className="bg-card border rounded-lg p-10 text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group block"
+                className="bg-card border rounded-lg p-10 text-center hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group h-full flex flex-col"
               >
-                <div className="relative w-42 h-40 mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Image src={brand.logo} alt={brand.name} fill unoptimized className="object-contain" />
+                <div className="relative w-[220px] h-40 mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Image
+                    src={brand.logo}
+                    alt={brand.name}
+                    width={220}
+                    height={160}
+                    unoptimized
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <h3 className="font-display font-bold text-2xl text-foreground mb-3 tracking-tight">{brand.name}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{brand.desc}</p>
+                <div className="mt-4 min-h-[20px]">
+                  {brand.name === "Joylong" ? (
+                    <p className="text-primary text-xs font-semibold uppercase tracking-[0.15em]">Visit Official Website</p>
+                  ) : (
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] opacity-0 select-none">Visit Official Website</p>
+                  )}
+                </div>
               </Link>
             </motion.div>
           ))}

@@ -228,8 +228,9 @@ const AdminDashboard = () => {
                         </div>
                     ) : (
                         recentInquiries.map((inq) => (
-                            <div
+                            <Link
                                 key={inq.id}
+                                href={`/admin/inquiries?inquiryId=${inq.id}`}
                                 className="px-6 py-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
                             >
                                 <div>
@@ -244,7 +245,7 @@ const AdminDashboard = () => {
                                         {new Date(inq.created_at).toLocaleDateString()}
                                     </span>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     )}
                 </div>

@@ -1,17 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Download, Phone, ChevronRight, Truck, Star } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Product, Category } from "@/lib/supabase/types";
 import ProductGallery from "@/components/products/ProductGallery";
+import ProductInquiryForm from "@/components/products/ProductInquiryForm";
 
 export const revalidate = 60;
 
 interface PageProps {
     params: Promise<{ category: string; slug: string }>;
-    searchParams?: Promise<{ submitted?: string; error?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
@@ -58,11 +58,8 @@ function getImageLabel(path: string): string {
         .replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
-export default async function ProductDetailPage({ params, searchParams }: PageProps) {
+export default async function ProductDetailPage({ params }: PageProps) {
     const { category: categorySlug, slug } = await params;
-    const resolved = searchParams ? await searchParams : undefined;
-    const isSubmitted = resolved?.submitted === "1";
-    const hasError = resolved?.error === "1";
     const supabase = await createClient();
 
     // Fetch product with category
@@ -75,6 +72,10 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     if (!productData) notFound();
 
     const product = productData as Product & { category: Category };
+
+    if (product.brand === "joylong") {
+        redirect("/brands/joylong");
+    }
 
     const { data: siteSettingsData } = await supabase
         .from("site_settings")
@@ -94,6 +95,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
         .select("id, name, slug, brand, thumbnail, short_description, model_year, is_featured")
         .eq("category_id", product.category_id)
         .eq("is_active", true)
+        .neq("brand", "joylong")
         .neq("id", product.id)
         .limit(3);
 
@@ -215,6 +217,12 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
                                         Get a Quote
                                     </Link>
                                     <a
+                                        href="#product-inquiry"
+                                        className="flex items-center justify-center gap-2 w-full py-3 border-2 border-primary text-primary font-display font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors"
+                                    >
+                                        Ask a Question
+                                    </a>
+                                    <a
                                         href={`https://wa.me/${whatsappNumber}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -235,6 +243,11 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
                                         </a>
                                     )}
                                 </div>
+                                <p className="text-xs text-muted-foreground leading-relaxed border-t pt-3">
+                                    <span className="font-semibold text-foreground">Get a Quote:</span> pricing and delivery offer.
+                                    <span className="mx-1.5">|</span>
+                                    <span className="font-semibold text-foreground">Ask a Question:</span> technical details and product guidance.
+                                </p>
                             </div>
 
                             {/* Quick features */}
@@ -251,36 +264,6 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
                                     </ul>
                                 </div>
                             )}
-
-                            <div className="bg-card border rounded-xl p-6 shadow-sm">
-                                <h3 className="font-display font-bold text-lg text-foreground mb-4">Send Product Inquiry</h3>
-
-                                {isSubmitted && (
-                                    <div className="mb-3 rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-xs text-green-700">
-                                        Your inquiry has been submitted.
-                                    </div>
-                                )}
-
-                                {hasError && (
-                                    <div className="mb-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-700">
-                                        Could not submit inquiry. Please try again.
-                                    </div>
-                                )}
-
-                                <form method="post" action="/api/inquiries/product" className="space-y-2.5">
-                                    <input type="hidden" name="product_id" value={product.id} />
-                                    <input type="hidden" name="product_slug" value={product.slug} />
-                                    <input type="hidden" name="return_url" value={`/products/${categorySlug}/${product.slug}`} />
-                                    <input name="full_name" type="text" required placeholder="Full Name *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
-                                    <input name="phone" type="tel" required placeholder="Phone *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
-                                    <input name="email" type="email" placeholder="Email" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
-                                    <input name="city" type="text" required placeholder="City *" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
-                                    <textarea name="message" rows={3} placeholder="Your requirement" className="w-full px-3 py-2 border rounded-md bg-background text-foreground text-sm" />
-                                    <button type="submit" className="w-full py-2.5 bg-primary text-primary-foreground font-display font-semibold text-xs uppercase tracking-wider rounded-md hover:bg-kama-blue-dark transition-colors">
-                                        Submit Inquiry
-                                    </button>
-                                </form>
-                            </div>
                         </div>
                     </div>
 
@@ -402,6 +385,24 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
                             </div>
                         </div>
                     )}
+
+                    <div id="product-inquiry" className="mt-10 md:mt-12 scroll-mt-36">
+                        <div className="rounded-2xl border bg-card p-7 md:p-10 shadow-sm">
+                            <div className="max-w-3xl mb-8 md:mb-10">
+                                <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.25em] mb-2">Direct Support</p>
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">Send Product Inquiry</h2>
+                                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                                    Use this form for technical questions, product compatibility, documentation, and guidance.
+                                    For pricing and delivery offers, use the <span className="font-semibold text-foreground">Get a Quote</span> option.
+                                </p>
+                            </div>
+                            <ProductInquiryForm
+                                productId={product.id}
+                                productSlug={product.slug}
+                                returnUrl={`/products/${categorySlug}/${product.slug}`}
+                            />
+                        </div>
+                    </div>
 
                     {/* Back link */}
                     <div className="mt-12">

@@ -162,6 +162,76 @@
 
 /* Firefox */
 html {
+  font-size: 100%;
   scrollbar-width: thin;
   scrollbar-color: hsl(211 99% 32%) hsl(210 20% 96%);
+}
+
+@media (min-width: 1024px) {
+  html {
+    /* Match 90% browser zoom at normal 100% zoom on Chromium browsers. */
+    zoom: 0.9;
+  }
+}
+
+/* Firefox does not support CSS zoom; emulate with transform on desktop. */
+@supports not (zoom: 1) {
+  @media (min-width: 1024px) {
+    body {
+      transform: scale(0.9);
+      transform-origin: top left;
+      width: 111.111111%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-mobile-section {
+    min-height: 100svh;
+  }
+
+  .hero-mobile-image {
+    object-position: 60% center !important;
+  }
+
+  .hero-mobile-content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero-mobile-headline {
+    font-size: clamp(2rem, 8vw, 3.5rem) !important;
+  }
+
+  .hero-mobile-cta {
+    gap: 12px;
+  }
+
+  .hero-mobile-cta-btn {
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-mobile-stats {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .hero-mobile-stat-pill {
+    padding: 6px 10px;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .hero-mobile-stat-value {
+    font-size: 1.125rem;
+  }
+
+  .hero-mobile-stat-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+  }
 }

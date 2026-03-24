@@ -7,6 +7,7 @@ import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Poppins, Rajdhani, DM_Sans, Orbitron } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import type { SiteSettings } from "@/lib/supabase/types";
@@ -137,6 +138,7 @@ export default async function RootLayout({
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
                 />
+                <GoogleAnalytics />
                 <Providers>
                     <ScrollProgress />
                     <TooltipProvider>

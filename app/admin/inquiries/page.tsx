@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { adminDb } from "@/lib/supabase/adminClient";
-import { Search, Eye } from "lucide-react";
+import { Search, Pencil, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
     Dialog,
@@ -25,23 +26,51 @@ const statuses = [
     "closed",
 ] as const;
 
+type InquiryWithProduct = Inquiry & {
+    product: {
+        id: string;
+        name: string;
+        slug: string;
+        brand: string;
+    } | null;
+};
+
+type InquiryDraft = {
+    status: Inquiry["status"];
+    notes: string;
+    assigned_to: string;
+    follow_up_date: string;
+};
+
 const AdminInquiries = () => {
-    const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+    const searchParams = useSearchParams();
+    const inquiryIdFromUrl = searchParams.get("inquiryId");
+
+    const [inquiries, setInquiries] = useState<InquiryWithProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState<string>("all");
     const [detailOpen, setDetailOpen] = useState(false);
-    const [selected, setSelected] = useState<Inquiry | null>(null);
+    const [selected, setSelected] = useState<InquiryWithProduct | null>(null);
+    const [handledDeepLinkId, setHandledDeepLinkId] = useState<string | null>(null);
+    const [draft, setDraft] = useState<InquiryDraft>({
+        status: "new",
+        notes: "",
+        assigned_to: "",
+        follow_up_date: "",
+    });
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
         let query = adminDb
             .from("inquiries")
-            .select("*")
+            .select("*, product:products(id, name, slug, brand)")
             .order("created_at", { ascending: false });
         if (filterStatus !== "all") query = query.eq("status", filterStatus);
         const { data } = await query;
-        setInquiries((data as Inquiry[]) || []);
+        setInquiries((data as InquiryWithProduct[]) || []);
         setLoading(false);
     };
 
@@ -54,40 +83,34 @@ const AdminInquiries = () => {
         (i) =>
             i.full_name.toLowerCase().includes(search.toLowerCase()) ||
             i.city.toLowerCase().includes(search.toLowerCase()) ||
-            i.phone.includes(search)
+            i.phone.includes(search) ||
+            (i.product?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+            (i.product?.slug || "").toLowerCase().includes(search.toLowerCase())
     );
 
-    const updateStatus = async (id: string, status: string) => {
-        const { error } = await adminDb
-            .from("inquiries")
-            .update({ status, updated_at: new Date().toISOString() })
-            .eq("id", id);
-        if (error)
-            toast({ title: "Error", description: error.message, variant: "destructive" });
-        else {
-            toast({ title: "Status updated" });
-            fetchData();
-            if (selected?.id === id)
-                setSelected({ ...selected!, status: status as Inquiry["status"] });
-        }
-    };
-
-    const updateAssignedTo = async (id: string, assignedTo: string) => {
-        const { error } = await adminDb
-            .from("inquiries")
-            .update({
-                assigned_to: assignedTo || null,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", id);
-
-        if (error) {
-            toast({ title: "Error", description: error.message, variant: "destructive" });
+    useEffect(() => {
+        if (!inquiryIdFromUrl || inquiryIdFromUrl === handledDeepLinkId || loading) {
             return;
         }
 
-        toast({ title: "Assignment updated" });
-    };
+        const target = inquiries.find((inquiry) => inquiry.id === inquiryIdFromUrl);
+        if (target) {
+            setSelected(target);
+            setDetailOpen(true);
+            setHandledDeepLinkId(inquiryIdFromUrl);
+        }
+    }, [inquiries, inquiryIdFromUrl, handledDeepLinkId, loading]);
+
+    useEffect(() => {
+        if (!selected || !detailOpen) return;
+
+        setDraft({
+            status: selected.status,
+            notes: selected.notes || "",
+            assigned_to: selected.assigned_to || "",
+            follow_up_date: selected.follow_up_date || "",
+        });
+    }, [selected, detailOpen]);
 
     const exportCsv = () => {
         const headers = [
@@ -96,6 +119,9 @@ const AdminInquiries = () => {
             "email",
             "city",
             "inquiry_type",
+            "product_id",
+            "product_name",
+            "product_slug",
             "status",
             "assigned_to",
             "follow_up_date",
@@ -113,6 +139,9 @@ const AdminInquiries = () => {
             item.email,
             item.city,
             item.inquiry_type,
+            item.product_id,
+            item.product?.name || "",
+            item.product?.slug || "",
             item.status,
             item.assigned_to,
             item.follow_up_date,
@@ -135,32 +164,80 @@ const AdminInquiries = () => {
         URL.revokeObjectURL(url);
     };
 
-    const updateNotes = async (id: string, notes: string) => {
-        const { error } = await adminDb
-            .from("inquiries")
-            .update({ notes, updated_at: new Date().toISOString() })
-            .eq("id", id);
-        if (error) {
-            toast({ title: "Error", description: error.message, variant: "destructive" });
+    const saveInquiryChanges = async () => {
+        if (!selected) return;
+        setSaving(true);
+
+        const response = await fetch(`/api/admin/inquiries/${selected.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: draft.status,
+                notes: draft.notes,
+                assigned_to: draft.assigned_to,
+                follow_up_date: draft.follow_up_date,
+            }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        setSaving(false);
+
+        if (!response.ok) {
+            toast({
+                title: "Error",
+                description: payload?.error || "Could not save inquiry",
+                variant: "destructive",
+            });
             return;
         }
-        toast({ title: "Notes saved" });
+
+        const updated = payload?.inquiry as Inquiry | undefined;
+        if (updated) {
+            setSelected((prev) =>
+                prev
+                    ? {
+                          ...prev,
+                          ...updated,
+                      }
+                    : prev
+            );
+        }
+
+        await fetchData();
+        toast({ title: "Inquiry changes saved" });
     };
 
-    const updateFollowUpDate = async (id: string, followUpDate: string) => {
-        const { error } = await adminDb
-            .from("inquiries")
-            .update({
-                follow_up_date: followUpDate || null,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", id);
+    const deleteInquiry = async (inquiry?: InquiryWithProduct) => {
+        const target = inquiry ?? selected;
+        if (!target) return;
 
-        if (error) {
-            toast({ title: "Error", description: error.message, variant: "destructive" });
+        const confirmed = window.confirm(
+            "Delete this inquiry permanently? This action cannot be undone."
+        );
+        if (!confirmed) return;
+
+        setDeleting(true);
+        const response = await fetch(`/api/admin/inquiries/${target.id}`, {
+            method: "DELETE",
+        });
+        const payload = await response.json().catch(() => ({}));
+        setDeleting(false);
+
+        if (!response.ok) {
+            toast({
+                title: "Error",
+                description: payload?.error || "Could not delete inquiry",
+                variant: "destructive",
+            });
             return;
         }
-        toast({ title: "Follow-up date updated" });
+
+        toast({ title: "Inquiry deleted" });
+        if (selected?.id === target.id) {
+            setDetailOpen(false);
+            setSelected(null);
+        }
+        await fetchData();
     };
 
     const columns = [
@@ -177,23 +254,31 @@ const AdminInquiries = () => {
         { header: "City", accessor: "city" as keyof Inquiry },
         {
             header: "Type",
-            accessor: (r: Inquiry) => (
+            accessor: (r: InquiryWithProduct) => (
                 <span className="capitalize text-sm">{r.inquiry_type}</span>
             ),
         },
         {
+            header: "Product",
+            accessor: (r: InquiryWithProduct) => (
+                <span className="text-sm text-muted-foreground">
+                    {r.product?.name || "—"}
+                </span>
+            ),
+        },
+        {
             header: "Source",
-            accessor: (r: Inquiry) => (
+            accessor: (r: InquiryWithProduct) => (
                 <span className="capitalize text-xs">{r.source}</span>
             ),
         },
         {
             header: "Status",
-            accessor: (r: Inquiry) => <StatusBadge status={r.status} />,
+            accessor: (r: InquiryWithProduct) => <StatusBadge status={r.status} />,
         },
         {
             header: "Date",
-            accessor: (r: Inquiry) => (
+            accessor: (r: InquiryWithProduct) => (
                 <span className="text-sm text-muted-foreground">
                     {new Date(r.created_at).toLocaleDateString()}
                 </span>
@@ -201,20 +286,38 @@ const AdminInquiries = () => {
         },
         {
             header: "",
-            accessor: (r: Inquiry) => (
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setSelected(r);
-                        setDetailOpen(true);
-                    }}
-                >
-                    <Eye className="w-4 h-4" />
-                </Button>
+            accessor: (r: InquiryWithProduct) => (
+                <div className="flex items-center justify-end gap-1">
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setSelected(r);
+                            setDetailOpen(true);
+                        }}
+                        aria-label="Edit inquiry"
+                        title="Edit"
+                    >
+                        <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            deleteInquiry(r);
+                        }}
+                        aria-label="Delete inquiry"
+                        title="Delete"
+                        disabled={deleting}
+                        className="text-red-600 hover:text-red-700"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
             ),
-            className: "w-[50px]",
+            className: "w-[94px]",
         },
     ];
 
@@ -296,6 +399,14 @@ const AdminInquiries = () => {
                                     </p>
                                 </div>
                                 <div>
+                                    <span className="text-muted-foreground">Product:</span>
+                                    <p className="font-medium">{selected.product?.name || "—"}</p>
+                                </div>
+                                <div>
+                                    <span className="text-muted-foreground">Product Slug:</span>
+                                    <p className="font-medium">{selected.product?.slug || "—"}</p>
+                                </div>
+                                <div>
                                     <span className="text-muted-foreground">Source:</span>
                                     <p className="font-medium capitalize">{selected.source}</p>
                                 </div>
@@ -314,8 +425,13 @@ const AdminInquiries = () => {
                                 <label className="text-sm font-medium mb-1 block">Status</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value={selected.status}
-                                    onChange={(e) => updateStatus(selected.id, e.target.value)}
+                                    value={draft.status}
+                                    onChange={(e) =>
+                                        setDraft((prev) => ({
+                                            ...prev,
+                                            status: e.target.value as Inquiry["status"],
+                                        }))
+                                    }
                                 >
                                     {statuses.map((s) => (
                                         <option key={s} value={s} className="capitalize">
@@ -328,19 +444,23 @@ const AdminInquiries = () => {
                                 <label className="text-sm font-medium mb-1 block">Notes</label>
                                 <textarea
                                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                                    defaultValue={selected.notes || ""}
-                                    onBlur={(e) => updateNotes(selected.id, e.target.value)}
+                                    value={draft.notes}
+                                    onChange={(e) =>
+                                        setDraft((prev) => ({
+                                            ...prev,
+                                            notes: e.target.value,
+                                        }))
+                                    }
                                     placeholder="Add internal notes..."
                                 />
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Assigned To (User UUID)</label>
                                 <Input
-                                    value={selected.assigned_to || ""}
+                                    value={draft.assigned_to}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        setSelected({ ...selected, assigned_to: value || null });
-                                        updateAssignedTo(selected.id, value);
+                                        setDraft((prev) => ({ ...prev, assigned_to: value }));
                                     }}
                                     placeholder="Enter auth user UUID"
                                 />
@@ -349,13 +469,26 @@ const AdminInquiries = () => {
                                 <label className="text-sm font-medium mb-1 block">Follow-up Date</label>
                                 <Input
                                     type="date"
-                                    value={selected.follow_up_date || ""}
+                                    value={draft.follow_up_date}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        setSelected({ ...selected, follow_up_date: value || null });
-                                        updateFollowUpDate(selected.id, value);
+                                        setDraft((prev) => ({ ...prev, follow_up_date: value }));
                                     }}
                                 />
+                            </div>
+                            <div className="flex items-center justify-between gap-3 pt-2">
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => {
+                                        void deleteInquiry();
+                                    }}
+                                    disabled={saving || deleting}
+                                >
+                                    {deleting ? "Deleting..." : "Delete Inquiry"}
+                                </Button>
+                                <Button onClick={saveInquiryChanges} disabled={saving || deleting}>
+                                    {saving ? "Saving..." : "Save Changes"}
+                                </Button>
                             </div>
                         </div>
                     )}

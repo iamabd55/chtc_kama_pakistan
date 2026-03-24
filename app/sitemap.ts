@@ -12,7 +12,6 @@ const STATIC_ROUTES = [
     "/brands",
     "/brands/kama",
     "/brands/kinwin",
-    "/brands/joylong",
     "/find-dealer",
     "/after-sales",
     "/fabrication",
@@ -40,7 +39,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         const [{ data: categories }, { data: products }, { data: dealers }] = await Promise.all([
             supabase.from("categories").select("slug, is_active").eq("is_active", true),
-            supabase.from("products").select("slug, updated_at, is_active, category:categories(slug)").eq("is_active", true),
+            supabase
+                .from("products")
+                .select("slug, updated_at, is_active, brand, category:categories(slug)")
+                .eq("is_active", true)
+                .neq("brand", "joylong"),
             supabase.from("dealers").select("id, is_active, created_at").eq("is_active", true),
         ]);
 

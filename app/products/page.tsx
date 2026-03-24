@@ -22,6 +22,7 @@ export default async function ProductsPage() {
             .from("products")
             .select("*, category:categories(*)")
             .eq("is_active", true)
+            .neq("brand", "joylong")
             .order("created_at", { ascending: false }),
     ]);
 

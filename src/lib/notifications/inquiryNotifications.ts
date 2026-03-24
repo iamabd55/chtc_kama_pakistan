@@ -1,17 +1,27 @@
+import { sendViaResend } from "@/lib/notifications/resend";
+
 type InquiryNotificationPayload = {
-    source: "contact" | "quote" | "product" | "after-sales";
+    source: "contact" | "quote" | "product" | "after-sales" | "news";
     inquiryType: string;
     fullName: string;
     phone: string;
     email: string | null;
     city: string;
     message: string | null;
+    inquiryId?: string;
+    inquiryStatus?: string;
+    productName?: string | null;
+    productSlug?: string | null;
 };
 
 const toHtml = (payload: InquiryNotificationPayload) => {
     const fields = [
+        ["Inquiry ID", payload.inquiryId || "-"],
+        ["Status", payload.inquiryStatus || "new"],
         ["Source", payload.source],
         ["Inquiry Type", payload.inquiryType],
+        ["Product", payload.productName || "-"],
+        ["Product Slug", payload.productSlug || "-"],
         ["Name", payload.fullName],
         ["Phone", payload.phone],
         ["Email", payload.email || "-"],
@@ -48,28 +58,23 @@ export async function sendInquiryNotification(payload: InquiryNotificationPayloa
         }
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY;
     const notificationTo = process.env.SALES_NOTIFICATION_EMAIL;
     const notificationFrom = process.env.NOTIFICATION_FROM_EMAIL || "inquiries@notifications.local";
 
-    if (resendApiKey && notificationTo) {
-        try {
-            await fetch("https://api.resend.com/emails", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${resendApiKey}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    from: notificationFrom,
-                    to: notificationTo,
-                    subject: `New ${payload.inquiryType} inquiry from ${payload.fullName}`,
-                    html: toHtml(payload),
-                    text: `${payload.inquiryType} inquiry from ${payload.fullName} (${payload.phone}) - ${payload.city}`,
-                }),
-            });
-        } catch {
-            // Notification should not break user submission.
-        }
+    if (!notificationTo) {
+        console.warn("[mail] SALES_NOTIFICATION_EMAIL is missing. Admin inquiry email not sent.");
+        return;
+    }
+
+    try {
+        await sendViaResend({
+            from: notificationFrom,
+            to: notificationTo,
+            subject: `New ${payload.inquiryType} inquiry${payload.productName ? ` for ${payload.productName}` : ""} from ${payload.fullName}`,
+            html: toHtml(payload),
+            text: `${payload.inquiryType} inquiry from ${payload.fullName} (${payload.phone}) - ${payload.city}${payload.inquiryId ? ` | ID: ${payload.inquiryId}` : ""}`,
+        });
+    } catch {
+        // Notification should not break user submission.
     }
 }

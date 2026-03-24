@@ -43,7 +43,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[100svh] min-h-[560px] sm:min-h-[700px] flex items-center overflow-hidden"
+      className="hero-mobile-section relative h-[100svh] lg:h-screen min-h-[560px] sm:min-h-[700px] lg:min-h-screen flex items-center overflow-hidden"
     >
       {/* ── Slideshow Background ── */}
       {slides.map((slide, i) => (
@@ -63,7 +63,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               src={slide.src}
               alt={slide.alt}
               fill
-              className="object-cover object-[60%_72%] sm:object-center"
+              className="hero-mobile-image object-cover object-[60%_72%] sm:object-center"
               priority={i === 0}
             />
           </motion.div>
@@ -72,8 +72,13 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
       {/* ── Cinematic overlay ── */}
       <motion.div className="absolute inset-0" style={{ opacity: overlayOpacity }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-kama-navy via-kama-navy/60 to-kama-navy/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-kama-navy/70 via-transparent to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.70) 100%)",
+          }}
+        />
       </motion.div>
 
       {/* Bottom fade */}
@@ -85,7 +90,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
       {/* ── Main Content ── */}
       <motion.div
-        className="container relative z-10 px-5 sm:px-8"
+        className="hero-mobile-content container relative z-10 px-5 sm:px-8"
         style={{ y: contentY }}
       >
         <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
@@ -116,6 +121,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             >
               <motion.h1
                 className="text-[3.2rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-heading font-semibold text-white leading-[0.98] sm:leading-[0.95] hero-headline-clean"
+                style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.4)" }}
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.9, delay: 0.35, ease }}
@@ -133,16 +139,17 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             >
               <motion.h1
                 className="text-[3rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-heading font-semibold text-white leading-[0.98] sm:leading-[0.95] hero-headline-clean"
+                style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.4)" }}
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.9, delay: 0.6, ease }}
               >
                 {/* ── Mobile only: "With Al Nasir" then "Motors" on new line ── */}
                 <span className="sm:hidden">
-                  {"With\u00A0"}
-                  <span style={{ color: "#ffffff" }}>Al Nasir</span>
-                  <br />
-                  <span style={{ color: "#E8821A" }}>Motors</span>
+                  <span className="whitespace-nowrap">With Al Nasir</span>
+                  <span className="block text-center" style={{ color: "#E8821A" }}>
+                    Motors
+                  </span>
                 </span>
 
                 {/* ── Desktop (sm+): everything on one line ── */}
@@ -157,7 +164,8 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
           {/* ── One-liner ── */}
           <motion.p
-            className="text-[13px] sm:text-base md:text-lg text-white/45 leading-relaxed font-body max-w-sm sm:max-w-xl mx-auto mb-6 sm:mb-10"
+            className="text-sm sm:text-lg md:text-xl text-white/75 text-center leading-relaxed font-body max-w-sm sm:max-w-2xl mx-auto mb-6 sm:mb-10"
+            style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.4)" }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.9, ease }}
@@ -168,14 +176,14 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
           {/* ── CTA Buttons ── */}
           <motion.div
-            className="flex flex-row gap-2.5 sm:gap-4 mb-8 sm:mb-14"
+            className="flex flex-row w-full max-w-[380px] sm:w-auto gap-2.5 sm:gap-4 mb-8 sm:mb-14"
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.1, ease }}
           >
             <Link
               href="/products"
-              className="group relative inline-flex items-center justify-center gap-2 px-5 sm:px-10 py-2.5 sm:py-[18px] bg-gradient-to-r from-accent to-amber-500 text-white font-display font-bold text-[11px] sm:text-sm uppercase tracking-[0.1em] sm:tracking-[0.12em] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-accent/30 hover:scale-[1.03]"
+              className="group relative inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-5 sm:px-10 py-2.5 sm:py-[18px] bg-gradient-to-r from-accent to-amber-500 text-white font-display font-bold text-[11px] sm:text-sm uppercase tracking-[0.1em] sm:tracking-[0.12em] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-accent/30 hover:scale-[1.03]"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center gap-2">
@@ -185,7 +193,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             </Link>
             <Link
               href="/get-quote"
-              className="inline-flex items-center justify-center gap-2 px-5 sm:px-10 py-2.5 sm:py-[18px] bg-white/[0.08] backdrop-blur-md border border-white/20 text-white font-display font-bold text-[11px] sm:text-sm uppercase tracking-[0.1em] sm:tracking-[0.12em] rounded-lg transition-all duration-300 hover:bg-white/[0.15] hover:border-white/40 hover:scale-[1.03]"
+              className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-5 sm:px-10 py-2.5 sm:py-[18px] bg-white/[0.08] backdrop-blur-md border border-white/20 text-white font-display font-bold text-[11px] sm:text-sm uppercase tracking-[0.1em] sm:tracking-[0.12em] rounded-lg transition-all duration-300 hover:bg-white/[0.15] hover:border-white/40 hover:scale-[1.03]"
             >
               Get a Quote
             </Link>
@@ -205,7 +213,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                className="flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-5 py-1.5 sm:py-3 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08]"
+                className="flex items-center justify-center min-w-[92px] sm:min-w-[128px] gap-1.5 sm:gap-2.5 px-2.5 sm:px-5 py-1.5 sm:py-3 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08]"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 1.4 + i * 0.1, ease }}

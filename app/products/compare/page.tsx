@@ -1,7 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Category, Product } from "@/lib/supabase/types";
+import { getStorageUrl } from "@/lib/supabase/storage";
+
+export const metadata: Metadata = {
+    title: "Compare Vehicles",
+    description: "Compare specifications of Al Nasir Motors commercial vehicles side-by-side.",
+};
 
 interface ComparePageProps {
     searchParams?: Promise<{
@@ -50,7 +58,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         .from("products")
         .select("*, category:categories(*)")
         .in("id", ids)
-        .eq("is_active", true);
+        .eq("is_active", true)
+        .neq("brand", "joylong");
 
     const products = ((data ?? []) as (Product & { category?: Category })[])
         .sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
@@ -82,11 +91,26 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                             <tr className="bg-muted/40 border-b">
                                 <th className="text-left px-4 py-3 font-display text-sm uppercase tracking-wide text-muted-foreground w-[220px]">Specification</th>
                                 {products.map((product) => (
-                                    <th key={product.id} className="text-left px-4 py-3 border-l">
-                                        <p className="font-display font-bold text-foreground text-base">{product.name}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">
+                                    <th key={product.id} className="text-left px-4 py-3 border-l min-w-[280px]">
+                                        <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-muted mb-4 border border-border/50">
+                                            <Image
+                                                src={getStorageUrl(product.thumbnail)}
+                                                alt={product.name}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 300px"
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <p className="font-display font-bold text-foreground text-xl">{product.name}</p>
+                                        <p className="text-sm text-muted-foreground mt-1 mb-4">
                                             {(product.category?.name ?? "-")} · {product.brand.toUpperCase()}
                                         </p>
+                                        <Link
+                                            href={`/get-quote?product=${product.slug}`}
+                                            className="block w-full text-center py-2.5 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-sm rounded-md transition-colors"
+                                        >
+                                            Get Quote
+                                        </Link>
                                     </th>
                                 ))}
                             </tr>

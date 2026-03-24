@@ -8,9 +8,12 @@ import { Menu, ShieldCheck, Sparkles, X } from "lucide-react";
 
 interface AdminLayoutProps {
     children: ReactNode;
-    title: string;
+    title: ReactNode;
     subtitle?: string;
     actions?: ReactNode;
+    hideHeaderMeta?: boolean;
+    minimalChrome?: boolean;
+    useContentCard?: boolean;
 }
 
 const AdminLayout = ({
@@ -18,6 +21,9 @@ const AdminLayout = ({
     title,
     subtitle,
     actions,
+    hideHeaderMeta = false,
+    minimalChrome = false,
+    useContentCard = true,
 }: AdminLayoutProps) => {
     const router = useRouter();
     const pathname = usePathname();
@@ -86,8 +92,16 @@ const AdminLayout = ({
     }
 
     return (
-        <div className="min-h-screen bg-[linear-gradient(145deg,#eef2f9_0%,#f7f9fc_45%,#edf2f8_100%)] relative overflow-x-clip">
-            <div className="pointer-events-none absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_5%_10%,rgba(14,92,190,0.12),transparent_26%),radial-gradient(circle_at_94%_14%,rgba(214,146,59,0.12),transparent_25%)]" />
+        <div
+            className={`min-h-screen relative overflow-x-clip ${
+                minimalChrome
+                    ? "bg-[#F8F9FA]"
+                    : "bg-[linear-gradient(145deg,#eef2f9_0%,#f7f9fc_45%,#edf2f8_100%)]"
+            }`}
+        >
+            {!minimalChrome && (
+                <div className="pointer-events-none absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_5%_10%,rgba(14,92,190,0.12),transparent_26%),radial-gradient(circle_at_94%_14%,rgba(214,146,59,0.12),transparent_25%)]" />
+            )}
             <AdminSidebar className="hidden lg:flex fixed" />
 
             {mobileNavOpen && (
@@ -108,7 +122,13 @@ const AdminLayout = ({
 
             <div className="relative lg:ml-[300px] transition-all duration-300 min-h-screen">
                 <header className="sticky top-0 z-40 px-4 md:px-8 pt-4 md:pt-6">
-                    <div className="rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,26,57,0.08)] px-5 md:px-7 py-4 md:py-5">
+                    <div
+                        className={`rounded-2xl border px-5 md:px-7 py-4 md:py-5 ${
+                            minimalChrome
+                                ? "border-slate-200 bg-white shadow-sm"
+                                : "border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,26,57,0.08)]"
+                        }`}
+                    >
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
                                 <div className="mb-3 lg:hidden">
@@ -136,26 +156,32 @@ const AdminLayout = ({
                             </div>
 
                             <div className="flex items-center gap-3 flex-wrap md:justify-end">
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-300/40 bg-emerald-100/70 text-emerald-900 text-xs font-semibold">
-                                    <ShieldCheck className="w-3.5 h-3.5" />
-                                    Secure Session
-                                </div>
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-300/40 bg-amber-100/70 text-amber-900 text-xs font-semibold">
-                                    <Sparkles className="w-3.5 h-3.5" />
-                                    {stamp}
-                                </div>
-                                {actions && (
-                                    <div className="flex items-center gap-3">{actions}</div>
+                                {!hideHeaderMeta && (
+                                    <>
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-300/40 bg-emerald-100/70 text-emerald-900 text-xs font-semibold">
+                                            <ShieldCheck className="w-3.5 h-3.5" />
+                                            Secure Session
+                                        </div>
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-300/40 bg-amber-100/70 text-amber-900 text-xs font-semibold">
+                                            <Sparkles className="w-3.5 h-3.5" />
+                                            {stamp}
+                                        </div>
+                                    </>
                                 )}
+                                {actions && <div className="flex items-center gap-3">{actions}</div>}
                             </div>
                         </div>
                     </div>
                 </header>
 
                 <main className="px-4 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6">
-                    <div className="rounded-2xl border border-slate-200/70 bg-white/45 backdrop-blur-sm p-4 md:p-6 shadow-[0_8px_30px_rgba(9,26,57,0.06)]">
-                        {children}
-                    </div>
+                    {useContentCard ? (
+                        <div className="rounded-2xl border border-slate-200/70 bg-white/45 backdrop-blur-sm p-4 md:p-6 shadow-[0_8px_30px_rgba(9,26,57,0.06)]">
+                            {children}
+                        </div>
+                    ) : (
+                        children
+                    )}
                 </main>
             </div>
         </div>

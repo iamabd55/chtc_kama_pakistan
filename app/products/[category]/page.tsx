@@ -47,6 +47,7 @@ export default async function ProductCategoryPage({ params }: PageProps) {
         .select("*")
         .eq("category_id", category.id)
         .eq("is_active", true)
+        .neq("brand", "joylong")
         .order("created_at", { ascending: false });
 
     const products = (productsData ?? []) as Product[];

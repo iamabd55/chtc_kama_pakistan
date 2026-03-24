@@ -20,6 +20,7 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
         .from("products")
         .select("id, name, slug")
         .eq("is_active", true)
+        .neq("brand", "joylong")
         .order("name", { ascending: true });
 
     const products = (productsData ?? []) as Array<{
