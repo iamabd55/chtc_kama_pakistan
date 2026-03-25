@@ -26,7 +26,7 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                 >
                     <Link
                         href={`/products/${cat.slug}`}
-                        className="group relative bg-card rounded-lg overflow-hidden border shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 block"
+                        className="group relative block overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
                     >
                         <div className="aspect-[4/3] overflow-hidden bg-muted relative">
                             {cat.image ? (
@@ -36,7 +36,7 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                                         src={getStorageUrl(cat.image)}
                                         alt={cat.name}
                                         fill
-                                        className="object-cover transition-opacity duration-500 group-hover:opacity-0"
+                                        className={`object-cover transition-opacity duration-500 ${cat.hover_image ? "group-hover:opacity-0" : ""}`}
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
                                     />
                                     {/* Hover image — sits on top, fades in */}
@@ -56,9 +56,12 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                                 </div>
                             )}
                         </div>
-                        <div className="p-4 flex items-center justify-between">
-                            <h3 className="font-display font-bold text-foreground tracking-tight">{cat.name}</h3>
-                            <ChevronRight className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                        <div className="flex items-center justify-between p-4">
+                            <div>
+                                <h3 className="font-display text-[1.02rem] font-bold tracking-tight text-foreground">{cat.name}</h3>
+                                <p className="mt-1 text-[0.76rem] font-medium tracking-[0.02em] text-muted-foreground">View models</p>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-primary/80 transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
                         </div>
                     </Link>
                 </motion.div>

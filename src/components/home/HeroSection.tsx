@@ -43,7 +43,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
   return (
     <section
       ref={sectionRef}
-      className="hero-mobile-section relative h-[100svh] lg:h-screen min-h-[560px] sm:min-h-[700px] lg:min-h-screen flex items-center overflow-hidden"
+      className="hero-mobile-section relative mt-[5vh] h-[100svh] lg:h-screen min-h-[560px] sm:min-h-[700px] lg:min-h-screen flex items-center overflow-hidden"
     >
       {/* ── Slideshow Background ── */}
       {slides.map((slide, i) => (
