@@ -7,6 +7,8 @@ import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Product, Category } from "@/lib/supabase/types";
 import ProductGallery from "@/components/products/ProductGallery";
 import ProductInquiryForm from "@/components/products/ProductInquiryForm";
+import { buildPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
@@ -14,22 +16,28 @@ interface PageProps {
     params: Promise<{ category: string; slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
-    const { slug } = await params;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { category, slug } = await params;
     const supabase = await createClient();
 
     const { data: product } = await supabase
         .from("products")
-        .select("name, meta_title, meta_desc, short_description")
+        .select("name, meta_title, meta_desc, short_description, thumbnail")
         .eq("slug", slug)
         .single();
 
     if (!product) return { title: "Product Not Found" };
 
-    return {
-        title: product.meta_title ?? `${product.name} — Al Nasir Motors Pakistan`,
-        description: product.meta_desc ?? product.short_description ?? `Learn more about the ${product.name}.`,
-    };
+    const title = product.meta_title ?? `${product.name} — Al Nasir Motors Pakistan`;
+    const description = product.meta_desc ?? product.short_description ?? `Learn more about the ${product.name}.`;
+
+    return buildPageMetadata({
+        title,
+        description,
+        path: `/products/${category}/${slug}`,
+        image: product.thumbnail ? getStorageUrl(product.thumbnail) : undefined,
+        imageAlt: product.name,
+    });
 }
 
 const BRAND_LABELS: Record<string, string> = {

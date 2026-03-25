@@ -2,17 +2,15 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import type { NewsPost } from "@/lib/supabase/types";
 import NewsListingClient from "@/components/news/NewsListingClient";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "News & Events",
-    description:
-        "Latest company news, press releases, product launches, and event coverage from Al Nasir Motors Pakistan.",
-    openGraph: {
-        title: "News & Events — Al Nasir Motors Pakistan",
-        description:
-            "Stay updated with the latest news, events, and product launches from Al Nasir Motors Pakistan.",
-    },
-};
+export const metadata: Metadata = buildPageMetadata({
+    title: "News & Events — Al Nasir Motors Pakistan",
+    description: "Latest company news, press releases, product launches, and event coverage from Al Nasir Motors Pakistan.",
+    path: "/news",
+    type: "article",
+    imageAlt: "Al Nasir Motors Pakistan news and events",
+});
 
 export default async function NewsPage() {
 

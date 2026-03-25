@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Product } from "@/lib/supabase/types";
+import { buildPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
@@ -69,7 +71,7 @@ type RawBrandProduct = Omit<BrandProduct, "category"> & {
     category: { name: string; slug: string } | { name: string; slug: string }[] | null;
 };
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { brand } = await params;
     const key = brand as BrandSlug;
     const config = BRAND_CONFIG[key];
@@ -78,10 +80,12 @@ export async function generateMetadata({ params }: PageProps) {
         return { title: "Brand Not Found" };
     }
 
-    return {
+    return buildPageMetadata({
         title: `${config.heroTitle} — CHTC Brands Pakistan`,
         description: config.heroDescription,
-    };
+        path: `/brands/${brand}`,
+        imageAlt: `${config.name} commercial vehicles by Al Nasir Motors Pakistan`,
+    });
 }
 
 export default async function BrandDetailPage({ params }: PageProps) {

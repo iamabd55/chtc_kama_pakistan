@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Category, Product } from "@/lib/supabase/types";
 import CategoryProductGrid from "@/components/products/CategoryProductGrid";
+import { buildPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
@@ -11,7 +13,7 @@ interface PageProps {
     params: Promise<{ category: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { category: slug } = await params;
     const supabase = await createClient();
 
@@ -23,10 +25,12 @@ export async function generateMetadata({ params }: PageProps) {
 
     if (!category) return { title: "Category Not Found" };
 
-    return {
+    return buildPageMetadata({
         title: `${category.name} — Al Nasir Motors Pakistan`,
         description: category.description ?? `Browse our ${category.name} range.`,
-    };
+        path: `/products/${slug}`,
+        imageAlt: `${category.name} commercial vehicles by Al Nasir Motors Pakistan`,
+    });
 }
 
 export default async function ProductCategoryPage({ params }: PageProps) {

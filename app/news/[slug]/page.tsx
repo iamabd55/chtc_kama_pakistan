@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { NewsPost } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import NewsInquiryForm from "@/components/news/NewsInquiryForm";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
@@ -34,13 +35,13 @@ const isInquiryEligiblePost = (post: NewsPost) => {
     return tags.some((tag) => PROMO_TAGS.has(tag));
 };
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const supabase = await createClient();
 
     const { data } = await supabase
         .from("news_posts")
-        .select("title, content")
+        .select("title, content, thumbnail")
         .eq("slug", slug)
         .eq("status", "published")
         .single();
@@ -52,10 +53,17 @@ export async function generateMetadata({ params }: PageProps) {
         .trim()
         .slice(0, 160);
 
-    return {
-        title: `${data.title} — News`,
-        description: summary || "Latest update from Al Nasir Motors Pakistan.",
-    };
+    const title = `${data.title} — News`;
+    const description = summary || "Latest update from Al Nasir Motors Pakistan.";
+
+    return buildPageMetadata({
+        title,
+        description,
+        path: `/news/${slug}`,
+        type: "article",
+        image: data.thumbnail ? getStorageUrl(data.thumbnail) : undefined,
+        imageAlt: data.title,
+    });
 }
 
 export default async function NewsDetailPage({ params }: PageProps) {

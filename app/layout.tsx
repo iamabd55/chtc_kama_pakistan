@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { absoluteUrl, SITE_URL } from "@/lib/seo";
+import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/seo";
 import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
         description: "Explore Al Nasir Motors Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
         images: [
             {
-                url: absoluteUrl("/images/hero/kama-hero.png"),
+                url: DEFAULT_OG_IMAGE,
                 width: 1200,
                 height: 630,
                 alt: "Al Nasir Motors Pakistan commercial vehicles",
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Al Nasir Motors Pakistan — Commercial Vehicles",
         description: "Explore Al Nasir Motors Pakistan lineup including mini trucks, light trucks, EV trucks, buses, and special-purpose vehicles.",
-        images: [absoluteUrl("/images/hero/kama-hero.png")],
+        images: [DEFAULT_OG_IMAGE],
     },
     robots: {
         index: true,

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, MapPin, MessageCircle, Phone } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { Dealer } from "@/lib/supabase/types";
+import { buildPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
@@ -10,7 +12,7 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
     const supabase = await createClient();
 
@@ -22,10 +24,12 @@ export async function generateMetadata({ params }: PageProps) {
 
     if (!data) return { title: "Dealer Not Found" };
 
-    return {
+    return buildPageMetadata({
         title: `${data.name} — Find Dealer`,
         description: `${data.name} in ${data.city}, ${data.province}. Contact details and location map.`,
-    };
+        path: `/find-dealer/${id}`,
+        imageAlt: `${data.name} dealer location`,
+    });
 }
 
 export default async function DealerDetailPage({ params }: PageProps) {
