@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
@@ -154,7 +154,6 @@ const Header = ({ settings }: HeaderProps) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [showTopBar, setShowTopBar] = useState(true);
   const [activeProductSlugs, setActiveProductSlugs] = useState<Set<string> | null>(null);
-  const lastScrollY = useRef(0);
   const pathname = usePathname();
   const phone = settings?.officePhone ?? "+92 300 8665 060";
   const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
@@ -167,24 +166,16 @@ const Header = ({ settings }: HeaderProps) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollY.current;
 
-      if (Math.abs(delta) < 4) {
-        return;
-      }
-
-      if (currentScrollY <= 16) {
-        setShowTopBar(true);
-      } else if (delta > 0 && currentScrollY > 80) {
-        setShowTopBar(false);
-      } else if (delta < 0) {
-        setShowTopBar(true);
-      }
-
-      lastScrollY.current = currentScrollY;
+      // Hysteresis prevents rapid flicker around a single threshold.
+      setShowTopBar((prev) => {
+        if (prev && currentScrollY > 120) return false;
+        if (!prev && currentScrollY < 56) return true;
+        return prev;
+      });
     };
 
-    lastScrollY.current = window.scrollY;
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
@@ -265,17 +256,10 @@ const Header = ({ settings }: HeaderProps) => {
   }, [activeProductSlugs]);
 
   return (
-    <header className="fixed top-[3px] left-0 right-0 z-50 bg-background/95 backdrop-blur-md shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md shadow-sm">
       {/* Top bar — hides on scroll down and returns on scroll up */}
-      <motion.div
-        className="bg-primary overflow-hidden"
-        initial={false}
-        animate={showTopBar ? "visible" : "hidden"}
-        variants={{
-          visible: { height: 32, opacity: 1, y: 0 },
-          hidden: { height: 0, opacity: 0, y: -8 },
-        }}
-        transition={{ duration: 0.25, ease }}
+      <div
+        className={`bg-primary overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${showTopBar ? "max-h-8 opacity-100" : "max-h-0 opacity-0"}`}
       >
         <div className="container h-8 flex items-center justify-between text-xs text-primary-foreground">
           <div className="flex items-center gap-4">
@@ -294,7 +278,7 @@ const Header = ({ settings }: HeaderProps) => {
             <Link href="/careers" className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main nav — original solid white */}
       <div className="container h-[5rem] md:h-[6rem] flex items-center justify-between lg:justify-center lg:gap-8">

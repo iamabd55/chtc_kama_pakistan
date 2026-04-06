@@ -43,7 +43,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
   return (
     <section
       ref={sectionRef}
-      className="hero-mobile-section relative mt-[5vh] h-[100svh] lg:h-screen min-h-[560px] sm:min-h-[700px] lg:min-h-screen flex items-center overflow-hidden"
+      className="hero-mobile-section relative h-[100svh] lg:h-screen min-h-[560px] sm:min-h-[700px] lg:min-h-screen flex items-center overflow-hidden"
     >
       {/* ── Slideshow Background ── */}
       {slides.map((slide, i) => (
@@ -82,7 +82,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
       </motion.div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 sm:h-40 bg-gradient-to-t from-background to-transparent z-[2]" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 bg-gradient-to-t from-background/80 to-transparent z-[2]" />
 
       {/* ── Glow orbs ── */}
       <div className="absolute top-1/3 right-[15%] w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-accent/8 rounded-full blur-[140px] pointer-events-none" />
@@ -213,7 +213,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                className="flex items-center justify-center min-w-[92px] sm:min-w-[128px] gap-1.5 sm:gap-2.5 px-2.5 sm:px-5 py-1.5 sm:py-3 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08]"
+                className="flex items-center justify-center min-w-[92px] sm:min-w-[128px] gap-1.5 sm:gap-2.5 px-2.5 sm:px-5 py-1.5 sm:py-3 rounded-full bg-white/[0.10] border border-white/[0.15]"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 1.4 + i * 0.1, ease }}
@@ -221,7 +221,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
                 <span className="font-kama font-bold text-[11px] sm:text-base text-accent leading-none">
                   {stat.value}
                 </span>
-                <span className="text-[8px] sm:text-[11px] text-white/35 uppercase tracking-wider font-heading font-medium">
+                <span className="text-[8px] sm:text-[11px] text-white uppercase tracking-wider font-heading font-medium">
                   {stat.label}
                 </span>
               </motion.div>
@@ -242,11 +242,10 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`w-1.5 transition-all duration-500 rounded-full ${
-                i === currentSlide
+              className={`w-1.5 transition-all duration-500 rounded-full ${i === currentSlide
                   ? "h-8 bg-accent shadow-sm shadow-accent/50"
                   : "h-1.5 bg-white/25 hover:bg-white/50"
-              }`}
+                }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}
@@ -265,9 +264,8 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`h-1.5 transition-all duration-500 rounded-full ${
-                i === currentSlide ? "w-6 bg-accent" : "w-1.5 bg-white/25"
-              }`}
+              className={`h-1.5 transition-all duration-500 rounded-full ${i === currentSlide ? "w-6 bg-accent" : "w-1.5 bg-white/25"
+                }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}

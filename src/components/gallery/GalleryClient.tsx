@@ -18,6 +18,8 @@ export default function GalleryClient({ items }: GalleryClientProps) {
     const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("all");
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+    const resolveImageUrl = (imageUrl: string) => (imageUrl.startsWith("/") ? imageUrl : getStorageUrl(imageUrl));
+
     const filtered = useMemo(
         () => (activeCategory === "all" ? items : items.filter((img) => img.category === activeCategory)),
         [activeCategory, items]
@@ -50,7 +52,7 @@ export default function GalleryClient({ items }: GalleryClientProps) {
                         className="rounded-lg overflow-hidden border bg-card group cursor-pointer text-left"
                     >
                         <div className="aspect-video overflow-hidden relative">
-                            <Image src={getStorageUrl(img.image_url)} alt={img.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                            <Image src={resolveImageUrl(img.image_url)} alt={img.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                         </div>
                         <div className="p-4">
                             <p className="font-display font-semibold text-foreground text-sm">{img.title}</p>
@@ -78,7 +80,7 @@ export default function GalleryClient({ items }: GalleryClientProps) {
                     </button>
                     <div className="relative w-full max-w-5xl aspect-[16/9]" onClick={(e) => e.stopPropagation()}>
                         <Image
-                            src={getStorageUrl(filtered[lightboxIndex].image_url)}
+                            src={resolveImageUrl(filtered[lightboxIndex].image_url)}
                             alt={filtered[lightboxIndex].title}
                             fill
                             className="object-contain"

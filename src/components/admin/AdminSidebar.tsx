@@ -20,7 +20,6 @@ import {
     Images,
     Award,
     Users,
-    MessageCircleMore,
     UserCog,
 } from "lucide-react";
 import { adminDb } from "@/lib/supabase/adminClient";
@@ -69,7 +68,6 @@ const menuGroups = [
             { label: "Client Logos", icon: Images, href: "/admin/clients", hint: "Trust" },
             { label: "Gallery", icon: Images, href: "/admin/gallery", hint: "Media" },
             { label: "Certifications", icon: Award, href: "/admin/certifications", hint: "Compliance" },
-            { label: "Testimonials", icon: MessageCircleMore, href: "/admin/testimonials", hint: "Moderation" },
         ],
     },
 ];
@@ -129,7 +127,9 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
             </div>
 
             {/* Nav */}
-            <nav className="relative flex-1 py-4 overflow-y-auto">
+            <nav
+                className="relative flex-1 py-4 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(59,130,246,0.75)_rgba(255,255,255,0.08)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-blue-300 [&::-webkit-scrollbar-thumb]:to-blue-500 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-white/20 [&::-webkit-scrollbar-thumb:hover]:from-blue-200 [&::-webkit-scrollbar-thumb:hover]:to-cyan-400"
+            >
                 {menuGroups.map((group) => (
                     <div key={group.label} className="mb-4">
                         <p className="px-5 mb-2 text-[10px] uppercase tracking-[0.22em] text-white/45 font-semibold">{group.label}</p>

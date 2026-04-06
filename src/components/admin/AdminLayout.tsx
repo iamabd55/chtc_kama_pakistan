@@ -93,11 +93,10 @@ const AdminLayout = ({
 
     return (
         <div
-            className={`min-h-screen relative overflow-x-clip ${
-                minimalChrome
-                    ? "bg-[#F8F9FA]"
-                    : "bg-[linear-gradient(145deg,#eef2f9_0%,#f7f9fc_45%,#edf2f8_100%)]"
-            }`}
+            className={`min-h-screen relative overflow-x-clip ${minimalChrome
+                ? "bg-[#F8F9FA]"
+                : "bg-[linear-gradient(145deg,#eef2f9_0%,#f7f9fc_45%,#edf2f8_100%)]"
+                }`}
         >
             {!minimalChrome && (
                 <div className="pointer-events-none absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_5%_10%,rgba(14,92,190,0.12),transparent_26%),radial-gradient(circle_at_94%_14%,rgba(214,146,59,0.12),transparent_25%)]" />
@@ -121,13 +120,12 @@ const AdminLayout = ({
             )}
 
             <div className="relative lg:ml-[300px] transition-all duration-300 min-h-screen">
-                <header className="sticky top-0 z-40 px-4 md:px-8 pt-4 md:pt-6">
+                <header className="px-4 md:px-8 pt-4 md:pt-6 relative z-10">
                     <div
-                        className={`rounded-2xl border px-5 md:px-7 py-4 md:py-5 ${
-                            minimalChrome
-                                ? "border-slate-200 bg-white shadow-sm"
-                                : "border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,26,57,0.08)]"
-                        }`}
+                        className={`rounded-2xl border px-5 md:px-7 py-4 md:py-5 ${minimalChrome
+                            ? "border-slate-200 bg-white shadow-sm"
+                            : "border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,26,57,0.08)]"
+                            }`}
                     >
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>

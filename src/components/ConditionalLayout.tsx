@@ -65,7 +65,7 @@ export default function ConditionalLayout({
     return (
         <>
             <Header settings={siteSettings} />
-            <main className="relative flex-1 pt-24 md:pt-28">
+            <main className="relative flex-1">
                 {children}
             </main>
             <Footer settings={siteSettings} />
