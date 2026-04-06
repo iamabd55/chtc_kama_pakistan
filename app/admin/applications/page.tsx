@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
+import AvatarLabel from "@/components/admin/AvatarLabel";
 import { Button } from "@/components/ui/button";
 import { adminDb } from "@/lib/supabase/adminClient";
-import { ExternalLink, Search } from "lucide-react";
+import { ExternalLink, Search, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -80,14 +81,30 @@ const AdminApplications = () => {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm("Delete this job application?")) return;
+
+        const { error } = await adminDb
+            .from("job_applications")
+            .delete()
+            .eq("id", id);
+
+        if (error) {
+            toast({ title: "Error", description: error.message, variant: "destructive" });
+            return;
+        }
+
+        toast({ title: "Deleted" });
+        setSelected((current) => (current?.id === id ? null : current));
+        setDetailOpen((current) => (selected?.id === id ? false : current));
+        fetchData();
+    };
+
     const columns = [
         {
             header: "Applicant",
             accessor: (r: ApplicationWithTitle) => (
-                <div>
-                    <p className="font-medium">{r.applicant_name}</p>
-                    <p className="text-xs text-muted-foreground">{r.email}</p>
-                </div>
+                <AvatarLabel name={r.applicant_name} subtitle={r.email} />
             ),
         },
         {
@@ -136,9 +153,20 @@ const AdminApplications = () => {
                             </Button>
                         </a>
                     )}
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(r.id);
+                        }}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
                 </div>
             ),
-            className: "w-[120px]",
+            className: "w-[160px]",
         },
     ];
 
@@ -230,6 +258,14 @@ const AdminApplications = () => {
                                     <ExternalLink className="w-4 h-4" /> View CV
                                 </a>
                             )}
+                            <div className="pt-2 border-t">
+                                <Button
+                                    variant="destructive"
+                                    onClick={() => handleDelete(selected.id)}
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" /> Delete Application
+                                </Button>
+                            </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Status</label>
                                 <select

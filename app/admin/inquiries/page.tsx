@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
+import AvatarLabel from "@/components/admin/AvatarLabel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { adminDb } from "@/lib/supabase/adminClient";
@@ -244,10 +245,7 @@ const AdminInquiries = () => {
         {
             header: "Name",
             accessor: (r: Inquiry) => (
-                <div>
-                    <p className="font-medium">{r.full_name}</p>
-                    <p className="text-xs text-muted-foreground">{r.email || "—"}</p>
-                </div>
+                <AvatarLabel name={r.full_name} subtitle={r.email || "—"} />
             ),
         },
         { header: "Phone", accessor: "phone" as keyof Inquiry },

@@ -6,7 +6,7 @@ import type { CareerPost } from "@/lib/supabase/types";
 
 interface CareerDetailPageProps {
     params: Promise<{ id: string }>;
-    searchParams?: Promise<{ submitted?: string; error?: string }>;
+    searchParams?: Promise<{ submitted?: string; error?: string; duplicate?: string }>;
 }
 
 export default async function CareerDetailPage({ params, searchParams }: CareerDetailPageProps) {
@@ -14,6 +14,7 @@ export default async function CareerDetailPage({ params, searchParams }: CareerD
     const resolved = searchParams ? await searchParams : undefined;
     const isSubmitted = resolved?.submitted === "1";
     const hasError = resolved?.error === "1";
+    const isDuplicate = resolved?.duplicate === "1";
 
     const supabase = await createClient();
     const { data } = await supabase
@@ -95,8 +96,18 @@ export default async function CareerDetailPage({ params, searchParams }: CareerD
                             </div>
                         )}
 
-                        <form method="post" action="/api/careers/apply" className="space-y-3">
+                        {isDuplicate && (
+                            <div className="mb-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
+                                You have already applied for this position with this email address.
+                            </div>
+                        )}
+
+                        <form method="post" action="/api/careers/apply" encType="multipart/form-data" className="space-y-3">
                             <input type="hidden" name="career_post_id" value={job.id} />
+
+                            <p className="text-xs text-muted-foreground">
+                                Please upload your CV or paste a CV URL. Applications without either will not be submitted.
+                            </p>
 
                             <input
                                 name="applicant_name"

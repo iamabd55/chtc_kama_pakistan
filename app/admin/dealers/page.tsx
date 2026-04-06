@@ -36,6 +36,61 @@ const parseBrands = (value: string): string[] =>
         .map((b) => b.trim())
         .filter(Boolean);
 
+const extractCoordsFromGoogleMapsUrl = (urlValue?: string | null) => {
+    if (!urlValue) return null;
+
+    const value = urlValue.trim();
+    if (!value) return null;
+
+    const toCoords = (latRaw: string, lngRaw: string) => {
+        const lat = Number(latRaw);
+        const lng = Number(lngRaw);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+        return { lat, lng };
+    };
+
+    // Matches .../@31.5204,74.3587,...
+    const atMatch = value.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+    if (atMatch) {
+        return toCoords(atMatch[1], atMatch[2]);
+    }
+
+    try {
+        const parsed = new URL(value);
+
+        // Matches ...?q=31.5204,74.3587 or ...?query=31.5204,74.3587
+        const q = parsed.searchParams.get("q") || parsed.searchParams.get("query");
+        if (q) {
+            const qMatch = q.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+            if (qMatch) {
+                const coords = toCoords(qMatch[1], qMatch[2]);
+                if (coords) return coords;
+            }
+        }
+
+        // Matches ...?ll=31.5204,74.3587
+        const ll = parsed.searchParams.get("ll");
+        if (ll) {
+            const llMatch = ll.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+            if (llMatch) {
+                const coords = toCoords(llMatch[1], llMatch[2]);
+                if (coords) return coords;
+            }
+        }
+
+        // Matches long map links containing !3d31.5204!4d74.3587
+        const longMatch = parsed.href.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
+        if (longMatch) {
+            return toCoords(longMatch[1], longMatch[2]);
+        }
+    } catch {
+        return null;
+    }
+
+    return null;
+};
+
 const AdminDealers = () => {
     const [dealers, setDealers] = useState<Dealer[]>([]);
     const [loading, setLoading] = useState(true);
@@ -81,6 +136,7 @@ const AdminDealers = () => {
             return;
         }
         setSaving(true);
+        const extractedCoords = extractCoordsFromGoogleMapsUrl(editing.google_maps_url);
         const payload = {
             name: editing.name,
             city: editing.city,
@@ -90,8 +146,8 @@ const AdminDealers = () => {
             whatsapp: editing.whatsapp || null,
             email: editing.email || null,
             google_maps_url: editing.google_maps_url || null,
-            lat: editing.lat || null,
-            lng: editing.lng || null,
+            lat: editing.lat ?? extractedCoords?.lat ?? null,
+            lng: editing.lng ?? extractedCoords?.lng ?? null,
             dealer_type: editing.dealer_type || "both",
             brands: editing.brands || [],
             working_hours: editing.working_hours || null,
@@ -300,11 +356,22 @@ const AdminDealers = () => {
                                 <label className="text-sm font-medium mb-1 block">Google Maps URL</label>
                                 <Input
                                     value={editing.google_maps_url || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, google_maps_url: e.target.value })
-                                    }
+                                    onChange={(e) => {
+                                        const nextUrl = e.target.value;
+                                        const coords = extractCoordsFromGoogleMapsUrl(nextUrl);
+
+                                        setEditing({
+                                            ...editing,
+                                            google_maps_url: nextUrl,
+                                            lat: coords?.lat ?? editing.lat ?? null,
+                                            lng: coords?.lng ?? editing.lng ?? null,
+                                        });
+                                    }}
                                     placeholder="https://www.google.com/maps/place/..."
                                 />
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    If this URL contains coordinates, latitude and longitude will auto-fill.
+                                </p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Type</label>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import StatsCard from "@/components/admin/StatsCard";
 import StatusBadge from "@/components/admin/StatusBadge";
+import AvatarLabel from "@/components/admin/AvatarLabel";
 import { adminDb } from "@/lib/supabase/adminClient";
 import {
     Package,
@@ -102,49 +103,23 @@ const AdminDashboard = () => {
             title="Dashboard"
             subtitle="Mission control for operations, sales pipeline, and content"
         >
-            <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6 mb-8">
-                <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-[linear-gradient(145deg,#0b2a54_0%,#113d74_55%,#0f3c72_100%)] text-white px-6 py-6 md:px-8 md:py-8 shadow-[0_20px_40px_rgba(11,43,86,0.28)]">
-                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_12%_20%,rgba(255,255,255,0.22),transparent_36%),radial-gradient(circle_at_90%_10%,rgba(214,146,59,0.30),transparent_30%)]" />
-                    <div className="relative">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-white/70 font-semibold mb-2">Operations Cockpit</p>
-                        <h2 className="font-display text-2xl md:text-3xl font-black leading-tight mb-3">Everything important. One command surface.</h2>
-                        <p className="text-white/75 max-w-2xl text-sm md:text-base mb-2">Track new leads, update product catalog, publish company updates, and monitor hiring from a single workspace.</p>
-                        <p className="text-white/90 text-sm md:text-base font-semibold mb-6">For Al Nasir Motors Pakistan nationwide operations.</p>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-3">
-                                <p className="text-white/70 text-[11px] uppercase tracking-[0.12em]">Lead Queue</p>
-                                <p className="text-xl font-black mt-1">{stats.inquiriesToday}</p>
-                            </div>
-                            <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-3">
-                                <p className="text-white/70 text-[11px] uppercase tracking-[0.12em]">Published News</p>
-                                <p className="text-xl font-black mt-1">{stats.news}</p>
-                            </div>
-                            <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-3">
-                                <p className="text-white/70 text-[11px] uppercase tracking-[0.12em]">Dealer Network</p>
-                                <p className="text-xl font-black mt-1">{stats.dealers}</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="rounded-2xl border border-slate-200 bg-white/85 p-5 shadow-[0_12px_28px_rgba(11,29,58,0.08)]">
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold mb-3">Quick Actions</p>
-                    <div className="space-y-2.5">
+            <div className="mb-8">
+                <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_12px_28px_rgba(11,29,58,0.08)]">
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold mb-4">Quick Actions</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { label: "Add Product", href: "/admin/products", icon: Package },
-                            { label: "Publish News", href: "/admin/news", icon: Newspaper },
-                            { label: "Review Inquiries", href: "/admin/inquiries", icon: MessageSquare },
-                            { label: "Update Site Settings", href: "/admin/settings", icon: Settings },
+                            { label: "Add Product", href: "/admin/products", icon: Package, color: "text-blue-600 bg-blue-50 border-blue-100" },
+                            { label: "Publish News", href: "/admin/news", icon: Newspaper, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+                            { label: "Review Inquiries", href: "/admin/inquiries", icon: MessageSquare, color: "text-sky-600 bg-sky-50 border-sky-100" },
+                            { label: "Update Site Settings", href: "/admin/settings", icon: Settings, color: "text-amber-600 bg-amber-50 border-amber-100" },
                         ].map((action) => (
-                            <Link key={action.label} href={action.href} className="group flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                                <span className="flex items-center gap-2.5 text-sm font-medium text-slate-800">
-                                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                                        <action.icon className="w-4 h-4" />
-                                    </span>
+                            <Link key={action.label} href={action.href} className="group flex items-center gap-3 rounded-xl border border-slate-200 p-3 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                                <span className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center border ${action.color}`}>
+                                    <action.icon className="w-5 h-5" />
+                                </span>
+                                <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">
                                     {action.label}
                                 </span>
-                                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                             </Link>
                         ))}
                     </div>
@@ -212,44 +187,42 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_1fr] gap-6">
                 {/* Recent Inquiries */}
                 <div className="bg-card rounded-xl border shadow-sm">
-                <div className="px-6 py-4 border-b">
-                    <h2 className="font-display text-lg font-bold text-foreground">
-                        Recent Inquiries
-                    </h2>
+                    <div className="px-6 py-4 border-b">
+                        <h2 className="font-display text-lg font-bold text-foreground">
+                            Recent Inquiries
+                        </h2>
+                    </div>
+                    <div className="divide-y">
+                        {loading ? (
+                            <div className="p-8 text-center text-muted-foreground">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
+                            </div>
+                        ) : recentInquiries.length === 0 ? (
+                            <div className="p-8 text-center text-muted-foreground">
+                                No inquiries yet
+                            </div>
+                        ) : (
+                            recentInquiries.map((inq) => (
+                                <Link
+                                    key={inq.id}
+                                    href={`/admin/inquiries?inquiryId=${inq.id}`}
+                                    className="px-6 py-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
+                                >
+                                    <AvatarLabel
+                                        name={inq.full_name}
+                                        subtitle={`${inq.city} · ${inq.inquiry_type} · ${inq.phone}`}
+                                    />
+                                    <div className="flex items-center gap-3">
+                                        <StatusBadge status={inq.status} />
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(inq.created_at).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))
+                        )}
+                    </div>
                 </div>
-                <div className="divide-y">
-                    {loading ? (
-                        <div className="p-8 text-center text-muted-foreground">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-                        </div>
-                    ) : recentInquiries.length === 0 ? (
-                        <div className="p-8 text-center text-muted-foreground">
-                            No inquiries yet
-                        </div>
-                    ) : (
-                        recentInquiries.map((inq) => (
-                            <Link
-                                key={inq.id}
-                                href={`/admin/inquiries?inquiryId=${inq.id}`}
-                                className="px-6 py-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
-                            >
-                                <div>
-                                    <p className="font-medium text-foreground">{inq.full_name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {inq.city} · {inq.inquiry_type} · {inq.phone}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <StatusBadge status={inq.status} />
-                                    <span className="text-xs text-muted-foreground">
-                                        {new Date(inq.created_at).toLocaleDateString()}
-                                    </span>
-                                </div>
-                            </Link>
-                        ))
-                    )}
-                </div>
-            </div>
 
                 <aside className="space-y-6">
                     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

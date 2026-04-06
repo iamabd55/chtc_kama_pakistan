@@ -1,8 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CheckCircle2, ShieldCheck, Activity, Users, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { TeamMember, ClientLogo, Certification } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
+
+type TeamMemberWithTeam = TeamMember & {
+    team?: {
+        id: string;
+        name: string;
+        slug: string;
+    } | null;
+};
 
 interface AboutSectionPageProps {
     params: Promise<{ section: string }>;
@@ -42,21 +51,41 @@ const teamMembers = [
 ];
 
 const clients = [
-    "Logistics Fleet Operators",
-    "Municipal Transport Authorities",
-    "Institutional Transport Programs",
-    "Private Commercial Fleets",
+    {
+        name: "NADRA",
+        logo_url: "/images/al-bcf/nadra_logo.png",
+        website_url: null,
+    },
+    {
+        name: "Punjab Police",
+        logo_url: "/images/al-bcf/punjab-police-logo-png.png",
+        website_url: null,
+    },
+    {
+        name: "HBL",
+        logo_url: "/images/al-bcf/HBL-Device-Logo-sponsorship.png",
+        website_url: null,
+    },
+    {
+        name: "Orient",
+        logo_url: "/images/al-bcf/orient-logo.svg",
+        website_url: null,
+    },
 ];
 
 const certifications = [
-    { title: "ISO Quality Compliance", file: "/images/logo.png" },
-    { title: "Vehicle Safety Certification", file: "/images/logo.png" },
-    { title: "Emission Compliance Record", file: "/images/logo.png" },
+    { title: "ISO 9001:2015 (Quality Management)", description: "International standard for quality management systems." },
+    { title: "PQR (Pakistan Quality Standards)", description: "Certified compliance with national automotive manufacturing standards." },
+    { title: "Euro II / Euro IV Emission Standards", description: "Adherence to environmental protocols for commercial vehicles." },
+    { title: "Health & Safety Compliance", description: "Workplace and operational safety certifications." },
 ];
 
 export default async function AboutSectionPage({ params }: AboutSectionPageProps) {
+        const resolveLogoUrl = (logoUrl: string) => (logoUrl.startsWith("/") ? logoUrl : getStorageUrl(logoUrl));
+
     const { section: rawSection } = await params;
     const supabase = await createClient();
+    const isLeadershipRoute = rawSection === "leadership";
 
     const canonicalSection =
         rawSection === "leadership"
@@ -78,12 +107,17 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
 
     const teamRows = (await supabase
         .from("team_members")
-        .select("*")
+        .select("*, team:teams(id, name, slug)")
         .eq("is_active", true)
-        .order("display_order")).data as TeamMember[] | null;
+        .order("display_order")).data as TeamMemberWithTeam[] | null;
+
+    const visibleTeamRows = isLeadershipRoute
+        ? (teamRows || []).filter((member) => member.team?.slug === "leadership")
+        : (teamRows || []);
 
     const teamFallback = teamMembers.map((m, idx) => ({
         id: `fallback-${idx}`,
+        team_id: "fallback-leadership",
         name: m.name,
         role: m.role,
         photo_url: m.photo_url,
@@ -94,7 +128,7 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
         updated_at: new Date().toISOString(),
     }));
 
-    const teamData = teamRows && teamRows.length > 0 ? teamRows : teamFallback;
+    const teamData = visibleTeamRows.length > 0 ? visibleTeamRows : teamFallback;
 
     const clientRows = (await supabase
         .from("client_logos")
@@ -104,9 +138,9 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
 
     const clientFallback = clients.map((c, idx) => ({
         id: `fallback-${idx}`,
-        name: c,
-        logo_url: "logo.png",
-        website_url: null,
+        name: c.name,
+        logo_url: c.logo_url,
+        website_url: c.website_url,
         display_order: idx,
         is_active: true,
         created_at: new Date().toISOString(),
@@ -124,9 +158,9 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
     const certificationFallback = certifications.map((c, idx) => ({
         id: `fallback-${idx}`,
         title: c.title,
-        thumbnail_url: c.file,
-        document_url: c.file,
-        description: null,
+        thumbnail_url: null,
+        document_url: null,
+        description: c.description,
         display_order: idx,
         is_active: true,
         created_at: new Date().toISOString(),
@@ -177,7 +211,7 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
                             {clientData.map((client) => (
                                 <article key={client.id} className="rounded-xl border bg-card p-5 flex items-center gap-4">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={getStorageUrl(client.logo_url)} alt={client.name} className="w-12 h-12 rounded-md object-cover bg-muted" />
+                                    <img src={resolveLogoUrl(client.logo_url)} alt={client.name} className="w-12 h-12 rounded-md object-cover bg-muted" />
                                     <p className="font-semibold text-foreground">{client.name}</p>
                                 </article>
                             ))}
@@ -185,22 +219,65 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
                     )}
 
                     {canonicalSection === "certifications" && (
-                        <div className="space-y-4">
-                            {certificationData.map((cert) => (
-                                <article key={cert.title} className="rounded-xl border bg-card p-5 flex items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="font-semibold text-foreground">{cert.title}</h2>
-                                        <p className="text-sm text-muted-foreground">{cert.description || "Document available for verification."}</p>
+                        <div className="space-y-12">
+                            {/* Commitment Statement */}
+                            <div className="bg-muted/30 p-8 rounded-2xl border border-border">
+                                <h2 className="text-2xl font-display font-bold text-foreground mb-4">Commitment to Quality</h2>
+                                <p className="text-muted-foreground leading-relaxed text-lg">
+                                    At Al Nasir Motors, we adhere to the highest international standards for automotive excellence. Our operations are guided by rigorous quality control protocols to ensure every vehicle delivered meets Pakistan’s safety and environmental regulations.
+                                </p>
+                            </div>
+
+                            {/* Certifications List */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {certificationData.map((cert, index) => (
+                                    <article key={cert.title || index} className="rounded-xl border bg-card p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <h3 className="font-semibold text-foreground text-lg mb-2">{cert.title}</h3>
+                                                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{cert.description || "Document available for verification."}</p>
+                                            </div>
+                                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                                <ShieldCheck className="w-6 h-6 text-primary" />
+                                            </div>
+                                        </div>
+                                        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 text-[0.7rem] font-bold tracking-widest uppercase border border-green-200 shadow-sm">
+                                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                                Verified
+                                            </span>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+
+                            {/* Process Section */}
+                            <div className="mt-16">
+                                <h2 className="text-2xl font-display font-bold text-foreground mb-8 text-center">Our Compliance Process</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="p-8 rounded-xl border bg-card text-center hover:border-primary/30 transition-colors shadow-sm cursor-default">
+                                        <div className="w-12 h-12 mx-auto bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-5">
+                                            <Settings className="w-6 h-6" />
+                                        </div>
+                                        <h4 className="font-bold text-foreground mb-3 tracking-tight">Pre-Delivery Inspection</h4>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">Every vehicle undergoes a comprehensive 50-point quality check before release.</p>
                                     </div>
-                                    <Link
-                                        href={cert.document_url || cert.thumbnail_url || "/images/logo.png"}
-                                        target="_blank"
-                                        className="px-4 py-2 rounded-lg border text-sm font-semibold hover:bg-muted transition-colors"
-                                    >
-                                        Download
-                                    </Link>
-                                </article>
-                            ))}
+                                    <div className="p-8 rounded-xl border bg-card text-center hover:border-primary/30 transition-colors shadow-sm cursor-default">
+                                        <div className="w-12 h-12 mx-auto bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-5">
+                                            <Activity className="w-6 h-6" />
+                                        </div>
+                                        <h4 className="font-bold text-foreground mb-3 tracking-tight">Safety Testing</h4>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">Strict adherence to local and international road safety protocols.</p>
+                                    </div>
+                                    <div className="p-8 rounded-xl border bg-card text-center hover:border-primary/30 transition-colors shadow-sm cursor-default">
+                                        <div className="w-12 h-12 mx-auto bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-5">
+                                            <Users className="w-6 h-6" />
+                                        </div>
+                                        <h4 className="font-bold text-foreground mb-3 tracking-tight">After-Sales Compliance</h4>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">Ensuring long-term operational compliance and scheduled maintenance.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

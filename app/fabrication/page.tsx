@@ -231,25 +231,56 @@ export default function FabricationPage() {
             </section>
 
             {/* ══════════════════════════════════════════
-                CLIENTS — clean white row
+                CLIENTS — infinite marquee
             ══════════════════════════════════════════ */}
-            <section className="py-12 sm:py-16 bg-white border-b border-gray-100">
-                <div className="container max-w-5xl px-4 sm:px-6 lg:px-8">
+            <section className="py-12 sm:py-16 bg-white border-b border-gray-100 overflow-hidden">
+                <style>{`
+                    @keyframes marquee {
+                        0% { transform: translateX(0%); }
+                        100% { transform: translateX(-100%); }
+                    }
+                    .animate-marquee {
+                        animation: marquee 35s linear infinite;
+                        min-width: 100%;
+                    }
+                    .group:hover .animate-marquee {
+                        animation-play-state: paused;
+                    }
+                `}</style>
+                <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
                     <p className="text-center text-[11px] font-black uppercase tracking-[0.22em] text-gray-300 mb-10">
                         Trusted by Industry Leaders
                     </p>
-                    <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 lg:gap-16">
-                        {clients.map((c) => (
-                            <div key={c.alt} className="flex items-center justify-center">
-                                <Image
-                                    src={c.src}
-                                    alt={c.alt}
-                                    width={c.w}
-                                    height={c.h}
-                                    className="object-contain max-h-12"
-                                />
-                            </div>
-                        ))}
+                    
+                    {/* Marquee Wrapper with edge fade masks */}
+                    <div className="relative flex overflow-hidden group py-4" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                        <div className="flex gap-24 lg:gap-36 pr-24 lg:pr-36 animate-marquee flex-shrink-0 items-center justify-around">
+                            {clients.map((c) => (
+                                <div key={c.alt} className="flex items-center justify-center shrink-0">
+                                    <Image
+                                        src={c.src}
+                                        alt={c.alt}
+                                        width={c.w * 1.5}
+                                        height={c.h * 1.5}
+                                        className="object-contain max-h-14 opacity-70 hover:opacity-100 transition-opacity duration-300"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        {/* Duplicate for seamless loop */}
+                        <div className="flex gap-24 lg:gap-36 pr-24 lg:pr-36 animate-marquee flex-shrink-0 items-center justify-around" aria-hidden="true">
+                            {clients.map((c) => (
+                                <div key={`dup-${c.alt}`} className="flex items-center justify-center shrink-0">
+                                    <Image
+                                        src={c.src}
+                                        alt={c.alt}
+                                        width={c.w * 1.5}
+                                        height={c.h * 1.5}
+                                        className="object-contain max-h-14 opacity-70 hover:opacity-100 transition-opacity duration-300"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
