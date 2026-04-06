@@ -14,7 +14,19 @@ type AdminAccess = {
     is_active: boolean;
 } | null;
 
-async function getAdminAccess() {
+type ServerClient = Awaited<ReturnType<typeof createServerClient>>;
+type ServerUser = Awaited<ReturnType<ServerClient["auth"]["getUser"]>>["data"]["user"];
+
+type AdminAccessResult =
+    | {
+          error: NextResponse;
+      }
+    | {
+          user: ServerUser;
+          profile: AdminAccess;
+      };
+
+async function getAdminAccess(): Promise<AdminAccessResult> {
     const server = await createServerClient();
     const {
         data: { user },
@@ -48,9 +60,11 @@ async function getAdminAccess() {
     };
 }
 
-async function getAuthorizedAdminClient(options?: { requireSuperAdmin?: boolean }) {
+async function getAuthorizedAdminClient(
+    options?: { requireSuperAdmin?: boolean }
+) {
     const access = await getAdminAccess();
-    if (access.error) return access;
+    if ("error" in access) return access;
 
     if (options?.requireSuperAdmin) {
         if (!access.profile || access.profile.is_active !== true || access.profile.role !== "super_admin") {
@@ -83,7 +97,7 @@ async function getAuthorizedAdminClient(options?: { requireSuperAdmin?: boolean 
 
 export async function GET() {
     const authorized = await getAuthorizedAdminClient();
-    if (authorized.error) return authorized.error;
+    if ("error" in authorized) return authorized.error;
 
     const { adminClient } = authorized;
 
@@ -134,7 +148,7 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
     const authorized = await getAuthorizedAdminClient();
-    if (authorized.error) return authorized.error;
+    if ("error" in authorized) return authorized.error;
 
     const { adminClient } = authorized;
     const body = await request.json();
@@ -191,7 +205,7 @@ export async function PATCH(request: Request) {
 
 export async function POST(request: Request) {
     const authorized = await getAuthorizedAdminClient();
-    if (authorized.error) return authorized.error;
+    if ("error" in authorized) return authorized.error;
 
     const { adminClient } = authorized;
 
@@ -279,7 +293,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     const authorized = await getAuthorizedAdminClient();
-    if (authorized.error) return authorized.error;
+    if ("error" in authorized) return authorized.error;
 
     const { adminClient } = authorized;
     const url = new URL(request.url);

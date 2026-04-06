@@ -31,6 +31,7 @@ type UsersApiResponse = {
     permissions?: {
         canManage?: boolean;
     };
+    error?: string;
 };
 
 export default function AdminUsersPage() {
