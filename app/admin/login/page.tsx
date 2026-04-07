@@ -39,7 +39,7 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-kama-gradient relative overflow-hidden">
+        <div className="min-h-screen lg:min-h-[111.12vh] flex items-center justify-center bg-kama-gradient relative overflow-hidden">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-5">
                 <div
