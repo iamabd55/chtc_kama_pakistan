@@ -8,7 +8,7 @@ import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
-import { Poppins, Rajdhani, DM_Sans, Orbitron } from "next/font/google";
+import { Poppins, Rajdhani, DM_Sans, Orbitron, Vujahday_Script, Manjari, Inter } from "next/font/google";
 import { createClient } from "@/lib/supabase/server";
 import type { SiteSettings } from "@/lib/supabase/types";
 import { normalizeSiteSettings } from "@/lib/siteSettings";
@@ -37,6 +37,27 @@ const orbitron = Orbitron({
     subsets: ["latin"],
     weight: ["400", "500", "600", "700", "800", "900"],
     variable: "--font-orbitron",
+    display: "swap",
+});
+
+const vujahdayScript = Vujahday_Script({
+    subsets: ["latin"],
+    weight: ["400"],
+    variable: "--font-vujahday-script",
+    display: "swap",
+});
+
+const manjari = Manjari({
+    subsets: ["latin"],
+    weight: ["400", "700"],
+    variable: "--font-manjari",
+    display: "swap",
+});
+
+const inter = Inter({
+    subsets: ["latin"],
+    weight: ["400", "700", "800"],
+    variable: "--font-inter",
     display: "swap",
 });
 
@@ -132,7 +153,10 @@ export default async function RootLayout({
     };
 
     return (
-        <html lang="en" className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable}`}>
+        <html
+            lang="en"
+            className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable} ${vujahdayScript.variable} ${manjari.variable} ${inter.variable}`}
+        >
             <body>
                 <script
                     type="application/ld+json"

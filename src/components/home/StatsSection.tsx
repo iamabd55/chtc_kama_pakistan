@@ -57,7 +57,7 @@ const StatItem = ({
 
 const StatsSection = () => {
   return (
-    <section className="relative py-20 md:py-24 bg-kama-gradient overflow-hidden">
+    <section className="relative py-20 md:py-24 bg-[#0364CE] overflow-hidden">
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{

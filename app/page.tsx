@@ -1,14 +1,35 @@
+import dynamic from "next/dynamic";
 import HeroSection from "@/components/home/HeroSection";
 import VehiclesSection from "@/components/home/VehiclesSection";
-import StatsSection from "@/components/home/StatsSection";
-import WhyKamaSection from "@/components/home/WhyKamaSection";
-import BrandsSection from "@/components/home/BrandsSection";
-import FabricationSection from "@/components/home/FabricationSection";
-import CTASection from "@/components/home/CTASection";
-import DealerSection from "@/components/home/DealerSection";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Dealer, SiteSettings } from "@/lib/supabase/types";
+
+export const revalidate = 300;
+
+const StatsSection = dynamic(() => import("@/components/home/StatsSection"), {
+    loading: () => <div className="h-[320px] bg-[#0364CE]" aria-hidden="true" />,
+});
+
+const WhyKamaSection = dynamic(() => import("@/components/home/WhyKamaSection"), {
+    loading: () => <div className="h-[520px] bg-muted/50" aria-hidden="true" />,
+});
+
+const BrandsSection = dynamic(() => import("@/components/home/BrandsSection"), {
+    loading: () => <div className="h-[640px] bg-background" aria-hidden="true" />,
+});
+
+const FabricationSection = dynamic(() => import("@/components/home/FabricationSection"), {
+    loading: () => <div className="h-[620px] bg-muted/30" aria-hidden="true" />,
+});
+
+const CTASection = dynamic(() => import("@/components/home/CTASection"), {
+    loading: () => <div className="h-[360px] bg-[#0364CE]" aria-hidden="true" />,
+});
+
+const DealerSection = dynamic(() => import("@/components/home/DealerSection"), {
+    loading: () => <div className="h-[760px] bg-background" aria-hidden="true" />,
+});
 
 type HeroSlideSettingsItem = {
     imageUrl?: string;
@@ -23,7 +44,7 @@ const resolveHeroImage = (value: string) => {
 };
 
 export default async function HomePage() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data: siteSettingsData } = await supabase
         .from("site_settings")

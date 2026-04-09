@@ -5,90 +5,63 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const ease = [0.25, 0.4, 0, 1] as const;
+const watermarkLogo = "https://www.figma.com/api/mcp/asset/bc54e09a-1524-462e-af94-e75eb874df08";
 
 const CTASection = () => {
   return (
-    <section className="py-24 md:py-32 bg-kama-gradient relative overflow-hidden">
-      {/* Animated floating blobs */}
-      <div className="absolute inset-0 opacity-5">
-        <motion.div
-          className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent rounded-full blur-[120px]"
-          animate={{
-            x: [0, 30, -20, 0],
-            y: [0, -25, 15, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+    <section className="relative overflow-hidden bg-[#0364CE] py-10 md:py-12">
+      <div className="container relative">
+        <img
+          src={watermarkLogo}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute right-8 top-1/2 hidden h-auto w-[300px] -translate-y-1/2 blur-[2px] opacity-[0.18] md:block"
         />
-        <motion.div
-          className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-foreground rounded-full blur-[100px]"
-          animate={{
-            x: [0, -20, 30, 0],
-            y: [0, 20, -15, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
-
-      <div className="container relative text-center">
-        <motion.p
-          className="font-display font-semibold text-xs uppercase tracking-[0.3em] text-accent mb-4"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.5, ease }}
-        >
-          Driven by Al Nasir Motors
-        </motion.p>
 
         <motion.h2
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-5 tracking-tight leading-tight"
-          initial={{ opacity: 0, y: 40 }}
+          className="relative z-10 max-w-[760px] text-white [font-family:var(--font-poppins)] font-bold leading-[1.03] tracking-[-0.015em] text-[42px] sm:text-[52px] md:text-[57px]"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease }}
+          transition={{ duration: 0.6, ease }}
         >
-          Ready to Drive Your
+          Ready to Drive your
           <br />
-          Business Forward?
+          <span className="text-white">Business </span>
+          <span className="align-baseline text-[#FFBB82] [font-family:var(--font-vujahday-script)] font-normal text-[62px] sm:text-[74px] md:text-[86px] leading-[0.8]">
+            Forward?
+          </span>
         </motion.h2>
 
         <motion.p
-          className="text-primary-foreground/60 max-w-lg mx-auto mb-10 text-base sm:text-lg"
-          initial={{ opacity: 0, y: 30 }}
+          className="relative z-10 mt-4 max-w-[563px] text-white [font-family:var(--font-manjari)] text-[20px] md:text-[22px] leading-[1.05]"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.2, ease }}
+          transition={{ duration: 0.55, delay: 0.1, ease }}
         >
           Get in touch with our sales team for personalized vehicle recommendations and competitive pricing.
         </motion.p>
 
         <motion.div
-          className="flex flex-wrap justify-center gap-4"
-          initial={{ opacity: 0, y: 30 }}
+          className="relative z-10 mt-8 flex flex-wrap gap-4 md:gap-8"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.35, ease }}
+          transition={{ duration: 0.55, delay: 0.2, ease }}
         >
           <Link
             href="/get-quote"
-            className="group inline-flex items-center gap-3 px-10 py-4 bg-accent text-accent-foreground font-display font-bold text-sm uppercase tracking-[0.15em] hover:opacity-90 transition-all duration-300"
+            className="inline-flex h-[66px] min-w-[263px] items-center justify-center rounded-xl bg-[#FF8622] px-6 text-center text-[27px] leading-[0.92] text-white [font-family:var(--font-inter)] font-bold transition-all duration-300 hover:scale-[1.03] hover:opacity-90"
           >
-            Request a Quote
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Request a quote
           </Link>
           <Link
             href="/find-dealer"
-            className="inline-flex items-center gap-3 px-10 py-4 border-2 border-primary-foreground/25 text-primary-foreground font-display font-bold text-sm uppercase tracking-[0.15em] hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all duration-300"
+            className="group inline-flex h-[66px] min-w-[263px] items-center justify-center gap-3 rounded-xl bg-black px-6 text-center text-[27px] leading-[0.92] text-white [font-family:var(--font-inter)] font-bold transition-all duration-300 hover:scale-[1.03] hover:opacity-90"
           >
-            Find a Dealer
+            Find a dealer
+            <ArrowRight className="h-[26px] w-[26px] stroke-[2.25]" />
           </Link>
         </motion.div>
       </div>
