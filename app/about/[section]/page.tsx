@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ShieldCheck, Activity, Users, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -21,31 +22,31 @@ const teamMembers = [
     {
         name: "Mr. Bashir Uddin Malik",
         role: "Founder",
-        photo_url: "/images/al-bcf/core-team/founder.png",
+        photo_url: "/images/al-bcf/core-team/founder.webp",
         bio: "Pioneer automotive leader whose vision established the group and laid the foundation for nationwide dealership growth.",
     },
     {
         name: "Zaheer Ud Din Malik",
         role: "Chairman",
-        photo_url: "/images/al-bcf/core-team/chairman.png",
+        photo_url: "/images/al-bcf/core-team/chairman.webp",
         bio: "Leads strategic direction and long-term growth of Al Nasir Motors Pakistan operations.",
     },
     {
         name: "Muneeb Ibrahim",
         role: "CEO",
-        photo_url: "/images/al-bcf/core-team/ceo.png",
+        photo_url: "/images/al-bcf/core-team/ceo.webp",
         bio: "Oversees execution, operational performance, and business transformation across departments.",
     },
     {
         name: "Shaukat Hayat",
         role: "Director",
-        photo_url: "/images/al-bcf/core-team/director-1-Shaukat-hayat.png",
+        photo_url: "/images/al-bcf/core-team/director-1-Shaukat-hayat.webp",
         bio: "Supports governance and enterprise management across core business units.",
     },
     {
         name: "M. Izhar Ul Haq",
         role: "Director Sales & Marketing",
-        photo_url: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.png",
+        photo_url: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp",
         bio: "Leads sales and marketing strategy, dealer engagement, and market expansion activities.",
     },
 ];
@@ -53,17 +54,17 @@ const teamMembers = [
 const clients = [
     {
         name: "NADRA",
-        logo_url: "/images/al-bcf/nadra_logo.png",
+        logo_url: "/images/al-bcf/nadra_logo.webp",
         website_url: null,
     },
     {
         name: "Punjab Police",
-        logo_url: "/images/al-bcf/punjab-police-logo-png.png",
+        logo_url: "/images/al-bcf/punjab-police-logo-png.webp",
         website_url: null,
     },
     {
         name: "HBL",
-        logo_url: "/images/al-bcf/HBL-Device-Logo-sponsorship.png",
+        logo_url: "/images/al-bcf/HBL-Device-Logo-sponsorship.webp",
         website_url: null,
     },
     {
@@ -79,6 +80,15 @@ const certifications = [
     { title: "Euro II / Euro IV Emission Standards", description: "Adherence to environmental protocols for commercial vehicles." },
     { title: "Health & Safety Compliance", description: "Workplace and operational safety certifications." },
 ];
+
+const preferWebpUrl = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith("/")) {
+        return url.replace(/\.(png|jpe?g)$/i, ".webp");
+    }
+
+    return getStorageUrl(url);
+};
 
 export default async function AboutSectionPage({ params }: AboutSectionPageProps) {
         const resolveLogoUrl = (logoUrl: string) => (logoUrl.startsWith("/") ? logoUrl : getStorageUrl(logoUrl));
@@ -191,12 +201,14 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
                             {teamData.map((member) => (
                                 <article key={member.name} className="rounded-xl border bg-card p-5">
                                     {member.photo_url && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={member.photo_url.startsWith("/") ? member.photo_url : getStorageUrl(member.photo_url)}
+                                        <Image
+                                            src={preferWebpUrl(member.photo_url)}
                                             alt={member.name}
+                                            width={260}
+                                            height={325}
+                                            sizes="(max-width: 640px) 100vw, 260px"
                                             className="w-full max-w-[260px] aspect-[4/5] object-cover rounded-lg mb-4"
-                                        />
+                                         loading="lazy" />
                                     )}
                                     <h2 className="font-display font-bold text-lg text-foreground">{member.name}</h2>
                                     <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
@@ -210,8 +222,14 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {clientData.map((client) => (
                                 <article key={client.id} className="rounded-xl border bg-card p-5 flex items-center gap-4">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={resolveLogoUrl(client.logo_url)} alt={client.name} className="w-12 h-12 rounded-md object-cover bg-muted" />
+                                    <Image
+                                        src={resolveLogoUrl(client.logo_url)}
+                                        alt={client.name}
+                                        width={48}
+                                        height={48}
+                                        sizes="48px"
+                                        className="w-12 h-12 rounded-md object-cover bg-muted"
+                                     loading="lazy" />
                                     <p className="font-semibold text-foreground">{client.name}</p>
                                 </article>
                             ))}

@@ -9,20 +9,23 @@ import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Poppins, Rajdhani, DM_Sans, Orbitron, Vujahday_Script, Manjari, Inter } from "next/font/google";
-import { createClient } from "@/lib/supabase/server";
-import type { SiteSettings } from "@/lib/supabase/types";
 import { normalizeSiteSettings } from "@/lib/siteSettings";
+import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
+
+const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
+    : null;
 
 const poppins = Poppins({
     subsets: ["latin"],
-    weight: ["400", "500", "600", "700", "800", "900"],
+    weight: ["400", "600", "700", "800"],
     variable: "--font-poppins",
     display: "swap",
 });
 
 const rajdhani = Rajdhani({
     subsets: ["latin"],
-    weight: ["300", "400", "500", "600", "700"],
+    weight: ["400", "600", "700"],
     variable: "--font-rajdhani",
     display: "swap",
 });
@@ -35,7 +38,7 @@ const dmSans = DM_Sans({
 
 const orbitron = Orbitron({
     subsets: ["latin"],
-    weight: ["400", "500", "600", "700", "800", "900"],
+    weight: ["700"],
     variable: "--font-orbitron",
     display: "swap",
 });
@@ -56,7 +59,7 @@ const manjari = Manjari({
 
 const inter = Inter({
     subsets: ["latin"],
-    weight: ["400", "700", "800"],
+    weight: ["400", "700"],
     variable: "--font-inter",
     display: "swap",
 });
@@ -64,12 +67,7 @@ const inter = Inter({
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
     icons: {
-        icon: [
-            { url: "/images/al-nasir-logo.png", type: "image/png" },
-            { url: "/favicon.ico", sizes: "any" },
-        ],
-        shortcut: ["/images/al-nasir-logo.png"],
-        apple: [{ url: "/images/al-nasir-logo.png", type: "image/png" }],
+        icon: "/favicon.ico",
     },
     title: {
         default: "Al Nasir Motors Pakistan — Commercial Vehicles",
@@ -128,21 +126,14 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const supabase = await createClient();
-    const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", 1)
-        .single();
-
-    const initialSettings = normalizeSiteSettings((data as SiteSettings | null) ?? null);
+    const initialSettings = normalizeSiteSettings(await getPublicSiteSettings());
 
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
         name: "Al Nasir Motors Pakistan",
         url: SITE_URL,
-        logo: absoluteUrl("/images/logo.png"),
+        logo: absoluteUrl("/images/logo.webp"),
         email: initialSettings.supportEmail,
         telephone: initialSettings.officePhone,
         address: {
@@ -157,6 +148,10 @@ export default async function RootLayout({
             lang="en"
             className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable} ${vujahdayScript.variable} ${manjari.variable} ${inter.variable}`}
         >
+            <head>
+                {supabaseOrigin && <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />}
+                {supabaseOrigin && <link rel="dns-prefetch" href={supabaseOrigin} />}
+            </head>
             <body>
                 <script
                     type="application/ld+json"

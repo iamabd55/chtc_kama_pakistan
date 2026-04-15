@@ -258,10 +258,9 @@ export default function ProductInquiryForm({
                 >
                     {submitting ? "Submitting..." : "Submit Inquiry"}
                 </button>
-                <Link
-                    href={`/get-quote?product=${productSlug}`}
+                <Link href={`/get-quote?product=${productSlug}`}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-primary/40 rounded-md text-primary text-xs font-display font-semibold uppercase tracking-wider hover:bg-primary/5 transition-colors"
-                >
+                 prefetch={false}>
                     Prefer Pricing? Get a Quote
                 </Link>
             </div>

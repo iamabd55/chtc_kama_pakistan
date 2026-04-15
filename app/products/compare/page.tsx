@@ -99,16 +99,15 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                                                 fill
                                                 sizes="(max-width: 768px) 100vw, 300px"
                                                 className="object-cover"
-                                            />
+                                             loading="lazy" />
                                         </div>
                                         <p className="font-display font-bold text-foreground text-xl">{product.name}</p>
                                         <p className="text-sm text-muted-foreground mt-1 mb-4">
                                             {(product.category?.name ?? "-")} · {product.brand.toUpperCase()}
                                         </p>
-                                        <Link
-                                            href={`/get-quote?product=${product.slug}`}
+                                        <Link href={`/get-quote?product=${product.slug}`}
                                             className="block w-full text-center py-2.5 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-sm rounded-md transition-colors"
-                                        >
+                                         prefetch={false}>
                                             Get Quote
                                         </Link>
                                     </th>

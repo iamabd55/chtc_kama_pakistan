@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
@@ -119,11 +119,11 @@ const AdminCategories = () => {
                 <div className="flex items-center gap-3">
                     {r.image && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                             src={getStorageUrl(r.image)}
                             alt={r.name}
                             className="w-10 h-10 rounded-lg object-cover bg-muted"
-                        />
+                         width={800} height={600}  loading="lazy" />
                     )}
                     <div>
                         <p className="font-medium">{r.name}</p>

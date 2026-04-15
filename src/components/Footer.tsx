@@ -45,11 +45,12 @@ const Footer = ({ settings }: FooterProps) => {
           >
             <div className="relative mb-6 h-16 w-52 overflow-hidden md:h-20 md:w-64">
               <Image
-                src="/images/al-nasir-logo-white.png"
+                src="/images/al-nasir-logo-white.webp"
                 alt="Al Nasir Motors"
                 fill
                 className="object-contain object-left"
-              />
+                sizes="(max-width: 768px) 208px, 256px"
+               loading="lazy" />
             </div>
 
             <p className="mb-3 text-xs font-display font-semibold uppercase tracking-[0.32em] text-[#FFBB82]">
@@ -68,6 +69,7 @@ const Footer = ({ settings }: FooterProps) => {
               </Link>
               <Link
                 href="/find-dealer"
+                prefetch={false}
                 className="inline-flex items-center rounded-lg border border-white/30 bg-white/5 px-4 py-2.5 text-xs font-display font-bold uppercase tracking-[0.13em] text-white transition-all duration-300 hover:scale-[1.03] hover:bg-white/10"
               >
                 Find Dealer
@@ -92,7 +94,7 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "Careers", href: "/careers" },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="transition-all duration-300 hover:translate-x-1 hover:text-white">
+                  <Link href={link.href} prefetch={false} className="transition-all duration-300 hover:translate-x-1 hover:text-white">
                     {link.label}
                   </Link>
                 </li>
@@ -117,7 +119,7 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "Gallery", href: "/gallery" },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="transition-all duration-300 hover:translate-x-1 hover:text-white">
+                  <Link href={link.href} prefetch={false} className="transition-all duration-300 hover:translate-x-1 hover:text-white">
                     {link.label}
                   </Link>
                 </li>
@@ -185,11 +187,11 @@ const Footer = ({ settings }: FooterProps) => {
         <div className="container flex flex-col items-center justify-between gap-3 py-4 text-xs text-white/60 md:flex-row">
           <p>{footerText}</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="transition-colors duration-300 hover:text-white">
+            <Link href="/privacy" className="transition-colors duration-300 hover:text-white" prefetch={false}>
               Privacy Policy
             </Link>
             <span className="h-1 w-1 rounded-full bg-white/35" />
-            <Link href="/terms" className="transition-colors duration-300 hover:text-white">
+            <Link href="/terms" className="transition-colors duration-300 hover:text-white" prefetch={false}>
               Terms of Service
             </Link>
           </div>

@@ -14,9 +14,10 @@ export type { PublicSiteSettings } from "@/lib/siteSettings";
 export function useSiteSettings(initialSettings?: PublicSiteSettings) {
     return useQuery({
         queryKey: ["site_settings_public"],
-        staleTime: 0,
-        refetchOnMount: true,
-        refetchOnWindowFocus: true,
+        staleTime: 10 * 60 * 1000,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
         queryFn: async () => {
             const supabase = createClient();
             const { data } = await supabase

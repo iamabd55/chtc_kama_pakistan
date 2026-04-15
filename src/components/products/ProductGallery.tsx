@@ -45,7 +45,7 @@ export default function ProductGallery({ thumbnail, images, name, preserveMainIm
                                 className={`${preserveMainImage && activeIndex === 0 ? "object-contain bg-black/5" : "object-cover group-hover:scale-[1.02]"} transition-transform duration-500`}
                                 sizes="(max-width: 1024px) 100vw, 60vw"
                                 priority={activeIndex === 0}
-                            />
+                             loading="eager" />
                         </motion.div>
                     </AnimatePresence>
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
@@ -64,7 +64,7 @@ export default function ProductGallery({ thumbnail, images, name, preserveMainIm
                                         : "border-transparent opacity-60 hover:opacity-100"
                                 }`}
                             >
-                                <Image src={img} alt={`${name} thumb ${i + 1}`} fill className="object-cover" sizes="80px" />
+                                <Image src={img} alt={`${name} thumb ${i + 1}`} fill className="object-cover" sizes="80px"  loading="lazy" />
                             </button>
                         ))}
                     </div>
@@ -127,7 +127,7 @@ export default function ProductGallery({ thumbnail, images, name, preserveMainIm
                                         fill
                                         className="object-contain"
                                         sizes="90vw"
-                                    />
+                                     loading="lazy" />
                                 </motion.div>
                             </AnimatePresence>
                         </div>

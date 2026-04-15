@@ -108,12 +108,12 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-white/55 font-semibold mb-2">Control Center</p>
                     <Image
-                        src="/images/al-nasir-logo-white.png"
+                        src="/images/al-nasir-logo-white.webp"
                         alt="Al Nasir Motors"
                         width={170}
                         height={52}
                         className="h-8 w-auto object-contain"
-                    />
+                     loading="lazy" />
                     <p className="font-display text-lg font-bold tracking-wide mt-2">Admin Workspace</p>
                 </div>
 
@@ -138,14 +138,13 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                                 const active = isActive(item.href);
                                 return (
                                     <li key={item.href}>
-                                        <Link
-                                            href={item.href}
+                                        <Link href={item.href}
                                             onClick={onNavigate}
                                             className={`group relative flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${active
                                                 ? "bg-gradient-to-r from-primary/90 to-primary text-white shadow-lg shadow-primary/20"
                                                 : "text-white/70 hover:text-white hover:bg-white/8"
                                                 }`}
-                                        >
+                                         prefetch={false}>
                                             <span className="flex items-center gap-3 min-w-0">
                                                 <span className={`flex items-center justify-center w-8 h-8 rounded-lg border ${active ? "bg-white/15 border-white/20" : "bg-white/5 border-white/10 group-hover:bg-white/10"}`}>
                                                     <item.icon className="w-4.5 h-4.5 flex-shrink-0" />

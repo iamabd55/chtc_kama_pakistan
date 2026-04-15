@@ -275,7 +275,7 @@ const Header = ({ settings }: HeaderProps) => {
           <div className="flex items-center gap-3">
             <Link href="/get-quote" className="hover:opacity-80 transition-opacity font-medium">Get a Quote</Link>
             <span>|</span>
-            <Link href="/careers" className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
+            <Link href="/careers" prefetch={false} className="hover:opacity-80 transition-opacity font-medium">Careers</Link>
           </div>
         </div>
       </div>
@@ -284,14 +284,14 @@ const Header = ({ settings }: HeaderProps) => {
       <div className="container h-[5rem] md:h-[6rem] flex items-center justify-between lg:justify-center lg:gap-8">
         <Link href="/" className="flex-shrink-0 py-1 md:py-2 rounded-md transition-transform duration-200 hover:scale-[1.01]">
           <Image
-            src="/images/al-nasir-logo.png"
+            src="/images/al-nasir-logo.webp"
             alt="Al Nasir Motors"
             width={3334}
             height={1042}
             sizes="(max-width: 768px) 220px, (max-width: 1280px) 300px, 360px"
             className="h-16 md:h-[4.5rem] lg:h-20 w-auto"
             priority
-          />
+           loading="eager" />
         </Link>
 
         {/* Desktop nav */}
@@ -303,14 +303,13 @@ const Header = ({ settings }: HeaderProps) => {
               onMouseEnter={() => setOpenDropdown(item.label)}
               onMouseLeave={() => setOpenDropdown(null)}
             >
-              <Link
-                href={item.href}
+              <Link href={item.href}
                 className={`flex items-center gap-1 px-3 py-2 text-lg font-medium font-display transition-colors rounded-sm
                   ${pathname.startsWith(item.href)
                     ? "text-primary"
                     : "text-foreground hover:text-primary"
                   }`}
-              >
+               prefetch={false}>
                 {item.label}
                 {(item.children || item.brandGroups) && (
                   <motion.span
@@ -351,19 +350,17 @@ const Header = ({ settings }: HeaderProps) => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.15, delay: idx * 0.04, ease }}
                               >
-                                <Link
-                                  href={cat.href}
+                                <Link href={cat.href}
                                   className="block text-sm font-display font-bold text-foreground hover:text-primary transition-colors mb-2 pb-1.5 border-b-2 border-primary/20 hover:border-primary"
-                                >
+                                 prefetch={false}>
                                   {cat.label}
                                 </Link>
                                 <ul className="space-y-1">
                                   {cat.series?.map((s) => (
                                     <li key={s.name}>
-                                      <Link
-                                        href={s.href}
+                                      <Link href={s.href}
                                         className="block text-xs text-muted-foreground hover:text-primary hover:pl-1 transition-all py-0.5"
-                                      >
+                                       prefetch={false}>
                                         {s.name}
                                       </Link>
                                     </li>
@@ -394,19 +391,17 @@ const Header = ({ settings }: HeaderProps) => {
                               <div className="grid grid-cols-2 gap-4">
                                 {group.categories.map((cat) => (
                                   <div key={cat.label}>
-                                    <Link
-                                      href={cat.href}
+                                    <Link href={cat.href}
                                       className="block text-sm font-display font-bold text-foreground hover:text-primary transition-colors mb-1.5 pb-1 border-b border-border"
-                                    >
+                                     prefetch={false}>
                                       {cat.label}
                                     </Link>
                                     <ul className="space-y-0.5">
                                       {cat.series?.map((s) => (
                                         <li key={s.name}>
-                                          <Link
-                                            href={s.href}
+                                          <Link href={s.href}
                                             className="block text-xs text-muted-foreground hover:text-primary hover:pl-1 transition-all py-0.5"
-                                          >
+                                           prefetch={false}>
                                             {s.name}
                                           </Link>
                                         </li>
@@ -424,6 +419,7 @@ const Header = ({ settings }: HeaderProps) => {
                       <div className="px-6 py-3 border-t border-border bg-muted/20">
                         <Link
                           href="/products"
+                          prefetch={false}
                           className="text-xs font-display font-semibold text-primary hover:underline inline-flex items-center gap-1"
                         >
                           View all products →
@@ -446,10 +442,9 @@ const Header = ({ settings }: HeaderProps) => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.15, delay: idx * 0.03, ease }}
                         >
-                          <Link
-                            href={child.href}
+                          <Link href={child.href}
                             className="block px-4 py-2 text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                          >
+                           prefetch={false}>
                             {child.label}
                           </Link>
                         </motion.div>
@@ -511,8 +506,7 @@ const Header = ({ settings }: HeaderProps) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2, delay: i * 0.03, ease }}
               >
-                <Link
-                  href={item.href}
+                <Link href={item.href}
                   className="block px-6 py-3 text-sm font-display font-bold text-foreground hover:bg-primary hover:text-primary-foreground transition-colors border-b border-border/40"
                   onClick={() => setMobileOpen(false)}
                 >
@@ -527,16 +521,14 @@ const Header = ({ settings }: HeaderProps) => {
                       </p>
                       {group.categories.map((cat) => (
                         <div key={cat.label}>
-                          <Link
-                            href={cat.href}
+                          <Link href={cat.href}
                             className="block px-8 py-2 text-sm font-display font-semibold text-foreground hover:bg-muted transition-colors"
                             onClick={() => setMobileOpen(false)}
                           >
                             {cat.label}
                           </Link>
                           {cat.series?.map((s) => (
-                            <Link
-                              key={s.name}
+                            <Link key={s.name}
                               href={s.href}
                               className="block px-12 py-1 text-xs text-muted-foreground hover:bg-muted transition-colors"
                               onClick={() => setMobileOpen(false)}
@@ -550,8 +542,7 @@ const Header = ({ settings }: HeaderProps) => {
                   ))
                   : /* Regular children */
                   item.children?.map((child) => (
-                    <Link
-                      key={child.label}
+                    <Link key={child.label}
                       href={child.href}
                       className="block px-10 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors"
                       onClick={() => setMobileOpen(false)}

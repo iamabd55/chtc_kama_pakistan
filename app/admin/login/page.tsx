@@ -55,12 +55,12 @@ const AdminLogin = () => {
                     {/* Logo */}
                     <div className="text-center mb-8">
                         <Image
-                            src="/images/al-nasir-logo.png"
+                            src="/images/al-nasir-logo.webp"
                             alt="Al Nasir Motors Pakistan"
                             width={120}
                             height={56}
                             className="h-14 w-auto mx-auto mb-4"
-                        />
+                         loading="lazy" />
                         <h1 className="font-display text-2xl font-bold text-foreground">
                             Admin Panel
                         </h1>

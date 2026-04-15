@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useRef, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
@@ -309,11 +309,11 @@ const AdminNews = () => {
             accessor: (r: NewsPost) => (
                 <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                         src={getStorageUrl(r.thumbnail)}
                         alt={r.title}
                         className="w-14 h-10 rounded-lg object-cover bg-muted"
-                    />
+                     width={800} height={600}  loading="lazy" />
                     <div>
                         <p className="font-medium line-clamp-1">{r.title}</p>
                         <p className="text-xs text-muted-foreground capitalize">
@@ -540,11 +540,11 @@ const AdminNews = () => {
                                                     {editing.thumbnail}
                                                 </p>
                                             </div>
-                                            <img
+                                            <Image
                                                 src={getStorageUrl(editing.thumbnail)}
                                                 alt="News thumbnail preview"
                                                 className="mt-3 w-full max-h-52 object-cover rounded-md border bg-muted"
-                                            />
+                                             width={800} height={600}  loading="lazy" />
                                         </div>
                                     ) : null}
                                 </div>

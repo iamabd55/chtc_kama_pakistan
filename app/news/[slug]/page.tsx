@@ -129,7 +129,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         <>
             <section className="py-16 bg-kama-gradient">
                 <div className="container max-w-4xl">
-                    <Link href="/news" className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-5 transition-colors">
+                    <Link href="/news" prefetch={false} className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-5 transition-colors">
                         <ArrowLeft className="w-4 h-4" />
                         Back to News
                     </Link>
@@ -171,7 +171,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                             sizes="(max-width: 1024px) 100vw, 896px"
                             className="object-contain"
                             priority
-                        />
+                         loading="eager" />
                     </div>
 
                     <article className="bg-card border rounded-xl p-6 md:p-8 whitespace-pre-wrap leading-relaxed text-foreground">
@@ -183,10 +183,9 @@ export default async function NewsDetailPage({ params }: PageProps) {
                             <p className="text-sm text-muted-foreground">
                                 Looking for exact product specs and variants?
                             </p>
-                            <Link
-                                href={relatedProductHref}
+                            <Link href={relatedProductHref}
                                 className="inline-flex items-center justify-center px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
-                            >
+                             prefetch={false}>
                                 View Product Details
                             </Link>
                         </div>
@@ -244,10 +243,9 @@ export default async function NewsDetailPage({ params }: PageProps) {
                             </div>
 
                             <div className="mb-6 flex flex-col sm:flex-row gap-3">
-                                <Link
-                                    href="/find-dealer"
+                                <Link href="/find-dealer"
                                     className="inline-flex items-center justify-center px-6 py-3 rounded-md border border-primary text-primary font-semibold text-sm hover:bg-primary hover:text-primary-foreground transition-colors"
-                                >
+                                 prefetch={false}>
                                     Find Dealers Near You
                                 </Link>
                             </div>
@@ -266,11 +264,10 @@ export default async function NewsDetailPage({ params }: PageProps) {
                             <h2 className="font-display font-bold text-xl text-foreground mb-5">Related Articles</h2>
                             <div className="space-y-3">
                                 {related.map((item) => (
-                                    <Link
-                                        key={item.id}
+                                    <Link key={item.id}
                                         href={`/news/${item.slug}`}
                                         className="block rounded-lg border px-4 py-3 hover:bg-muted/50 transition-colors"
-                                    >
+                                     prefetch={false}>
                                         <p className="font-semibold text-foreground">{item.title}</p>
                                         <p className="text-xs text-muted-foreground mt-1">
                                             {formatDate(item.published_at ?? item.created_at)}

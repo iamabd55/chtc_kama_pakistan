@@ -29,7 +29,7 @@ interface BrandConfig {
 const BRAND_CONFIG: Record<BrandSlug, BrandConfig> = {
     kama: {
         name: "Kama",
-        logo: "/images/kama-round.png",
+        logo: "/images/kama-round.webp",
         heroTitle: "CHTC Kama",
         heroDescription:
             "Flagship commercial vehicle lineup for Pakistan, from compact mini trucks to heavy-duty and EV solutions.",
@@ -39,7 +39,7 @@ const BRAND_CONFIG: Record<BrandSlug, BrandConfig> = {
     },
     kinwin: {
         name: "Kinwin",
-        logo: "/images/kinwin logo.jpg",
+        logo: "/images/kinwin logo.webp",
         heroTitle: "CHTC Kinwin",
         heroDescription:
             "Passenger bus platform focused on comfort, reliability, and long-route efficiency for private and fleet operators.",
@@ -49,7 +49,7 @@ const BRAND_CONFIG: Record<BrandSlug, BrandConfig> = {
     },
     joylong: {
         name: "Joylong",
-        logo: "/images/joylong-logo.png",
+        logo: "/images/joylong-logo.webp",
         heroTitle: "Joylong",
         heroDescription:
             "Passenger-focused vehicles designed for commercial mobility, tourism, and institutional transport applications.",
@@ -127,7 +127,7 @@ export default async function BrandDetailPage({ params }: PageProps) {
                                         height={56}
                                         className="w-auto h-10 object-contain"
                                         unoptimized
-                                    />
+                                     loading="lazy" />
                                 </div>
 
                                 <div className="flex-1 text-center md:text-left">
@@ -145,10 +145,9 @@ export default async function BrandDetailPage({ params }: PageProps) {
                                             Visit Joylong Pakistan
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
-                                        <Link
-                                            href="/brands"
+                                        <Link href="/brands"
                                             className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border font-semibold text-foreground hover:bg-muted transition-colors"
-                                        >
+                                         prefetch={false}>
                                             Explore Other Brands
                                         </Link>
                                     </div>
@@ -210,7 +209,7 @@ export default async function BrandDetailPage({ params }: PageProps) {
                                     height={60}
                                     className="w-auto h-12 object-contain"
                                     unoptimized
-                                />
+                                 loading="lazy" />
                             </div>
                         </div>
                     </div>
@@ -242,10 +241,9 @@ export default async function BrandDetailPage({ params }: PageProps) {
                                 Get Quotation
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
-                            <Link
-                                href="/find-dealer"
+                            <Link href="/find-dealer"
                                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border rounded-md text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-                            >
+                             prefetch={false}>
                                 Find Dealer
                             </Link>
                             {config.officialUrl && (
@@ -284,10 +282,9 @@ export default async function BrandDetailPage({ params }: PageProps) {
                             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
                                 We are onboarding the {config.name} catalog for Pakistan. Share your requirement and our team will provide current options.
                             </p>
-                            <Link
-                                href="/contact"
+                            <Link href="/contact"
                                 className="inline-flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
-                            >
+                             prefetch={false}>
                                 Contact Sales
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
@@ -295,11 +292,10 @@ export default async function BrandDetailPage({ params }: PageProps) {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
                             {products.map((product) => (
-                                <Link
-                                    key={product.id}
+                                <Link key={product.id}
                                     href={product.category ? `/products/${product.category.slug}/${product.slug}` : "/products"}
                                     className="group bg-card border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
-                                >
+                                 prefetch={false}>
                                     <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                                         <Image
                                             src={getStorageUrl(product.thumbnail)}
@@ -307,7 +303,7 @@ export default async function BrandDetailPage({ params }: PageProps) {
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        />
+                                         loading="lazy" />
                                         {product.is_featured && (
                                             <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
                                                 Featured

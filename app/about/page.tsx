@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Award, Factory, Globe2, Leaf, ShieldCheck, TrendingUp } from "lucide-react";
 
 const highlights = [
@@ -104,12 +105,14 @@ export default function AboutPage() {
                         <h2 className="font-display font-bold text-3xl text-foreground mb-6">Leadership Spotlight</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <article className="rounded-xl border bg-background p-5">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src="/images/al-bcf/core-team/founder.png"
+                                <Image
+                                    src="/images/al-bcf/core-team/founder.webp"
                                     alt="Mr. Bashir Uddin Malik, Founder"
+                                    width={280}
+                                    height={350}
+                                    sizes="(max-width: 640px) 100vw, 280px"
                                     className="w-full max-w-[280px] aspect-[4/5] object-cover rounded-lg mb-4"
-                                />
+                                 loading="lazy" />
                                 <h3 className="font-display font-bold text-xl text-foreground">Mr. Bashir Uddin Malik</h3>
                                 <p className="text-sm text-primary font-semibold mt-1">Founder</p>
                                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
@@ -119,12 +122,14 @@ export default function AboutPage() {
                             </article>
 
                             <article className="rounded-xl border bg-background p-5">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src="/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.png"
+                                <Image
+                                    src="/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp"
                                     alt="Mr. M. Izhar Ul Haq, Director Sales and Marketing"
+                                    width={280}
+                                    height={350}
+                                    sizes="(max-width: 640px) 100vw, 280px"
                                     className="w-full max-w-[280px] aspect-[4/5] object-cover rounded-lg mb-4"
-                                />
+                                 loading="lazy" />
                                 <h3 className="font-display font-bold text-xl text-foreground">Mr. M. Izhar Ul Haq</h3>
                                 <p className="text-sm text-primary font-semibold mt-1">Director Sales & Marketing</p>
                                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">

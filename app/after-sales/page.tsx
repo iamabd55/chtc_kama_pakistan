@@ -88,7 +88,7 @@ export default async function AfterSalesPage({ searchParams }: AfterSalesPagePro
                 <div className="container text-center">
                     <h2 className="text-2xl font-display font-bold text-foreground mb-4">Need Service Support?</h2>
                     <p className="text-muted-foreground mb-6">Contact our after sales team or visit your nearest dealer.</p>
-                    <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors">
+                    <Link href="/contact" prefetch={false} className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors">
                         Contact Us
                     </Link>
                 </div>

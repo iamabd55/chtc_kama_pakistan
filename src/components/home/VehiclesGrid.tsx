@@ -24,10 +24,9 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.6, delay: i * 0.1, ease }}
                 >
-                    <Link
-                        href={`/products/${cat.slug}`}
+                    <Link href={`/products/${cat.slug}`}
                         className="group relative block overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
-                    >
+                     prefetch={false}>
                         <div className="aspect-[4/3] overflow-hidden bg-muted relative">
                             {cat.image ? (
                                 <>
@@ -38,7 +37,7 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                                         fill
                                         className={`object-cover transition-opacity duration-500 ${cat.hover_image ? "group-hover:opacity-0" : ""}`}
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-                                    />
+                                     loading="lazy" />
                                     {/* Hover image — sits on top, fades in */}
                                     {cat.hover_image && (
                                         <Image
@@ -47,7 +46,7 @@ export default function VehiclesGrid({ categories }: VehiclesGridProps) {
                                             fill
                                             className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-                                        />
+                                         loading="lazy" />
                                     )}
                                 </>
                             ) : (

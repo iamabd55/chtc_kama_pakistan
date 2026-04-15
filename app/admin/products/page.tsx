@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -561,11 +561,11 @@ const AdminProducts = () => {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img
+                                                    <Image
                                                         src={getStorageUrl(row.thumbnail)}
                                                         alt={row.name}
                                                         className="w-12 h-12 rounded-md object-cover bg-slate-100 border"
-                                                    />
+                                                     width={800} height={600}  loading="lazy" />
                                                 </td>
                                                 <td className="px-4 py-3 text-sm font-semibold text-slate-900">{row.name}</td>
                                                 <td className="px-4 py-3 text-sm text-slate-600">{row.slug}</td>
@@ -603,7 +603,7 @@ const AdminProducts = () => {
                                                         </Button>
                                                         {viewHref ? (
                                                             <Button size="icon" variant="ghost" asChild>
-                                                                <Link href={viewHref} target="_blank">
+                                                                <Link href={viewHref} target="_blank" prefetch={false}>
                                                                     <Eye className="w-4 h-4" />
                                                                 </Link>
                                                             </Button>

@@ -187,10 +187,9 @@ export default function DealerDirectory({ dealers }: DealerDirectoryProps) {
                                                     {dealer.brands?.length ? dealer.brands.join(", ") : "All Brands"}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <Link
-                                                        href={`/find-dealer/${dealer.id}`}
+                                                    <Link href={`/find-dealer/${dealer.id}`}
                                                         className="text-sm font-medium text-primary hover:text-kama-blue-dark transition-colors"
-                                                    >
+                                                     prefetch={false}>
                                                         View Details
                                                     </Link>
                                                     <a

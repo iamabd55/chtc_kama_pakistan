@@ -9,6 +9,7 @@ import ProductGallery from "@/components/products/ProductGallery";
 import ProductInquiryForm from "@/components/products/ProductInquiryForm";
 import { buildPageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
+import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
 
 export const revalidate = 60;
 
@@ -84,14 +85,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
     if (product.brand === "joylong") {
         redirect("/brands/joylong");
     }
-
-    const { data: siteSettingsData } = await supabase
-        .from("site_settings")
-        .select("whatsapp_number")
-        .eq("id", 1)
-        .single();
-
-    const whatsappNumber = String(siteSettingsData?.whatsapp_number ?? "923008665060").replace(/[^\d]/g, "") || "923008665060";
+    const siteSettings = await getPublicSiteSettings();
+    const whatsappNumber = String(siteSettings?.whatsapp_number ?? "923008665060").replace(/[^\d]/g, "") || "923008665060";
 
     // Parse specs
     const specs = product.specs as Record<string, string | number>;
@@ -165,7 +160,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     <nav className="flex items-center gap-2 text-sm text-primary-foreground/50 mb-6 flex-wrap">
                         <Link href="/products" className="hover:text-primary-foreground transition-colors">Products</Link>
                         <ChevronRight className="w-3.5 h-3.5" />
-                        <Link href={`/products/${categorySlug}`} className="hover:text-primary-foreground transition-colors">{product.category?.name}</Link>
+                        <Link href={`/products/${categorySlug}`} className="hover:text-primary-foreground transition-colors" prefetch={false}>{product.category?.name}</Link>
                         <ChevronRight className="w-3.5 h-3.5" />
                         <span className="text-primary-foreground font-medium">{product.name}</span>
                     </nav>
@@ -218,10 +213,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                     </div>
                                 </div>
                                 <div className="space-y-2.5">
-                                    <Link
-                                        href={`/get-quote?product=${product.slug}`}
+                                    <Link href={`/get-quote?product=${product.slug}`}
                                         className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-kama-blue-dark transition-colors"
-                                    >
+                                     prefetch={false}>
                                         Get a Quote
                                     </Link>
                                     <a
@@ -299,7 +293,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                             fill
                                             className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                                             sizes={index === 0 ? "(max-width: 768px) 100vw, 80vw" : "(max-width: 768px) 100vw, 40vw"}
-                                        />
+                                         loading="lazy" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent opacity-85" />
                                         <figcaption className="absolute bottom-3 left-3 right-3 text-white text-xs md:text-sm font-medium tracking-wide">
                                             {getImageLabel(path)}
@@ -328,7 +322,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                         fill
                                         className="object-contain"
                                         sizes="100vw"
-                                    />
+                                     loading="lazy" />
                                 </div>
                             </div>
                         </div>
@@ -362,17 +356,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         <div className="mt-14 md:mt-20">
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-2xl font-display font-bold text-foreground">More in {product.category?.name}</h2>
-                                <Link href={`/products/${categorySlug}`} className="text-primary hover:text-kama-blue-dark text-sm font-medium transition-colors flex items-center gap-1">
+                                <Link href={`/products/${categorySlug}`} className="text-primary hover:text-kama-blue-dark text-sm font-medium transition-colors flex items-center gap-1" prefetch={false}>
                                     View All <ChevronRight className="w-4 h-4" />
                                 </Link>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {related.map((rel) => (
-                                    <Link
-                                        key={rel.id}
+                                    <Link key={rel.id}
                                         href={`/products/${categorySlug}/${rel.slug}`}
                                         className="group bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all duration-300"
-                                    >
+                                     prefetch={false}>
                                         <div className="aspect-[4/3] overflow-hidden bg-muted relative">
                                             <Image
                                                 src={getStorageUrl(rel.thumbnail)}
@@ -380,7 +373,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                                                 fill
                                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
+                                             loading="lazy" />
                                         </div>
                                         <div className="p-4">
                                             <h3 className="font-display font-bold text-foreground mb-1">{rel.name}</h3>
@@ -414,7 +407,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
                     {/* Back link */}
                     <div className="mt-12">
-                        <Link href={`/products/${categorySlug}`} className="inline-flex items-center gap-2 text-primary hover:text-kama-blue-dark font-medium transition-colors">
+                        <Link href={`/products/${categorySlug}`} className="inline-flex items-center gap-2 text-primary hover:text-kama-blue-dark font-medium transition-colors" prefetch={false}>
                             <ArrowLeft className="w-4 h-4" />
                             Back to {product.category?.name ?? "Products"}
                         </Link>

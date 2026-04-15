@@ -59,12 +59,13 @@ const FabricationSection = () => {
                     >
                         <div className="relative rounded-xl overflow-hidden shadow-2xl">
                             <Image
-                                src="/images/fabrication-hero.png"
+                                src="/images/fabrication-hero.webp"
                                 alt="Al-Bashir Custom Fabrication Workshop"
                                 width={640}
                                 height={420}
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                                 className="w-full h-auto object-cover"
-                            />
+                             loading="lazy" />
                             {/* Gradient overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-kama-navy/40 to-transparent" />
                         </div>
@@ -91,13 +92,13 @@ const FabricationSection = () => {
                     >
                         <div className="flex items-center gap-4 mb-6">
                             <Image
-                                src="/images/al-bcf-logo.png"
+                                src="/images/al-bcf-logo.webp"
                                 alt="AL-BCF"
                                 width={64}
                                 height={64}
                                 unoptimized
-                                className="flex-shrink-0"
-                            />
+                                className="h-16 w-16 flex-shrink-0 object-contain"
+                             loading="lazy" />
                             <h3 className="text-3xl sm:text-4xl font-display font-bold text-foreground tracking-tight">
                                 Al-Bashir Custom{" "}
                                 <span className="text-gradient-gold">Fabrication</span>
@@ -133,10 +134,9 @@ const FabricationSection = () => {
                         </div>
 
                         {/* CTA */}
-                        <Link
-                            href="/fabrication"
+                        <Link href="/fabrication"
                             className="group inline-flex items-center gap-3 px-7 py-3.5 bg-primary text-primary-foreground font-display font-bold text-sm uppercase tracking-[0.15em] hover:bg-accent transition-colors duration-300"
-                        >
+                         prefetch={false}>
                             Discover More
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>

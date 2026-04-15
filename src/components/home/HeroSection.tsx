@@ -65,7 +65,8 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               fill
               className="hero-mobile-image object-cover object-[60%_72%] sm:object-center"
               priority={i === 0}
-            />
+              sizes="100vw"
+             loading="eager" />
           </motion.div>
         </motion.div>
       ))}
@@ -243,8 +244,8 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               key={i}
               onClick={() => setCurrentSlide(i)}
               className={`w-1.5 transition-all duration-500 rounded-full ${i === currentSlide
-                  ? "h-8 bg-accent shadow-sm shadow-accent/50"
-                  : "h-1.5 bg-white/25 hover:bg-white/50"
+                ? "h-8 bg-accent shadow-sm shadow-accent/50"
+                : "h-1.5 bg-white/25 hover:bg-white/50"
                 }`}
               aria-label={`Slide ${i + 1}`}
             />

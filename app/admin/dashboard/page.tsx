@@ -113,7 +113,7 @@ const AdminDashboard = () => {
                             { label: "Review Inquiries", href: "/admin/inquiries", icon: MessageSquare, color: "text-sky-600 bg-sky-50 border-sky-100" },
                             { label: "Update Site Settings", href: "/admin/settings", icon: Settings, color: "text-amber-600 bg-amber-50 border-amber-100" },
                         ].map((action) => (
-                            <Link key={action.label} href={action.href} className="group flex items-center gap-3 rounded-xl border border-slate-200 p-3 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                            <Link key={action.label} href={action.href} className="group flex items-center gap-3 rounded-xl border border-slate-200 p-3 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm" prefetch={false}>
                                 <span className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center border ${action.color}`}>
                                     <action.icon className="w-5 h-5" />
                                 </span>
@@ -203,11 +203,10 @@ const AdminDashboard = () => {
                             </div>
                         ) : (
                             recentInquiries.map((inq) => (
-                                <Link
-                                    key={inq.id}
+                                <Link key={inq.id}
                                     href={`/admin/inquiries?inquiryId=${inq.id}`}
                                     className="px-6 py-4 flex items-center justify-between hover:bg-muted/30 transition-colors"
-                                >
+                                 prefetch={false}>
                                     <AvatarLabel
                                         name={inq.full_name}
                                         subtitle={`${inq.city} · ${inq.inquiry_type} · ${inq.phone}`}

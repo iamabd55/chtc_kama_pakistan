@@ -100,7 +100,7 @@ export default async function ProductCategoryPage({ params }: PageProps) {
                             <p className="text-muted-foreground max-w-md mx-auto mb-6">
                                 We&apos;re preparing our {category.name.toLowerCase()} catalog. Check back soon or contact us for immediate inquiries.
                             </p>
-                            <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors">
+                            <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-display font-semibold text-sm uppercase tracking-wider rounded-sm hover:bg-kama-blue-dark transition-colors" prefetch={false}>
                                 Contact Us
                                 <ChevronRight className="w-4 h-4" />
                             </Link>

@@ -1,65 +1,9 @@
 "use client";
-
 import Link from "next/link";
-import { MapPin, ArrowRight, Phone } from "lucide-react";
+import { MapPin, ArrowRight, Phone, ShieldCheck, Wrench, Navigation } from "lucide-react";
 import { motion } from "framer-motion";
-import mapData from "@/components/find-dealer/mapdata.js";
-import { dealerCityLabelOverrides } from "./dealerCityLabelOverrides";
 
 const ease = [0.25, 0.4, 0, 1] as const;
-
-type MapLabel = {
-  name?: string;
-  x?: string | number;
-  y?: string | number;
-  parent_type?: string;
-  parent_id?: string;
-};
-
-type ProjectedDealer = {
-  name: string;
-  city: string;
-  province: string;
-  x: number;
-  y: number;
-  labelX: number;
-  labelY: number;
-  mapUrl: string | undefined;
-};
-
-const MAP_VIEWBOX_WIDTH = 312.8;
-const MAP_VIEWBOX_HEIGHT = 299.9752;
-const SIMPLEMAPS_SCALE = 0.3128;
-
-const mapLabelByCity = Object.values((mapData as { labels?: Record<string, MapLabel> }).labels ?? {}).reduce(
-  (acc, label) => {
-    if (label.parent_type !== "location" || !label.name) {
-      return acc;
-    }
-    const normalizedName = label.name.trim();
-    const x = Number(label.x) * SIMPLEMAPS_SCALE;
-    const y = Number(label.y) * SIMPLEMAPS_SCALE;
-    if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      return acc;
-    }
-
-    acc[normalizedName] = { x, y };
-    return acc;
-  },
-  {} as Record<string, { x: number; y: number }>,
-);
-
-const latLngToMapPoint = (lat: number, lng: number) => {
-  const lngMin = 60.8;
-  const lngMax = 77.8;
-  const latMin = 23.5;
-  const latMax = 37.2;
-
-  const x = 36 + ((lng - lngMin) / (lngMax - lngMin)) * 238;
-  const y = 292 - ((lat - latMin) / (latMax - latMin)) * 232;
-
-  return { x, y };
-};
 
 type DealerSectionDealer = {
   name: string;
@@ -74,90 +18,108 @@ interface DealerSectionProps {
   dealers: DealerSectionDealer[];
 }
 
-const buildProjectedDealers = (input: DealerSectionDealer[]): ProjectedDealer[] => {
-  const byCity = new Map<string, DealerSectionDealer>();
-
-  for (const dealer of input) {
-    const city = dealer.city.trim();
-    if (!city || byCity.has(city)) continue;
-    byCity.set(city, dealer);
-  }
-
-  return Array.from(byCity.values())
-    .map((entry) => {
-      const normalizedCity = entry.city.trim();
-      const override = dealerCityLabelOverrides[normalizedCity];
-
-      const lat = Number(entry.lat);
-      const lng = Number(entry.lng);
-      let point =
-        override?.mapX != null && override?.mapY != null
-          ? { x: override.mapX, y: override.mapY }
-          : mapLabelByCity[normalizedCity];
-
-      if (!point && Number.isFinite(lat) && Number.isFinite(lng)) {
-        point = latLngToMapPoint(lat, lng);
-      }
-
-      if (!point) {
-        return null;
-      }
-
-      return {
-        name: entry.name,
-        city: normalizedCity,
-        province: entry.province,
-        x: point.x,
-        y: point.y,
-        labelX: override?.labelX ?? 12,
-        labelY: override?.labelY ?? -12,
-        mapUrl: entry.google_maps_url ?? undefined,
-      };
-    })
-    .filter((dealer): dealer is ProjectedDealer => dealer !== null)
-    .sort((a, b) => a.city.localeCompare(b.city));
-};
-
 const DealerSection = ({ dealers: dealerRows }: DealerSectionProps) => {
-  const dealers = buildProjectedDealers(dealerRows);
+  // Extract unique cities (normalized)
+  const uniqueCities = Array.from(
+    new Set(
+      dealerRows
+        .map((d) => d.city?.trim())
+        .filter(Boolean)
+    )
+  ).sort();
 
   return (
     <section className="relative py-20 md:py-28 bg-background overflow-hidden">
       {/* Subtle background accents */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="absolute top-1/4 left-[5%] w-[350px] h-[350px] bg-primary/[0.03] rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/[0.02] rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container relative">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-          {/* ── Left: Pakistan Map ── */}
+          {/* ── Left: Abstract Network Visual ── */}
           <motion.div
-            className="relative flex justify-center order-2 lg:order-1"
+            className="relative flex justify-center order-2 lg:order-1 h-full min-h-[400px] lg:min-h-[550px]"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, ease }}
           >
-            <div className="relative w-full max-w-sm sm:max-w-md aspect-[313/300]">
-              <img
-                src="/images/dealers/country.svg"
-                alt="Pakistan map with dealer locations"
-                className="w-full h-full object-contain select-none pointer-events-none"
-              />
+            <div className="relative w-full max-w-lg mx-auto flex items-center justify-center">
+              {/* Decorative background element */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-[2.5rem] border border-primary/10 overflow-hidden">
+                 <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-[80px] animate-pulse mix-blend-multiply" />
+                 <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent/20 rounded-full blur-[80px] animate-pulse mix-blend-multiply" style={{ animationDelay: '1.5s' }} />
+              </div>
 
-              {dealers.map((dealer) => {
-                const labelLeft = ((dealer.x + dealer.labelX) / MAP_VIEWBOX_WIDTH) * 100;
-                const labelTop = ((dealer.y + dealer.labelY) / MAP_VIEWBOX_HEIGHT) * 100;
-                return (
-                  <span
-                    key={dealer.city}
-                    className="absolute text-[clamp(14px,1.45vw,18px)] font-semibold leading-none text-primary whitespace-nowrap"
-                    style={{ left: `${labelLeft}%`, top: `${labelTop}%` }}
-                  >
-                    {dealer.city}
-                  </span>
-                );
-              })}
+              {/* Bento Grid overlay */}
+              <div className="relative z-10 w-full p-6 grid grid-cols-2 gap-4">
+                 {/* Main stat block */}
+                 <motion.div 
+                    className="col-span-2 bg-white/70 backdrop-blur-md rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 flex items-center justify-between"
+                    whileHover={{ y: -5 }}
+                    transition={{ ease: "easeOut" }}
+                 >
+                    <div>
+                      <h3 className="text-4xl md:text-5xl font-display font-extrabold text-primary mb-1">
+                        {dealerRows.length}+
+                      </h3>
+                      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                        Authorized Centers
+                      </p>
+                    </div>
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Navigation className="w-8 h-8 text-primary" />
+                    </div>
+                 </motion.div>
+
+                 {/* Secondary block 1 */}
+                 <motion.div 
+                    className="col-span-1 bg-white/70 backdrop-blur-md rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 flex flex-col justify-between aspect-square"
+                    whileHover={{ y: -5 }}
+                    transition={{ ease: "easeOut" }}
+                 >
+                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                      <ShieldCheck className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <h4 className="text-2xl font-display font-bold text-foreground mb-1">Genuine</h4>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Parts & Quality</p>
+                    </div>
+                 </motion.div>
+
+                 {/* Secondary block 2 */}
+                 <motion.div 
+                    className="col-span-1 bg-white/70 backdrop-blur-md rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 flex flex-col justify-between aspect-square"
+                    whileHover={{ y: -5 }}
+                    transition={{ ease: "easeOut" }}
+                 >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <Wrench className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-2xl font-display font-bold text-foreground mb-1">Expert</h4>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">3S Dealerships</p>
+                    </div>
+                 </motion.div>
+
+                 {/* Locations scroll snippet */}
+                 <motion.div 
+                    className="col-span-2 bg-gradient-to-r from-primary to-primary/90 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden"
+                    whileHover={{ y: -5 }}
+                    transition={{ ease: "easeOut" }}
+                 >
+                    <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-20 mix-blend-overlay" />
+                    <div className="relative z-10 flex items-center justify-between">
+                       <div>
+                         <p className="text-sm font-semibold opacity-90 mb-1">Covering Pakistan in</p>
+                         <h4 className="text-xl md:text-2xl font-display font-bold">{uniqueCities.length} Major Cities</h4>
+                       </div>
+                       <MapPin className="w-10 h-10 opacity-20" />
+                    </div>
+                 </motion.div>
+              </div>
             </div>
           </motion.div>
 
@@ -184,35 +146,48 @@ const DealerSection = ({ dealers: dealerRows }: DealerSectionProps) => {
             </h2>
 
             <p className="text-muted-foreground text-[15px] sm:text-base leading-relaxed max-w-lg mb-8">
-              With authorized dealerships across{" "}
-              <span className="text-foreground font-medium">{dealers.length} major cities</span>,
-              expert service teams and genuine parts are always within reach. Visit your nearest KAMA dealer for sales, test drives, and after-sales support.
+              With an extensive network of authorized 3S dealerships stationed across Pakistan, 
+              expert service teams and genuine parts are always within reach. Drop by your nearest 
+              center for sales, test drives, and unparalleled after-sales support.
             </p>
 
             {/* City chips */}
             <div className="flex flex-wrap gap-2 mb-8">
-              {dealers.map((dealer, i) => (
+              {uniqueCities.slice(0, 8).map((city, i) => (
                 <motion.div
-                  key={dealer.city}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/[0.06] border border-primary/[0.1] text-foreground/70"
+                  key={city}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/[0.06] border border-primary/[0.1] text-foreground/80 hover:bg-primary/[0.1] hover:border-primary/[0.2] transition-colors"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.4 + i * 0.08, ease }}
+                  transition={{ duration: 0.3, delay: i * 0.05, ease }}
                 >
                   <MapPin className="w-3 h-3 text-accent" />
                   <span className="text-[11px] sm:text-xs font-heading font-semibold uppercase tracking-wider">
-                    {dealer.city}
+                    {city}
                   </span>
                 </motion.div>
               ))}
+              {uniqueCities.length > 8 && (
+                <motion.div
+                  className="flex items-center justify-center px-3 py-1.5 rounded-full bg-muted border border-border text-muted-foreground"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.4, ease }}
+                >
+                  <span className="text-[11px] sm:text-xs font-heading font-semibold uppercase tracking-wider">
+                    +{uniqueCities.length - 8} more
+                  </span>
+                </motion.div>
+              )}
             </div>
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/find-dealer"
+              <Link href="/find-dealer"
                 className="group relative inline-flex items-center justify-center gap-2.5 px-7 sm:px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white font-display font-bold text-xs sm:text-sm uppercase tracking-[0.12em] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.02]"
+                prefetch={false}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-accent to-accent/80 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 <span className="relative flex items-center gap-2.5">

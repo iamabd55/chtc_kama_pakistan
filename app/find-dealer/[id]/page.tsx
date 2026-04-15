@@ -61,7 +61,7 @@ export default async function DealerDetailPage({ params }: PageProps) {
         <>
             <section className="py-16 bg-kama-gradient">
                 <div className="container">
-                    <Link href="/find-dealer" className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-5 transition-colors">
+                    <Link href="/find-dealer" className="inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground mb-5 transition-colors" prefetch={false}>
                         <ArrowLeft className="w-4 h-4" />
                         Back to Find Dealer
                     </Link>

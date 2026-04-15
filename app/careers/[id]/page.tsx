@@ -32,7 +32,7 @@ export default async function CareerDetailPage({ params, searchParams }: CareerD
         <>
             <section className="py-16 bg-kama-gradient">
                 <div className="container max-w-5xl">
-                    <Link href="/careers" className="text-primary-foreground/80 hover:text-primary-foreground text-sm">
+                    <Link href="/careers" className="text-primary-foreground/80 hover:text-primary-foreground text-sm" prefetch={false}>
                         ← Back to Careers
                     </Link>
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-primary-foreground mt-3 mb-3">{job.title}</h1>

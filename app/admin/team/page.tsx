@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
@@ -15,6 +15,15 @@ import type { Team, TeamMember } from "@/lib/supabase/types";
 
 type TeamMemberWithTeam = TeamMember & {
     team: Pick<Team, "id" | "name" | "slug"> | null;
+};
+
+const preferWebpUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("/")) {
+        return url.replace(/\.(png|jpe?g)$/i, ".webp");
+    }
+
+    return getStorageUrl(url);
 };
 
 export default function AdminTeamPage() {
@@ -127,11 +136,11 @@ export default function AdminTeamPage() {
                 <div className="flex items-center gap-2.5">
                     {row.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={row.photo_url.startsWith("/") ? row.photo_url : getStorageUrl(row.photo_url)}
+                        <Image
+                            src={preferWebpUrl(row.photo_url)}
                             alt={row.name}
                             className="h-8 w-8 rounded-full object-cover border border-slate-200"
-                        />
+                         width={800} height={600}  loading="lazy" />
                     ) : (
                         <div className="h-8 w-8 rounded-full border border-slate-200 bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-semibold">
                             {row.name
@@ -239,11 +248,11 @@ export default function AdminTeamPage() {
                                 <p className="text-xs text-muted-foreground">Image will be uploaded to Supabase Storage.</p>
                                 {(photoFile || editing.photo_url) && (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={photoFile ? URL.createObjectURL(photoFile) : (editing.photo_url?.startsWith("/") ? editing.photo_url : getStorageUrl(editing.photo_url || ""))}
+                                    <Image
+                                        src={photoFile ? URL.createObjectURL(photoFile) : preferWebpUrl(editing.photo_url || "")}
                                         alt="Member preview"
                                         className="h-24 w-24 rounded-md object-cover border"
-                                    />
+                                     width={800} height={600}  loading="lazy" />
                                 )}
                             </div>
                             <div className="space-y-2">

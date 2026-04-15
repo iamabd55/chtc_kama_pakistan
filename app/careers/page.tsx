@@ -59,10 +59,9 @@ export default async function CareersPage() {
                                             </div>
                                         </div>
 
-                                        <Link
-                                            href={`/careers/${job.id}`}
+                                        <Link href={`/careers/${job.id}`}
                                             className="inline-flex px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
-                                        >
+                                         prefetch={false}>
                                             View & Apply
                                         </Link>
                                     </div>

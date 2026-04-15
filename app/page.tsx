@@ -4,6 +4,7 @@ import VehiclesSection from "@/components/home/VehiclesSection";
 import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Dealer, SiteSettings } from "@/lib/supabase/types";
+import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
 
 export const revalidate = 300;
 
@@ -45,14 +46,7 @@ const resolveHeroImage = (value: string) => {
 
 export default async function HomePage() {
     const supabase = createPublicServerClient();
-
-    const { data: siteSettingsData } = await supabase
-        .from("site_settings")
-        .select("hero_slides")
-        .eq("id", 1)
-        .single();
-
-    const settings = siteSettingsData as Pick<SiteSettings, "hero_slides"> | null;
+    const settings = await getPublicSiteSettings();
     const configuredSlides = (settings?.hero_slides ?? []) as HeroSlideSettingsItem[];
     const heroSlidesFromSettings = configuredSlides
         .filter((slide) => Boolean(slide?.imageUrl))

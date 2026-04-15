@@ -300,10 +300,9 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                                             exit={{ opacity: 0, scale: 0.95 }}
                                             transition={{ duration: 0.35, delay: i * 0.05, ease }}
                                         >
-                                            <Link
-                                                href={`/products/${catSlug}/${product.slug}`}
+                                            <Link href={`/products/${catSlug}/${product.slug}`}
                                                 className="group bg-card rounded-xl border overflow-hidden hover:shadow-xl transition-all duration-300 block h-full"
-                                            >
+                                             prefetch={false}>
                                                 {/* Image */}
                                                 <div className="aspect-[4/3] overflow-hidden bg-muted relative">
                                                     <Image
@@ -312,7 +311,7 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                                                         fill
                                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                    />
+                                                     loading="lazy" />
                                                     {/* Featured badge */}
                                                     {product.is_featured && (
                                                         <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
@@ -435,8 +434,7 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                         >
                             Clear
                         </button>
-                        <Link
-                            href={`/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
+                        <Link href={`/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
                             className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
                                 compareIds.length >= 2
                                     ? "bg-primary text-primary-foreground hover:bg-kama-blue-dark"

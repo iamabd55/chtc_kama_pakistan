@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
@@ -107,7 +107,7 @@ export default function AdminClientsPage() {
             accessor: (row: ClientLogo) => (
                 <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resolveLogoUrl(row.logo_url)} alt={row.name} className="w-12 h-12 rounded-md object-cover bg-muted" />
+                    <Image src={resolveLogoUrl(row.logo_url)} alt={row.name} className="w-12 h-12 rounded-md object-cover bg-muted"  width={800} height={600}  loading="lazy" />
                     <div>
                         <p className="font-medium">{row.name}</p>
                         <p className="text-xs text-muted-foreground">{row.website_url || "—"}</p>
@@ -148,11 +148,11 @@ export default function AdminClientsPage() {
                                 <p className="text-xs text-muted-foreground">This logo appears on the public About Clients page.</p>
                                 {(logoFile || editing.logo_url) && (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img
+                                    <Image
                                         src={logoFile ? URL.createObjectURL(logoFile) : resolveLogoUrl(editing.logo_url || "")}
                                         alt="Client logo preview"
                                         className="h-12 w-12 rounded-md object-cover bg-muted border"
-                                    />
+                                     width={800} height={600}  loading="lazy" />
                                 )}
                             </div>
                             <div className="space-y-2">

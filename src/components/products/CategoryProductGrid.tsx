@@ -128,10 +128,9 @@ export default function CategoryProductGrid({ products, categorySlug }: Category
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.35, delay: i * 0.05, ease }}
                             >
-                                <Link
-                                    href={`/products/${categorySlug}/${product.slug}`}
+                                <Link href={`/products/${categorySlug}/${product.slug}`}
                                     className="group bg-card rounded-xl border overflow-hidden hover:shadow-xl transition-all duration-300 block h-full"
-                                >
+                                 prefetch={false}>
                                     <div className="aspect-[4/3] overflow-hidden bg-muted relative">
                                         <Image
                                             src={getStorageUrl(product.thumbnail)}
@@ -139,7 +138,7 @@ export default function CategoryProductGrid({ products, categorySlug }: Category
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        />
+                                         loading="lazy" />
                                         {product.is_featured && (
                                             <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
                                                 Featured

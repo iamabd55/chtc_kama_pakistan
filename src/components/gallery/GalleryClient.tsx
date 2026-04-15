@@ -52,7 +52,7 @@ export default function GalleryClient({ items }: GalleryClientProps) {
                         className="rounded-lg overflow-hidden border bg-card group cursor-pointer text-left"
                     >
                         <div className="aspect-video overflow-hidden relative">
-                            <Image src={resolveImageUrl(img.image_url)} alt={img.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                            <Image src={resolveImageUrl(img.image_url)} alt={img.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"  loading="lazy" />
                         </div>
                         <div className="p-4">
                             <p className="font-display font-semibold text-foreground text-sm">{img.title}</p>
@@ -85,7 +85,7 @@ export default function GalleryClient({ items }: GalleryClientProps) {
                             fill
                             className="object-contain"
                             sizes="100vw"
-                        />
+                         loading="lazy" />
                     </div>
                 </div>
             )}

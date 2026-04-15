@@ -1,22 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const ease = [0.25, 0.4, 0, 1] as const;
-const watermarkLogo = "https://www.figma.com/api/mcp/asset/bc54e09a-1524-462e-af94-e75eb874df08";
+const watermarkLogo = "/images/al-nasir-logo-white.webp";
 
 const CTASection = () => {
   return (
     <section className="relative overflow-hidden bg-[#0364CE] py-10 md:py-12">
       <div className="container relative">
-        <img
+        <Image
           src={watermarkLogo}
           alt=""
           aria-hidden
+          width={300}
+          height={95}
+          sizes="300px"
           className="pointer-events-none absolute right-8 top-1/2 hidden h-auto w-[300px] -translate-y-1/2 blur-[2px] opacity-[0.18] md:block"
-        />
+         loading="lazy" />
 
         <motion.h2
           className="relative z-10 max-w-[760px] text-white [font-family:var(--font-poppins)] font-bold leading-[1.03] tracking-[-0.015em] text-[42px] sm:text-[52px] md:text-[57px]"
@@ -56,10 +60,9 @@ const CTASection = () => {
           >
             Request a quote
           </Link>
-          <Link
-            href="/find-dealer"
+          <Link href="/find-dealer"
             className="group inline-flex h-[66px] min-w-[263px] items-center justify-center gap-3 rounded-xl bg-black px-6 text-center text-[27px] leading-[0.92] text-white [font-family:var(--font-inter)] font-bold transition-all duration-300 hover:scale-[1.03] hover:opacity-90"
-          >
+           prefetch={false}>
             Find a dealer
             <ArrowRight className="h-[26px] w-[26px] stroke-[2.25]" />
           </Link>

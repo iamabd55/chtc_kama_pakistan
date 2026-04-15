@@ -147,7 +147,7 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                                     sizes="(max-width: 1024px) 100vw, 896px"
                                     className="object-cover"
                                     priority
-                                />
+                                 loading="eager" />
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -167,10 +167,9 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                             <p className="text-muted-foreground leading-relaxed">{excerpt(featured.content, 240)}</p>
 
                             <div className="flex items-center gap-3">
-                                <Link
-                                    href={`/news/${featured.slug}`}
+                                <Link href={`/news/${featured.slug}`}
                                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
-                                >
+                                 prefetch={false}>
                                     Read More
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
@@ -219,10 +218,9 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                                     <h3 className="font-display font-bold text-xl text-foreground mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground mb-4">{excerpt(item.content, 140)}</p>
                                     <div className="flex items-center gap-3">
-                                        <Link
-                                            href={`/news/${item.slug}`}
+                                        <Link href={`/news/${item.slug}`}
                                             className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-kama-blue-dark transition-colors"
-                                        >
+                                         prefetch={false}>
                                             Read More
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>

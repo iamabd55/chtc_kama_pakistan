@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const heroImages = [
-    "/images/al-bcf/hero/image-1.png",
-    "/images/al-bcf/hero/image-2.png",
-    "/images/al-bcf/hero/image-3.png",
+    "/images/al-bcf/hero/image-1.webp",
+    "/images/al-bcf/hero/image-2.webp",
+    "/images/al-bcf/hero/image-3.webp",
 ];
 
 export default function HeroSlideshow() {
@@ -31,7 +31,7 @@ export default function HeroSlideshow() {
                         }`}
                     priority={i === 0}
                     sizes="100vw"
-                />
+                 loading="eager" />
             ))}
             {/* Subtle dark overlay for contrast — no blur */}
             <div className="absolute inset-0 bg-kama-navy/30" />

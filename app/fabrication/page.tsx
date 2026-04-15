@@ -22,25 +22,25 @@ const services = [
 ];
 
 const teamFounders = [
-    { name: "Basheer Ud Din Malik", suffix: "(Late)", role: "Founder", src: "/images/al-bcf/core-team/founder.png" },
-    { name: "Zaheer Ud Din Malik", role: "Chairman", src: "/images/al-bcf/core-team/chairman.png" },
+    { name: "Basheer Ud Din Malik", suffix: "(Late)", role: "Founder", src: "/images/al-bcf/core-team/founder.webp" },
+    { name: "Zaheer Ud Din Malik", role: "Chairman", src: "/images/al-bcf/core-team/chairman.webp" },
 ];
 
 const teamLeaders = [
-    { name: "Muneeb Ibrahim", role: "CEO", src: "/images/al-bcf/core-team/ceo.png" },
-    { name: "Shaukat Hayat", role: "Director", src: "/images/al-bcf/core-team/director-1-Shaukat-hayat.png" },
-    { name: "M. Izhar Ul Haq", role: "Director", src: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.png" },
+    { name: "Muneeb Ibrahim", role: "CEO", src: "/images/al-bcf/core-team/ceo.webp" },
+    { name: "Shaukat Hayat", role: "Director", src: "/images/al-bcf/core-team/director-1-Shaukat-hayat.webp" },
+    { name: "M. Izhar Ul Haq", role: "Director", src: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp" },
 ];
 
 const clients = [
-    { src: "/images/al-bcf/CHANGAN AUTO LOGO (2).png", alt: "Changan Auto", w: 120, h: 55 },
-    { src: "/images/al-bcf/logo-2.png", alt: "Go", w: 100, h: 55 },
+    { src: "/images/al-bcf/CHANGAN AUTO LOGO (2).webp", alt: "Changan Auto", w: 120, h: 55 },
+    { src: "/images/al-bcf/logo-2.webp", alt: "Go", w: 100, h: 55 },
     { src: "/images/al-bcf/orient-logo.svg", alt: "Orient", w: 100, h: 50 },
-    { src: "/images/al-bcf/punjab-police-logo-png.png", alt: "Punjab Police", w: 55, h: 65 },
-    { src: "/images/al-bcf/Aleem-Dar-logo-1.png", alt: "Aleem Dar", w: 100, h: 55 },
-    { src: "/images/al-bcf/HBL-Device-Logo-sponsorship.png", alt: "HBL", w: 90, h: 55 },
-    { src: "/images/al-bcf/forland-seeklogo.png", alt: "Forland", w: 100, h: 55 },
-    { src: "/images/al-bcf/nadra_logo.png", alt: "NADRA", w: 100, h: 55 },
+    { src: "/images/al-bcf/punjab-police-logo-png.webp", alt: "Punjab Police", w: 55, h: 65 },
+    { src: "/images/al-bcf/Aleem-Dar-logo-1.webp", alt: "Aleem Dar", w: 100, h: 55 },
+    { src: "/images/al-bcf/HBL-Device-Logo-sponsorship.webp", alt: "HBL", w: 90, h: 55 },
+    { src: "/images/al-bcf/forland-seeklogo.webp", alt: "Forland", w: 100, h: 55 },
+    { src: "/images/al-bcf/nadra_logo.webp", alt: "NADRA", w: 100, h: 55 },
 ];
 
 export default function FabricationPage() {
@@ -115,10 +115,9 @@ export default function FabricationPage() {
                                     Visit AL-BCF.com
                                     <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                 </a>
-                                <Link
-                                    href="#team"
+                                <Link href="#team"
                                     className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-gray-200 text-gray-600 font-display font-bold text-sm uppercase tracking-[0.12em] rounded-xl hover:border-kama-navy hover:text-kama-navy transition-all duration-300"
-                                >
+                                 prefetch={false}>
                                     Meet the Team
                                 </Link>
                             </div>
@@ -148,25 +147,25 @@ export default function FabricationPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         {[
                             {
-                                src: "/images/al-bcf/services/ambulance-service.jpg",
+                                src: "/images/al-bcf/services/ambulance-service.webp",
                                 label: "Ambulances",
                                 desc: "Advanced life-support systems & medical-grade interiors.",
                                 accent: "border-l-4 border-red-400",
                             },
                             {
-                                src: "/images/al-bcf/services/fire-and-rescue-vehicles.jpg",
+                                src: "/images/al-bcf/services/fire-and-rescue-vehicles.webp",
                                 label: "Fire & Rescue",
                                 desc: "Integrated water tanks, pump systems & emergency gear.",
                                 accent: "border-l-4 border-orange-400",
                             },
                             {
-                                src: "/images/al-bcf/services/mortuary-vehicles.jpg",
+                                src: "/images/al-bcf/services/mortuary-vehicles.webp",
                                 label: "Mortuary Vehicles",
                                 desc: "Refrigerated compartments and dignified interiors.",
                                 accent: "border-l-4 border-slate-400",
                             },
                             {
-                                src: "/images/al-bcf/services/ambulance-service.jpg",
+                                src: "/images/al-bcf/services/ambulance-service.webp",
                                 label: "Mobile Health Units",
                                 desc: "Fully functional mobile clinics for remote communities.",
                                 accent: "border-l-4 border-emerald-400",
@@ -184,7 +183,7 @@ export default function FabricationPage() {
                                         fill
                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                                         sizes="144px"
-                                    />
+                                     loading="lazy" />
                                 </div>
                                 {/* Text */}
                                 <div className="flex flex-col justify-center p-4 sm:p-5">
@@ -263,7 +262,7 @@ export default function FabricationPage() {
                                         width={c.w * 1.5}
                                         height={c.h * 1.5}
                                         className="object-contain max-h-14 opacity-70 hover:opacity-100 transition-opacity duration-300"
-                                    />
+                                     loading="lazy" />
                                 </div>
                             ))}
                         </div>
@@ -277,7 +276,7 @@ export default function FabricationPage() {
                                         width={c.w * 1.5}
                                         height={c.h * 1.5}
                                         className="object-contain max-h-14 opacity-70 hover:opacity-100 transition-opacity duration-300"
-                                    />
+                                     loading="lazy" />
                                 </div>
                             ))}
                         </div>
@@ -313,7 +312,7 @@ export default function FabricationPage() {
                                         fill
                                         className="object-cover object-top"
                                         sizes="128px"
-                                    />
+                                     loading="lazy" />
                                 </div>
                                 {/* Info */}
                                 <div className="flex flex-col justify-center p-5 sm:p-6 border-l-2 border-kama-gold/30">
@@ -344,7 +343,7 @@ export default function FabricationPage() {
                                         fill
                                         className="object-cover object-top"
                                         sizes="(max-width: 640px) 100vw, 33vw"
-                                    />
+                                     loading="lazy" />
                                 </div>
                                 {/* Info */}
                                 <div className="p-4 sm:p-5 border-t-2 border-primary/20">

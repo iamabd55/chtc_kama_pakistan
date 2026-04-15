@@ -6,19 +6,19 @@ const brands = [
     {
         name: "Kama",
         slug: "kama",
-        logo: "/images/kama-round.png",
+        logo: "/images/kama-round.webp",
         desc: "Flagship CHTC commercial vehicle brand in Pakistan with full local lineup and support.",
     },
     {
         name: "Kinwin",
         slug: "kinwin",
-        logo: "/images/kinwin logo.jpg",
+        logo: "/images/kinwin logo.webp",
         desc: "Passenger bus-focused platform for fleet, labor transport, and intercity operations.",
     },
     {
         name: "Joylong",
         slug: "joylong",
-        logo: "/images/joylong-logo.png",
+        logo: "/images/joylong-logo.webp",
         desc: "Joylong has a dedicated official Pakistan website for complete product information and updates.",
     },
 ];
@@ -35,11 +35,10 @@ export default function BrandsPage() {
             <section className="py-20">
                 <div className="container max-w-4xl space-y-8">
                     {brands.map((brand) => (
-                        <Link
-                            key={brand.name}
+                        <Link key={brand.name}
                             href={`/brands/${brand.slug}`}
                             className="group bg-card border rounded-lg p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-lg transition-shadow"
-                        >
+                         prefetch={false}>
                             <div className="bg-muted rounded-xl border w-32 h-20 p-3 flex items-center justify-center shrink-0">
                                 <Image
                                     src={brand.logo}
@@ -48,7 +47,7 @@ export default function BrandsPage() {
                                     height={56}
                                     className="w-auto h-10 object-contain"
                                     unoptimized
-                                />
+                                 loading="lazy" />
                             </div>
                             <div className="flex-1">
                                 <h3 className="font-display font-bold text-2xl text-foreground mb-2">{brand.name}</h3>

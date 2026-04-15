@@ -1,5 +1,5 @@
 import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
 import type { SiteSettings } from "@/lib/supabase/types";
 
 interface ContactPageProps {
@@ -13,15 +13,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     const resolved = searchParams ? await searchParams : undefined;
     const isSubmitted = resolved?.submitted === "1";
     const hasError = resolved?.error === "1";
-
-    const supabase = await createClient();
-    const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", 1)
-        .single();
-
-    const settings = data as SiteSettings | null;
+    const settings = await getPublicSiteSettings();
     const socialLinks = settings?.social_links && typeof settings.social_links === "object"
         ? (Object.entries(settings.social_links).filter(([, value]) => typeof value === "string" && value.trim().length > 0) as Array<[string, string]>)
         : [];

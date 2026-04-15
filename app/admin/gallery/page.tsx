@@ -1,5 +1,5 @@
 "use client";
-
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
@@ -110,7 +110,7 @@ export default function AdminGalleryPage() {
             accessor: (row: GalleryItem) => (
                 <div className="flex items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resolveImageUrl(row.image_url)} alt={row.title} className="w-12 h-12 rounded-md object-cover bg-muted" />
+                    <Image src={resolveImageUrl(row.image_url)} alt={row.title} className="w-12 h-12 rounded-md object-cover bg-muted"  width={800} height={600}  loading="lazy" />
                     <div>
                         <p className="font-medium">{row.title}</p>
                         <p className="text-xs text-muted-foreground uppercase">{row.category}</p>
@@ -176,11 +176,11 @@ export default function AdminGalleryPage() {
                                 />
                                 {(imageFile || editing.image_url) && (
                                     // eslint-disable-next-line @next/next/no-img-element
-                                    <img
+                                    <Image
                                         src={imageFile ? URL.createObjectURL(imageFile) : resolveImageUrl(editing.image_url || "")}
                                         alt="Gallery preview"
                                         className="h-20 w-32 rounded-md border object-cover bg-muted"
-                                    />
+                                     width={800} height={600}  loading="lazy" />
                                 )}
                             </div>
 
