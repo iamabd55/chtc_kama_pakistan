@@ -4,6 +4,20 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   compress: true,
   poweredByHeader: false,
+  
+  // Enable experimental features for better optimization
+  experimental: {
+    optimizePackageImports: ["@radix-ui"],
+  },
+  
+  // Turbopack configuration for code splitting and optimization
+  turbopack: {
+    resolveAlias: {
+      "@": "./src",
+    },
+  },
+  
+  // Image optimization configuration
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 2592000,
@@ -16,6 +30,40 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
+  },
+  
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
+  
+  // SWC configuration for minification and optimization
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  
+  // Headers for better performance and caching
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+        has: [{ type: "query", key: "v" }],
+      },
+      {
+        source: "/fonts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
 };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import Image from "next/image";
@@ -201,5 +202,5 @@ const Footer = ({ settings }: FooterProps) => {
   );
 };
 
-export default Footer;
+export default memo(Footer);
 

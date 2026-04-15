@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 import { createClient } from "@/lib/supabase/client";
+import { useStableCallback } from "@/hooks/useOptimization";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -559,4 +560,4 @@ const Header = ({ settings }: HeaderProps) => {
   );
 };
 
-export default Header;
+export default memo(Header);

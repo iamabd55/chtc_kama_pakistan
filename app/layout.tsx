@@ -149,6 +149,9 @@ export default async function RootLayout({
             className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable} ${vujahdayScript.variable} ${manjari.variable} ${inter.variable}`}
         >
             <head>
+                {/* Preconnect to external resources for performance */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 {supabaseOrigin && <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />}
                 {supabaseOrigin && <link rel="dns-prefetch" href={supabaseOrigin} />}
             </head>
