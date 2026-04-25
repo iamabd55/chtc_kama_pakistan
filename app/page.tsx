@@ -46,7 +46,20 @@ const resolveHeroImage = (value: string) => {
 
 export default async function HomePage() {
     const supabase = createPublicServerClient();
-    const settings = await getPublicSiteSettings();
+
+    // Fire all three independent network requests simultaneously to reduce TTFB
+    const [settings, { data: heroFiles }, { data: dealerRows }] = await Promise.all([
+        getPublicSiteSettings(),
+        supabase.storage
+            .from("images")
+            .list("hero", { sortBy: { column: "name", order: "asc" } }),
+        supabase
+            .from("dealers")
+            .select("name, city, province, lat, lng, google_maps_url")
+            .eq("is_active", true)
+            .order("city", { ascending: true })
+    ]);
+
     const configuredSlides = (settings?.hero_slides ?? []) as HeroSlideSettingsItem[];
     const heroSlidesFromSettings = configuredSlides
         .filter((slide) => Boolean(slide?.imageUrl))
@@ -54,11 +67,6 @@ export default async function HomePage() {
             src: resolveHeroImage(String(slide.imageUrl)),
             alt: slide.title || `Al Nasir Motors Hero Slide ${idx + 1}`,
         }));
-
-    // Dynamically list ALL files in images/hero/ — no code changes needed when adding/removing images
-    const { data: heroFiles } = await supabase.storage
-        .from("images")
-        .list("hero", { sortBy: { column: "name", order: "asc" } });
 
     const heroSlidesFromStorage = (heroFiles ?? [])
         .filter((f) => !f.name.startsWith("."))  // exclude hidden/placeholder files
@@ -68,12 +76,6 @@ export default async function HomePage() {
         }));
 
     const heroSlides = heroSlidesFromSettings.length > 0 ? heroSlidesFromSettings : heroSlidesFromStorage;
-
-    const { data: dealerRows } = await supabase
-        .from("dealers")
-        .select("name, city, province, lat, lng, google_maps_url")
-        .eq("is_active", true)
-        .order("city", { ascending: true });
 
     const dealers = (dealerRows ?? []) as Pick<Dealer, "name" | "city" | "province" | "lat" | "lng" | "google_maps_url">[];
 

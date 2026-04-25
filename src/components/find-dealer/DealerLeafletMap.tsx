@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import "leaflet/dist/leaflet.css";
 import type { Dealer } from "@/lib/supabase/types";
 
 interface DealerLeafletMapProps {

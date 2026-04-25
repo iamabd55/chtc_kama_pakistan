@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,7 +13,7 @@ interface ProductGalleryProps {
 }
 
 export default function ProductGallery({ thumbnail, images, name, preserveMainImage = false }: ProductGalleryProps) {
-    const allImages = [thumbnail, ...images];
+    const allImages = useMemo(() => [thumbnail, ...images], [thumbnail, images]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [lightbox, setLightbox] = useState(false);
 

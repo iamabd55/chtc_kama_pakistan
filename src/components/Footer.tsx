@@ -48,9 +48,10 @@ const Footer = ({ settings }: FooterProps) => {
               <Image
                 src="/images/al-nasir-logo-white.webp"
                 alt="Al Nasir Motors"
-                fill
-                className="object-contain object-left"
-                sizes="(max-width: 768px) 208px, 256px"
+                width={256}
+                height={80}
+                className="h-auto w-auto object-contain object-left"
+                style={{ width: "auto", height: "auto" }}
                loading="lazy" />
             </div>
 

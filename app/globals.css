@@ -1,4 +1,3 @@
-@import "leaflet/dist/leaflet.css";
 
 @tailwind base;
 @tailwind components;
@@ -83,21 +82,20 @@
     0% {
       background-position: 0% 50%;
     }
+
     100% {
       background-position: 200% 50%;
     }
   }
 
   .wordmark-aurora {
-    background: linear-gradient(
-      112deg,
-      hsl(211 99% 32%) 0%,
-      hsl(211 96% 42%) 24%,
-      hsl(205 96% 63%) 46%,
-      hsl(0 0% 100%) 56%,
-      hsl(31 92% 62%) 78%,
-      hsl(211 99% 32%) 100%
-    );
+    background: linear-gradient(112deg,
+        hsl(211 99% 32%) 0%,
+        hsl(211 96% 42%) 24%,
+        hsl(205 96% 63%) 46%,
+        hsl(0 0% 100%) 56%,
+        hsl(31 92% 62%) 78%,
+        hsl(211 99% 32%) 100%);
     background-size: 260% 100%;
     animation: wordmark-shift 6.5s ease-in-out infinite alternate;
     -webkit-background-clip: text;
@@ -191,7 +189,7 @@ html {
   }
 
   .hero-mobile-image {
-    object-position: 60% center !important;
+    object-position: 60% 50% !important;
   }
 
   .hero-mobile-content {

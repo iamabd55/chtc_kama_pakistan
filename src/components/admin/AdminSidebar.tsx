@@ -112,7 +112,8 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                         alt="Al Nasir Motors"
                         width={170}
                         height={52}
-                        className="h-8 w-auto object-contain"
+                        className="h-auto w-auto object-contain"
+                        style={{ width: "auto", height: "auto" }}
                      loading="lazy" />
                     <p className="font-display text-lg font-bold tracking-wide mt-2">Admin Workspace</p>
                 </div>

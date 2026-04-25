@@ -50,6 +50,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
         <motion.div
           key={slide.src}
           className="absolute inset-0"
+          initial={{ opacity: i === 0 ? 1 : 0 }}
           animate={{ opacity: i === currentSlide ? 1 : 0 }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
           style={{ y: bgY }}
@@ -63,10 +64,10 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               src={slide.src}
               alt={slide.alt}
               fill
-              className="hero-mobile-image object-cover object-[60%_72%] sm:object-center"
+              className="hero-mobile-image object-cover object-[65%_50%] sm:object-center"
               priority={i === 0}
               sizes="100vw"
-             loading="eager" />
+            />
           </motion.div>
         </motion.div>
       ))}
@@ -177,7 +178,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
           {/* ── CTA Buttons ── */}
           <motion.div
-            className="flex flex-row w-full max-w-[380px] sm:w-auto gap-2.5 sm:gap-4 mb-8 sm:mb-14"
+            className="flex flex-row items-stretch justify-center w-full max-w-[380px] sm:max-w-none sm:w-auto gap-2.5 sm:gap-4 mb-8 sm:mb-14"
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.1, ease }}
@@ -202,7 +203,7 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
 
           {/* ── Stats ── */}
           <motion.div
-            className="flex w-full flex-wrap items-center justify-center gap-2 sm:gap-4"
+            className="flex flex-wrap items-center justify-center gap-2 sm:gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.35, ease }}

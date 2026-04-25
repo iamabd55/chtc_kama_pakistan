@@ -55,6 +55,19 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
         return Array.from(set).sort();
     }, [products]);
 
+    const categoriesById = useMemo(() => {
+        return new Map(categories.map((category) => [category.id, category]));
+    }, [categories]);
+
+    const categoryCounts = useMemo(() => {
+        const counts = new Map<string, number>();
+        for (const product of products) {
+            if (!product.category_id) continue;
+            counts.set(product.category_id, (counts.get(product.category_id) ?? 0) + 1);
+        }
+        return counts;
+    }, [products]);
+
     // Filter + sort
     const filtered = useMemo(() => {
         let result = products;
@@ -97,11 +110,11 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
     }, [products, activeCategory, activeBrand, search, sort]);
 
     // Pagination
-    const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-    const safeCurrentPage = Math.min(page, totalPages);
-    const paginated = filtered.slice(
-        (safeCurrentPage - 1) * ITEMS_PER_PAGE,
-        safeCurrentPage * ITEMS_PER_PAGE
+    const totalPages = useMemo(() => Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)), [filtered.length]);
+    const safeCurrentPage = useMemo(() => Math.min(page, totalPages), [page, totalPages]);
+    const paginated = useMemo(
+        () => filtered.slice((safeCurrentPage - 1) * ITEMS_PER_PAGE, safeCurrentPage * ITEMS_PER_PAGE),
+        [filtered, safeCurrentPage]
     );
 
     // Reset page when filters change
@@ -130,13 +143,15 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
         setPage(1);
     };
 
-    const hasActiveFilters = activeCategory !== "all" || activeBrand !== "all" || search.trim() !== "";
+    const hasActiveFilters = useMemo(
+        () => activeCategory !== "all" || activeBrand !== "all" || search.trim() !== "",
+        [activeCategory, activeBrand, search]
+    );
 
     // Find category slug for product link
-    const getCategorySlug = (product: Product & { category?: Category }) => {
-        const cat = categories.find((c) => c.id === product.category_id);
-        return cat?.slug ?? "";
-    };
+    const getCategorySlug = useMemo(() => {
+        return (product: Product & { category?: Category }) => categoriesById.get(product.category_id)?.slug ?? "";
+    }, [categoriesById]);
 
     return (
         <>
@@ -205,7 +220,7 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                                 All Categories
                             </button>
                             {categories.map((cat) => {
-                                const count = products.filter((p) => p.category_id === cat.id).length;
+                                const count = categoryCounts.get(cat.id) ?? 0;
                                 return (
                                     <button
                                         key={cat.id}
