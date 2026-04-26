@@ -15,8 +15,8 @@ const CTASection = () => {
           aria-hidden
           width={300}
           height={95}
-          sizes="300px"
-          className="pointer-events-none absolute right-8 top-1/2 hidden h-auto w-[300px] -translate-y-1/2 blur-[2px] opacity-[0.18] md:block"
+          className="pointer-events-none absolute right-8 top-1/2 hidden -translate-y-1/2 blur-[2px] opacity-[0.18] md:block"
+          style={{ width: "auto", height: "auto" }}
          loading="lazy" />
 
         <h2

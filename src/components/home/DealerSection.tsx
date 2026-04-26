@@ -110,7 +110,14 @@ const DealerSection = ({ dealers: dealerRows }: DealerSectionProps) => {
                     whileHover={{ y: -5 }}
                     transition={{ ease: "easeOut" }}
                  >
-                    <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-20 mix-blend-overlay" />
+                    <div
+                      className="absolute inset-0 opacity-20 mix-blend-overlay"
+                      style={{
+                        backgroundImage:
+                          "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.22) 0 1px, transparent 1px), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.16) 0 1px, transparent 1px), radial-gradient(circle at 40% 80%, rgba(255,255,255,0.12) 0 1px, transparent 1px)",
+                        backgroundSize: "22px 22px",
+                      }}
+                    />
                     <div className="relative z-10 flex items-center justify-between">
                        <div>
                          <p className="text-sm font-semibold opacity-90 mb-1">Covering Pakistan in</p>

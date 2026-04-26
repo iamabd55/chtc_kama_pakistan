@@ -22,15 +22,15 @@ const StatItem = ({
   label: string;
   icon: LucideIcon;
 }) => {
-  const { ref, display, hasStarted } = useCountUp({ end: value, suffix, duration: 2200 });
+  const { ref, display, hasStarted } = useCountUp({ end: value, suffix });
 
   return (
     <div
       ref={ref}
       className="flex flex-col items-center text-center px-4 py-6"
     >
-      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/[0.08] border border-white/[0.08] flex items-center justify-center mb-4">
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-accent" strokeWidth={1.8} />
+      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-blue-100 bg-white text-blue-600 shadow-[0_10px_20px_rgba(59,130,246,0.08)] sm:h-14 sm:w-14">
+        <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.9} />
       </div>
 
       <p
@@ -48,14 +48,7 @@ const StatItem = ({
 
 const StatsSection = () => {
   return (
-    <section className="relative py-20 md:py-24 bg-[#0364CE] overflow-hidden">
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(90deg, white 0px, white 1px, transparent 1px, transparent 80px),
-          repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 80px)`,
-        }}
-      />
+    <section className="bg-[linear-gradient(180deg,#eef4fb_0%,#edf3fb_100%)] pb-16 sm:pb-20 md:pb-24">
       <div className="container relative">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {statsData.map((stat) => (

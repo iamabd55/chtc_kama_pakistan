@@ -4,19 +4,19 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   compress: true,
   poweredByHeader: false,
-  
+
   // Enable experimental features for better optimization
   experimental: {
     optimizePackageImports: ["@radix-ui"],
   },
-  
+
   // Turbopack configuration for code splitting and optimization
   turbopack: {
     resolveAlias: {
       "@": "./src",
     },
   },
-  
+
   // Image optimization configuration
   images: {
     formats: ["image/avif", "image/webp"],
@@ -31,16 +31,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Optimize production builds
   productionBrowserSourceMaps: false,
-  
+
   // SWC configuration for minification and optimization
   compiler: {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === "production",
   },
-  
+
   // Headers for better performance and caching
   async headers() {
     return [

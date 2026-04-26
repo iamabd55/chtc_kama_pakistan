@@ -225,7 +225,7 @@ const Header = ({ settings }: HeaderProps) => {
                     ? "text-primary"
                     : "text-foreground hover:text-primary"
                   }`}
-               prefetch={false}>
+                prefetch={false}>
                 {item.label}
                 {(item.children || item.brandGroups) && (
                   <motion.span
@@ -268,7 +268,7 @@ const Header = ({ settings }: HeaderProps) => {
                               >
                                 <Link href={cat.href}
                                   className="block text-sm font-display font-bold text-foreground hover:text-primary transition-colors mb-2 pb-1.5 border-b-2 border-primary/20 hover:border-primary"
-                                 prefetch={false}>
+                                  prefetch={false}>
                                   {cat.label}
                                 </Link>
                                 <ul className="space-y-1">
@@ -276,7 +276,7 @@ const Header = ({ settings }: HeaderProps) => {
                                     <li key={s.name}>
                                       <Link href={s.href}
                                         className="block text-xs text-muted-foreground hover:text-primary hover:pl-1 transition-all py-0.5"
-                                       prefetch={false}>
+                                        prefetch={false}>
                                         {s.name}
                                       </Link>
                                     </li>
@@ -309,7 +309,7 @@ const Header = ({ settings }: HeaderProps) => {
                                   <div key={cat.label}>
                                     <Link href={cat.href}
                                       className="block text-sm font-display font-bold text-foreground hover:text-primary transition-colors mb-1.5 pb-1 border-b border-border"
-                                     prefetch={false}>
+                                      prefetch={false}>
                                       {cat.label}
                                     </Link>
                                     <ul className="space-y-0.5">
@@ -317,7 +317,7 @@ const Header = ({ settings }: HeaderProps) => {
                                         <li key={s.name}>
                                           <Link href={s.href}
                                             className="block text-xs text-muted-foreground hover:text-primary hover:pl-1 transition-all py-0.5"
-                                           prefetch={false}>
+                                            prefetch={false}>
                                             {s.name}
                                           </Link>
                                         </li>
@@ -360,7 +360,7 @@ const Header = ({ settings }: HeaderProps) => {
                         >
                           <Link href={child.href}
                             className="block px-4 py-2 text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                           prefetch={false}>
+                            prefetch={false}>
                             {child.label}
                           </Link>
                         </motion.div>
