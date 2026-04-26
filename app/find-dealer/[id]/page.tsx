@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, MapPin, MessageCircle, Phone } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Dealer } from "@/lib/supabase/types";
 import { buildPageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -12,9 +12,22 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams() {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+        .from("dealers")
+        .select("id")
+        .eq("is_active", true);
+
+    return (data ?? [])
+        .map((dealer) => dealer.id)
+        .filter((id): id is string => Boolean(id))
+        .map((id) => ({ id }));
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data } = await supabase
         .from("dealers")
@@ -34,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DealerDetailPage({ params }: PageProps) {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data } = await supabase
         .from("dealers")

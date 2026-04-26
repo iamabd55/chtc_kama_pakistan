@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Category } from "@/lib/supabase/types";
 import VehiclesGrid from "./VehiclesGrid";
 import Link from "next/link";
 
 export default async function VehiclesSection() {
-  const supabase = await createClient();
+  const supabase = createPublicServerClient();
 
   const { data } = await supabase
     .from("categories")

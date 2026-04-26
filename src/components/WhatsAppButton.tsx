@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
 
 const WHATSAPP_NUMBER = "923008665060";
@@ -11,8 +11,6 @@ interface WhatsAppButtonProps {
 }
 
 export default function WhatsAppButton({ settings }: WhatsAppButtonProps) {
-    const [isHovered, setIsHovered] = useState(false);
-
     const whatsappRaw = settings?.whatsappNumber ?? WHATSAPP_NUMBER;
     const whatsappNumber = whatsappRaw.replace(/[^\d]/g, "") || WHATSAPP_NUMBER;
 
@@ -24,29 +22,7 @@ export default function WhatsAppButton({ settings }: WhatsAppButtonProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className="whatsapp-float"
-            style={{
-                position: "fixed",
-                bottom: "28px",
-                right: "28px",
-                zIndex: 9999,
-                display: "flex",
-                alignItems: "center",
-                gap: isHovered ? "10px" : "0px",
-                background: "linear-gradient(135deg, #25D366, #128C7E)",
-                color: "#fff",
-                borderRadius: "50px",
-                padding: isHovered ? "14px 24px 14px 18px" : "14px",
-                boxShadow: isHovered
-                    ? "0 8px 32px rgba(37, 211, 102, 0.45)"
-                    : "0 4px 16px rgba(37, 211, 102, 0.35)",
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                cursor: "pointer",
-                textDecoration: "none",
-                transform: isHovered ? "scale(1.05)" : "scale(1)",
-            }}
+            className="group fixed bottom-7 right-7 z-[9999] flex items-center gap-0 rounded-full bg-[linear-gradient(135deg,#25D366,#128C7E)] px-[14px] py-[14px] text-white no-underline shadow-[0_4px_16px_rgba(37,211,102,0.35)] transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-105 hover:gap-2.5 hover:pl-[18px] hover:pr-6 hover:shadow-[0_8px_32px_rgba(37,211,102,0.45)]"
         >
             {/* WhatsApp SVG Icon */}
             <svg
@@ -65,16 +41,7 @@ export default function WhatsAppButton({ settings }: WhatsAppButtonProps) {
 
             {/* Tooltip text on hover */}
             <span
-                style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    maxWidth: isHovered ? "200px" : "0px",
-                    opacity: isHovered ? 1 : 0,
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    letterSpacing: "0.3px",
-                }}
+                className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold tracking-[0.3px] opacity-0 transition-all duration-300 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] group-hover:max-w-[200px] group-hover:opacity-100"
             >
                 Chat with us
             </span>

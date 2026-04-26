@@ -1,8 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { GalleryItem } from "@/lib/supabase/types";
 import GalleryClient from "@/components/gallery/GalleryClient";
 
 import { Suspense } from "react";
+
+export const revalidate = 120;
 
 export default function GalleryPage() {
     return (
@@ -35,7 +37,7 @@ function GallerySkeleton() {
 }
 
 async function GalleryLoader() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("gallery_items")
         .select("*")

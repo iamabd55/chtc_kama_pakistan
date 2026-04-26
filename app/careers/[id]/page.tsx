@@ -1,12 +1,27 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, MapPin } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { CareerPost } from "@/lib/supabase/types";
+
+export const revalidate = 300;
 
 interface CareerDetailPageProps {
     params: Promise<{ id: string }>;
     searchParams?: Promise<{ submitted?: string; error?: string; duplicate?: string }>;
+}
+
+export async function generateStaticParams() {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+        .from("career_posts")
+        .select("id")
+        .eq("is_active", true);
+
+    return (data ?? [])
+        .map((post) => post.id)
+        .filter((id): id is string => Boolean(id))
+        .map((id) => ({ id }));
 }
 
 export default async function CareerDetailPage({ params, searchParams }: CareerDetailPageProps) {
@@ -16,7 +31,7 @@ export default async function CareerDetailPage({ params, searchParams }: CareerD
     const hasError = resolved?.error === "1";
     const isDuplicate = resolved?.duplicate === "1";
 
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("career_posts")
         .select("*")

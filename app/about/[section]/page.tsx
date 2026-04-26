@@ -1,10 +1,11 @@
-import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ShieldCheck, Activity, Users, Settings } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { TeamMember, ClientLogo, Certification } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
+
+export const revalidate = 300;
 
 type TeamMemberWithTeam = TeamMember & {
     team?: {
@@ -94,7 +95,7 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
         const resolveLogoUrl = (logoUrl: string) => (logoUrl.startsWith("/") ? logoUrl : getStorageUrl(logoUrl));
 
     const { section: rawSection } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const isLeadershipRoute = rawSection === "leadership";
 
     const canonicalSection =

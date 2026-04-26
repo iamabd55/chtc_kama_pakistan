@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Download, Phone, ChevronRight, Truck, Star } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Product, Category } from "@/lib/supabase/types";
 import ProductGallery from "@/components/products/ProductGallery";
@@ -17,9 +17,28 @@ interface PageProps {
     params: Promise<{ category: string; slug: string }>;
 }
 
+export async function generateStaticParams() {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+        .from("products")
+        .select("slug, category:categories(slug)")
+        .eq("is_active", true)
+        .neq("brand", "joylong")
+        .limit(60);
+
+    return (data ?? []).flatMap((product) => {
+        const category = Array.isArray(product.category) ? product.category[0] : product.category;
+        if (!category?.slug || !product.slug) {
+            return [];
+        }
+
+        return [{ category: category.slug, slug: product.slug }];
+    });
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { category, slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data: product } = await supabase
         .from("products")
@@ -69,7 +88,7 @@ function getImageLabel(path: string): string {
 
 export default async function ProductDetailPage({ params }: PageProps) {
     const { category: categorySlug, slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     // Fetch product with category
     const { data: productData } = await supabase

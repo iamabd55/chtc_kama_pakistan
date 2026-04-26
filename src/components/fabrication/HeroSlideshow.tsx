@@ -31,7 +31,8 @@ export default function HeroSlideshow() {
                         }`}
                     priority={i === 0}
                     sizes="100vw"
-                 loading="eager" />
+                    loading={i === 0 ? "eager" : "lazy"}
+                />
             ))}
             {/* Subtle dark overlay for contrast — no blur */}
             <div className="absolute inset-0 bg-kama-navy/30" />

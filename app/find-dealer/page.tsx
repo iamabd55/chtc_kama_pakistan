@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Dealer } from "@/lib/supabase/types";
 import DealerDirectory from "@/components/find-dealer/DealerDirectory";
 
 export const revalidate = 60;
 
 export default async function FindDealerPage() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("dealers")
         .select("*")

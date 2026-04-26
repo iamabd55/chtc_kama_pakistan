@@ -1,12 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { PublicSiteSettings } from "@/lib/siteSettings";
+
+const Header = dynamic(() => import("@/components/Header"), {
+    loading: () => null,
+});
+
+const Footer = dynamic(() => import("@/components/Footer"), {
+    loading: () => null,
+});
+
+const WhatsAppButton = dynamic(() => import("@/components/WhatsAppButton"), {
+    loading: () => null,
+});
 
 /**
  * Conditionally renders the public Header/Footer/WhatsApp for main site routes.
@@ -21,7 +31,7 @@ export default function ConditionalLayout({
 }) {
     const pathname = usePathname();
     const isAdmin = pathname?.startsWith("/admin");
-    const { data: siteSettings } = useSiteSettings(initialSettings);
+    const { data: siteSettings } = useSiteSettings(initialSettings, !isAdmin);
 
     useEffect(() => {
         if (typeof window === "undefined" || isAdmin) {

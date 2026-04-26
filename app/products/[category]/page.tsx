@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Category, Product } from "@/lib/supabase/types";
 import CategoryProductGrid from "@/components/products/CategoryProductGrid";
 import { buildPageMetadata } from "@/lib/seo";
@@ -13,9 +13,22 @@ interface PageProps {
     params: Promise<{ category: string }>;
 }
 
+export async function generateStaticParams() {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+        .from("categories")
+        .select("slug")
+        .eq("is_active", true);
+
+    return (data ?? [])
+        .map((category) => category.slug)
+        .filter((slug): slug is string => Boolean(slug))
+        .map((slug) => ({ category: slug }));
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { category: slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data: category } = await supabase
         .from("categories")
@@ -35,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductCategoryPage({ params }: PageProps) {
     const { category: slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data: categoryData } = await supabase
         .from("categories")

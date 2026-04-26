@@ -4,11 +4,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/seo";
-import Providers from "./providers";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
-import { Poppins, Rajdhani, DM_Sans, Orbitron, Vujahday_Script, Manjari, Inter } from "next/font/google";
+import { Poppins, Rajdhani, DM_Sans } from "next/font/google";
 import { normalizeSiteSettings } from "@/lib/siteSettings";
 import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
 
@@ -33,34 +32,6 @@ const rajdhani = Rajdhani({
 const dmSans = DM_Sans({
     subsets: ["latin"],
     variable: "--font-dm-sans",
-    display: "swap",
-});
-
-const orbitron = Orbitron({
-    subsets: ["latin"],
-    weight: ["700"],
-    variable: "--font-orbitron",
-    display: "swap",
-});
-
-const vujahdayScript = Vujahday_Script({
-    subsets: ["latin"],
-    weight: ["400"],
-    variable: "--font-vujahday-script",
-    display: "swap",
-});
-
-const manjari = Manjari({
-    subsets: ["latin"],
-    weight: ["400", "700"],
-    variable: "--font-manjari",
-    display: "swap",
-});
-
-const inter = Inter({
-    subsets: ["latin"],
-    weight: ["400", "700"],
-    variable: "--font-inter",
     display: "swap",
 });
 
@@ -146,12 +117,10 @@ export default async function RootLayout({
     return (
         <html
             lang="en"
-            className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable} ${orbitron.variable} ${vujahdayScript.variable} ${manjari.variable} ${inter.variable}`}
+            className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable}`}
         >
             <head>
                 {/* Preconnect to external resources for performance */}
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 {supabaseOrigin && <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />}
                 {supabaseOrigin && <link rel="dns-prefetch" href={supabaseOrigin} />}
             </head>
@@ -161,14 +130,12 @@ export default async function RootLayout({
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
                 />
                 <GoogleAnalytics />
-                <Providers>
-                    <ScrollProgress />
-                    <TooltipProvider>
-                        <Toaster />
-                        <Sonner />
-                        <ConditionalLayout initialSettings={initialSettings}>{children}</ConditionalLayout>
-                    </TooltipProvider>
-                </Providers>
+                <ScrollProgress />
+                <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <ConditionalLayout initialSettings={initialSettings}>{children}</ConditionalLayout>
+                </TooltipProvider>
             </body>
         </html>
     );

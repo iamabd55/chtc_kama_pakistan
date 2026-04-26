@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock3, Share2, User } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { NewsPost } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import NewsInquiryForm from "@/components/news/NewsInquiryForm";
@@ -13,6 +13,19 @@ export const revalidate = 60;
 
 interface PageProps {
     params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+        .from("news_posts")
+        .select("slug")
+        .eq("status", "published");
+
+    return (data ?? [])
+        .map((post) => post.slug)
+        .filter((slug): slug is string => Boolean(slug))
+        .map((slug) => ({ slug }));
 }
 
 const formatDate = (value: string | null) =>
@@ -37,7 +50,7 @@ const isInquiryEligiblePost = (post: NewsPost) => {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data } = await supabase
         .from("news_posts")
@@ -68,7 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function NewsDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data } = await supabase
         .from("news_posts")

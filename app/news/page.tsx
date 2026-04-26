@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { NewsPost } from "@/lib/supabase/types";
 import NewsListingClient from "@/components/news/NewsListingClient";
 import { buildPageMetadata } from "@/lib/seo";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = buildPageMetadata({
     title: "News & Events — Al Nasir Motors Pakistan",
@@ -45,7 +47,7 @@ function NewsSkeleton() {
 }
 
 async function NewsLoader() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("news_posts")
         .select("id, title, slug, content, thumbnail, category, author, published_at, created_at")

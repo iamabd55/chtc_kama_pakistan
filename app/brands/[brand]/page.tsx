@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { getStorageUrl } from "@/lib/supabase/storage";
 import type { Product } from "@/lib/supabase/types";
 import { buildPageMetadata } from "@/lib/seo";
@@ -70,6 +70,12 @@ type BrandProduct = Pick<
 type RawBrandProduct = Omit<BrandProduct, "category"> & {
     category: { name: string; slug: string } | { name: string; slug: string }[] | null;
 };
+
+export async function generateStaticParams() {
+    return Object.keys(BRAND_CONFIG).map((brand) => ({
+        brand,
+    }));
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { brand } = await params;
@@ -160,7 +166,7 @@ export default async function BrandDetailPage({ params }: PageProps) {
         );
     }
 
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data } = await supabase
         .from("products")

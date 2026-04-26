@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Category, Product } from "@/lib/supabase/types";
 import ProductsExplorer from "@/components/products/ProductsExplorer";
 
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const [{ data: categories }, { data: products }] = await Promise.all([
         supabase

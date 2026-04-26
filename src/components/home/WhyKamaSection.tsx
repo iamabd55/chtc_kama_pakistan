@@ -1,9 +1,6 @@
 "use client";
 
 import { Truck, Settings, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
-
-const ease = [0.25, 0.4, 0, 1] as const;
 
 const services = [
   {
@@ -34,12 +31,8 @@ const WhyKamaSection = () => {
     <section className="py-20 md:py-28 bg-muted/50">
       <div className="container">
         {/* Section heading */}
-        <motion.div
+        <div
           className="text-center mb-14"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease }}
         >
           <div className="inline-flex items-center gap-3 mb-4">
             <span className="w-8 h-[2px] bg-gradient-to-r from-transparent to-accent rounded-full" />
@@ -54,18 +47,14 @@ const WhyKamaSection = () => {
           <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Over 50 years of delivering reliable commercial vehicles, engineered for Pakistani roads and businesses.
           </p>
-        </motion.div>
+        </div>
 
         {/* Service cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {services.map((service, i) => (
-            <motion.div
+          {services.map((service) => (
+            <div
               key={service.title}
               className="group relative bg-card rounded-xl border hover:shadow-xl transition-all duration-500 hover:-translate-y-1 overflow-hidden flex flex-col"
-              initial={{ opacity: 0, y: 50, rotateX: 8 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: i * 0.15, ease }}
             >
               {/* Top accent bar on hover */}
               <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary via-accent to-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
@@ -96,7 +85,7 @@ const WhyKamaSection = () => {
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

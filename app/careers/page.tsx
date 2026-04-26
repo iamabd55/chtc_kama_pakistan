@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Briefcase, MapPin, CalendarDays, Users } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { CareerPost } from "@/lib/supabase/types";
 
+export const revalidate = 300;
+
 export default async function CareersPage() {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("career_posts")
         .select("*")

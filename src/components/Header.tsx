@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
-import { createClient } from "@/lib/supabase/client";
-import { useStableCallback } from "@/hooks/useOptimization";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -140,12 +138,6 @@ const navItems: NavItem[] = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-const getSeriesSlugFromHref = (href: string) => {
-  const segments = href.split("/").filter(Boolean);
-  return segments[segments.length - 1] || "";
-};
-
-
 interface HeaderProps {
   settings?: PublicSiteSettings;
 }
@@ -154,15 +146,10 @@ const Header = ({ settings }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [showTopBar, setShowTopBar] = useState(true);
-  const [activeProductSlugs, setActiveProductSlugs] = useState<Set<string> | null>(null);
   const pathname = usePathname();
   const phone = settings?.officePhone ?? "+92 300 8665 060";
   const phoneHref = `tel:${phone.replace(/[^+\d]/g, "")}`;
   const email = settings?.supportEmail ?? "info@alnasirmotors.com.pk";
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,78 +170,6 @@ const Header = ({ settings }: HeaderProps) => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadActiveProductSlugs = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from("products")
-          .select("slug")
-          .eq("is_active", true)
-          .neq("brand", "joylong");
-
-        if (cancelled) return;
-
-        const slugs = (data ?? [])
-          .map((entry) => entry.slug)
-          .filter((slug): slug is string => typeof slug === "string" && slug.length > 0);
-        setActiveProductSlugs(new Set(slugs));
-      } catch {
-        if (!cancelled) {
-          // If client fetch fails, keep static menu as fallback.
-          setActiveProductSlugs(null);
-        }
-      }
-    };
-
-    void loadActiveProductSlugs();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const filteredNavItems = useMemo(() => {
-    if (!activeProductSlugs) return navItems;
-
-    return navItems
-      .map((item) => {
-        if (!item.megamenu || !item.brandGroups) return item;
-
-        const filteredBrandGroups = item.brandGroups
-          .map((group) => {
-            const filteredCategories = group.categories
-              .map((category) => {
-                if (!category.series || category.series.length === 0) return category;
-
-                const filteredSeries = category.series.filter((seriesItem) =>
-                  activeProductSlugs.has(getSeriesSlugFromHref(seriesItem.href))
-                );
-
-                return {
-                  ...category,
-                  series: filteredSeries,
-                };
-              })
-              .filter((category) => !category.series || category.series.length > 0);
-
-            return {
-              ...group,
-              categories: filteredCategories,
-            };
-          })
-          .filter((group) => group.categories.length > 0);
-
-        return {
-          ...item,
-          brandGroups: filteredBrandGroups,
-        };
-      })
-      .filter((item) => !item.megamenu || !item.brandGroups || item.brandGroups.length > 0);
-  }, [activeProductSlugs]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md shadow-sm">
@@ -292,12 +207,12 @@ const Header = ({ settings }: HeaderProps) => {
             sizes="(max-width: 768px) 220px, (max-width: 1280px) 300px, 360px"
             className="h-16 md:h-[4.5rem] lg:h-20 w-auto"
             priority
-           loading="eager" />
+          />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1">
-          {filteredNavItems.map((item) => (
+          {navItems.map((item) => (
             <div
               key={item.label}
               className="relative group"
@@ -500,7 +415,7 @@ const Header = ({ settings }: HeaderProps) => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease }}
           >
-            {filteredNavItems.map((item, i) => (
+            {navItems.map((item, i) => (
               <motion.div
                 key={item.label}
                 initial={{ opacity: 0, x: -15 }}

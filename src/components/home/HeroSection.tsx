@@ -66,7 +66,8 @@ const HeroSection = ({ slides }: HeroSectionProps) => {
               className="hero-mobile-image object-cover object-[60%_72%] sm:object-center"
               priority={i === 0}
               sizes="100vw"
-             loading="eager" />
+              loading={i === 0 ? "eager" : "lazy"}
+            />
           </motion.div>
         </motion.div>
       ))}

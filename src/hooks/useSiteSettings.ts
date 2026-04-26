@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { SiteSettings } from "@/lib/supabase/types";
 import {
@@ -11,23 +11,40 @@ import {
 
 export type { PublicSiteSettings } from "@/lib/siteSettings";
 
-export function useSiteSettings(initialSettings?: PublicSiteSettings) {
-    return useQuery({
-        queryKey: ["site_settings_public"],
-        staleTime: 10 * 60 * 1000,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        queryFn: async () => {
-            const supabase = createClient();
-            const { data } = await supabase
-                .from("site_settings")
-                .select("*")
-                .eq("id", 1)
-                .single();
+export function useSiteSettings(initialSettings?: PublicSiteSettings, enabled = true) {
+    const baseSettings = initialSettings ?? DEFAULT_PUBLIC_SETTINGS;
+    const [fetchedData, setFetchedData] = useState<PublicSiteSettings | null>(null);
 
-            return normalizeSiteSettings((data as SiteSettings | null) ?? null);
-        },
-        initialData: initialSettings ?? DEFAULT_PUBLIC_SETTINGS,
-    });
+    useEffect(() => {
+        if (!enabled) {
+            return;
+        }
+
+        let cancelled = false;
+
+        const fetchSettings = async () => {
+            try {
+                const supabase = createClient();
+                const { data: settingsData } = await supabase
+                    .from("site_settings")
+                    .select("*")
+                    .eq("id", 1)
+                    .single();
+
+                if (!cancelled) {
+                    setFetchedData(normalizeSiteSettings((settingsData as SiteSettings | null) ?? null));
+                }
+            } catch {
+                // Keep existing settings when the client fetch fails.
+            }
+        };
+
+        void fetchSettings();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [enabled]);
+
+    return { data: fetchedData ?? baseSettings };
 }

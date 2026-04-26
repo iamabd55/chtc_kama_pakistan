@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { absoluteUrl } from "@/lib/seo";
+
+export const revalidate = 3600;
 
 const STATIC_ROUTES = [
     "/",
@@ -35,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     try {
-        const supabase = await createClient();
+        const supabase = createPublicServerClient();
 
         const [{ data: categories }, { data: products }, { data: dealers }] = await Promise.all([
             supabase.from("categories").select("slug, is_active").eq("is_active", true),

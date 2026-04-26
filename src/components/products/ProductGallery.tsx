@@ -45,7 +45,8 @@ export default function ProductGallery({ thumbnail, images, name, preserveMainIm
                                 className={`${preserveMainImage && activeIndex === 0 ? "object-contain bg-black/5" : "object-cover group-hover:scale-[1.02]"} transition-transform duration-500`}
                                 sizes="(max-width: 1024px) 100vw, 60vw"
                                 priority={activeIndex === 0}
-                             loading="eager" />
+                                loading={activeIndex === 0 ? "eager" : "lazy"}
+                            />
                         </motion.div>
                     </AnimatePresence>
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />

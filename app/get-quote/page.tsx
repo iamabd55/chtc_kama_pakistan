@@ -1,5 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
+
+export const revalidate = 60;
 
 interface GetQuotePageProps {
     searchParams?: Promise<{
@@ -14,7 +16,7 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
     const isSubmitted = resolved?.submitted === "1";
     const hasError = resolved?.error === "1";
     const requestedProduct = resolved?.product?.trim() ?? "";
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data: productsData } = await supabase
         .from("products")

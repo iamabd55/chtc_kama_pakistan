@@ -2,9 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Category, Product } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: "Compare Vehicles",
@@ -53,7 +55,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         );
     }
 
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("products")
         .select("*, category:categories(*)")
