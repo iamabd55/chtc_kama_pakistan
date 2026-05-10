@@ -14,7 +14,24 @@ interface GetQuotePageProps {
 export default async function GetQuotePage({ searchParams }: GetQuotePageProps) {
     const resolved = searchParams ? await searchParams : undefined;
     const isSubmitted = resolved?.submitted === "1";
-    const hasError = resolved?.error === "1";
+    const errorCode = resolved?.error?.trim() ?? "";
+    const hasError = Boolean(errorCode);
+    const errorMessage = (() => {
+        switch (errorCode) {
+            case "missing_fields":
+                return "Please fill all required fields before submitting.";
+            case "invalid_phone":
+                return "Please enter a valid Pakistani mobile number (e.g., 03XXXXXXXXX or +92XXXXXXXXXX).";
+            case "invalid_email":
+                return "Please enter a valid email address.";
+            case "supabase":
+                return "We could not save your request right now. Please try again in a moment.";
+            case "server":
+                return "A server error occurred while submitting your request. Please try again.";
+            default:
+                return "We could not submit your quote request right now. Please try again.";
+        }
+    })();
     const requestedProduct = resolved?.product?.trim() ?? "";
     const supabase = createPublicServerClient();
 
@@ -54,7 +71,7 @@ export default async function GetQuotePage({ searchParams }: GetQuotePageProps) 
                         )}
                         {hasError && (
                             <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700">
-                                We could not submit your quote request right now. Please try again.
+                                {errorMessage}
                             </div>
                         )}
                         <form className="space-y-5" method="post" action="/api/inquiries/quote">

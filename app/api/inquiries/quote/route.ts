@@ -28,15 +28,18 @@ export async function POST(request: Request) {
     const phone = normalizePhone(phoneRaw);
 
     if (!fullName || !phone || !city || !vehicleCategory) {
-        return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+        console.warn('[inquiry] Validation failed - missing required fields', { fullName: Boolean(fullName), phone: Boolean(phone), city: Boolean(city), vehicleCategory: Boolean(vehicleCategory) });
+        return NextResponse.redirect(new URL("/get-quote?error=missing_fields", request.url), 303);
     }
 
     if (!isValidLocalPhone(phone)) {
-        return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+        console.warn('[inquiry] Validation failed - invalid phone', { phone });
+        return NextResponse.redirect(new URL("/get-quote?error=invalid_phone", request.url), 303);
     }
 
     if (email && !isValidEmail(email)) {
-        return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+        console.warn('[inquiry] Validation failed - invalid email', { email });
+        return NextResponse.redirect(new URL("/get-quote?error=invalid_email", request.url), 303);
     }
 
     const messageParts = [
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
 
         if (error) {
             console.error("[inquiry] Supabase error:", error);
-            return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+            return NextResponse.redirect(new URL("/get-quote?error=supabase", request.url), 303);
         }
 
         await sendInquiryNotification({
@@ -116,6 +119,6 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
     } catch (err) {
         console.error("[inquiry] Unexpected error:", err);
-        return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+        return NextResponse.redirect(new URL("/get-quote?error=server", request.url), 303);
     }
 }
