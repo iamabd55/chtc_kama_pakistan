@@ -101,11 +101,10 @@ export async function POST(request: Request) {
             source: "web-form",
         };
 
-        let { data: inserted, error } = await supabase
+        let inserted: { id?: string; status?: string } | null = null;
+        let { error } = await supabase
             .from("inquiries")
-            .insert(insertPayload)
-            .select("id, status")
-            .maybeSingle();
+            .insert(insertPayload);
 
         if (error && serviceRoleKey) {
             console.error("[inquiry] Service-role insert failed, retrying with anon client", {
@@ -116,11 +115,8 @@ export async function POST(request: Request) {
             const anonClient = await createClient();
             const anonInsert = await anonClient
                 .from("inquiries")
-                .insert(insertPayload)
-                .select("id, status")
-                .maybeSingle();
+                .insert(insertPayload);
 
-            inserted = anonInsert.data;
             error = anonInsert.error;
         }
 
