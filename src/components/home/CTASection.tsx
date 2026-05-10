@@ -9,15 +9,17 @@ const CTASection = () => {
   return (
     <section className="relative overflow-hidden bg-[#0364CE] py-10 md:py-12">
       <div className="container relative">
-        <Image
-          src={watermarkLogo}
-          alt=""
-          aria-hidden
-          width={300}
-          height={95}
-          className="pointer-events-none absolute right-8 top-1/2 hidden -translate-y-1/2 blur-[2px] opacity-[0.18] md:block"
-          style={{ width: "auto", height: "auto" }}
-         loading="lazy" />
+        <div className="pointer-events-none absolute right-8 top-1/2 hidden h-[95px] w-[300px] -translate-y-1/2 md:block">
+          <Image
+            src={watermarkLogo}
+            alt=""
+            aria-hidden
+            fill
+            className="blur-[2px] opacity-[0.18] object-contain"
+            sizes="(max-width: 768px) 0px, 300px"
+            loading="lazy"
+          />
+        </div>
 
         <h2
           className="relative z-10 max-w-[760px] text-white [font-family:var(--font-poppins)] font-bold leading-[1.03] tracking-[-0.015em] text-[42px] sm:text-[52px] md:text-[57px]"

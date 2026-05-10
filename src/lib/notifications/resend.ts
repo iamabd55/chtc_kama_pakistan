@@ -6,6 +6,18 @@ type SendResendEmailInput = {
     text?: string;
 };
 
+function formatSender(from: string) {
+    // If caller already provided "Name <email@domain>", keep it as-is.
+    if (from.includes("<") && from.includes(">")) {
+        return from;
+    }
+
+    const senderName = process.env.NOTIFICATION_FROM_NAME || "Al Nasir Motors Pakistan";
+    const safeName = senderName.replace(/"/g, "").trim();
+
+    return `${safeName} <${from}>`;
+}
+
 export async function sendViaResend(input: SendResendEmailInput) {
     const resendApiKey = process.env.RESEND_API_KEY;
 
@@ -20,7 +32,10 @@ export async function sendViaResend(input: SendResendEmailInput) {
             Authorization: `Bearer ${resendApiKey}`,
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(input),
+        body: JSON.stringify({
+            ...input,
+            from: formatSender(input.from),
+        }),
     });
 
     const payload = await response.json().catch(() => null);

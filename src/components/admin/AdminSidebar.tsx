@@ -107,14 +107,16 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                 )}
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-white/55 font-semibold mb-2">Control Center</p>
-                    <Image
-                        src="/images/al-nasir-logo-white.webp"
-                        alt="Al Nasir Motors"
-                        width={170}
-                        height={52}
-                        className="h-auto w-auto object-contain"
-                        style={{ width: "auto", height: "auto" }}
-                     loading="lazy" />
+                    <div className="relative h-[52px] w-[170px]">
+                        <Image
+                            src="/images/al-nasir-logo-white.webp"
+                            alt="Al Nasir Motors"
+                            fill
+                            className="object-contain"
+                            sizes="170px"
+                            loading="lazy"
+                        />
+                    </div>
                     <p className="font-display text-lg font-bold tracking-wide mt-2">Admin Workspace</p>
                 </div>
 

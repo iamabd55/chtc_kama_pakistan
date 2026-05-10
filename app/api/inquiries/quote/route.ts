@@ -48,68 +48,74 @@ export async function POST(request: Request) {
         requirements,
     ].filter(Boolean);
 
-    const supabase = await createClient();
-    let resolvedProductId: string | null = selectedProductId || null;
-    let resolvedProductName: string | null = null;
-    let resolvedProductSlug: string | null = requestedProductSlug || null;
+    try {
+        const supabase = await createClient();
+        let resolvedProductId: string | null = selectedProductId || null;
+        let resolvedProductName: string | null = null;
+        let resolvedProductSlug: string | null = requestedProductSlug || null;
 
-    if (selectedProductId || requestedProductSlug) {
-        const productLookup = selectedProductId
-            ? await supabase
-                .from("products")
-                .select("id, name, slug")
-                .eq("id", selectedProductId)
-                .maybeSingle()
-            : await supabase
-                .from("products")
-                .select("id, name, slug")
-                .eq("slug", requestedProductSlug)
-                .maybeSingle();
+        if (selectedProductId || requestedProductSlug) {
+            const productLookup = selectedProductId
+                ? await supabase
+                    .from("products")
+                    .select("id, name, slug")
+                    .eq("id", selectedProductId)
+                    .maybeSingle()
+                : await supabase
+                    .from("products")
+                    .select("id, name, slug")
+                    .eq("slug", requestedProductSlug)
+                    .maybeSingle();
 
-        if (productLookup.data) {
-            resolvedProductId = productLookup.data.id;
-            resolvedProductName = productLookup.data.name;
-            resolvedProductSlug = productLookup.data.slug;
+            if (productLookup.data) {
+                resolvedProductId = productLookup.data.id;
+                resolvedProductName = productLookup.data.name;
+                resolvedProductSlug = productLookup.data.slug;
+            }
         }
-    }
 
-    const { data: inserted, error } = await supabase.from("inquiries").insert({
-        full_name: fullName,
-        phone,
-        email: email || null,
-        city,
-        product_id: resolvedProductId,
-        inquiry_type: inquiryType,
-        message: messageParts.join("\n") || null,
-        source: "web-form",
-    }).select("id, status").single();
+        const { data: inserted, error } = await supabase.from("inquiries").insert({
+            full_name: fullName,
+            phone,
+            email: email || null,
+            city,
+            product_id: resolvedProductId,
+            inquiry_type: inquiryType,
+            message: messageParts.join("\n") || null,
+            source: "web-form",
+        }).select("id, status").maybeSingle();
 
-    if (error) {
+        if (error) {
+            console.error("[inquiry] Supabase error:", error);
+            return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
+        }
+
+        await sendInquiryNotification({
+            source: "quote",
+            inquiryType,
+            fullName,
+            phone,
+            email: email || null,
+            city,
+            message: messageParts.join("\n") || null,
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+            productName: resolvedProductName,
+            productSlug: resolvedProductSlug,
+        });
+
+        await sendCustomerConfirmation({
+            customerName: fullName,
+            customerEmail: email,
+            inquiryType,
+            source: "quote",
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+        });
+
+        return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
+    } catch (err) {
+        console.error("[inquiry] Unexpected error:", err);
         return NextResponse.redirect(new URL("/get-quote?error=1", request.url), 303);
     }
-
-    await sendInquiryNotification({
-        source: "quote",
-        inquiryType,
-        fullName,
-        phone,
-        email: email || null,
-        city,
-        message: messageParts.join("\n") || null,
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-        productName: resolvedProductName,
-        productSlug: resolvedProductSlug,
-    });
-
-    await sendCustomerConfirmation({
-        customerName: fullName,
-        customerEmail: email,
-        inquiryType,
-        source: "quote",
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-    });
-
-    return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
 }

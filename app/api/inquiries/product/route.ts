@@ -61,82 +61,94 @@ export async function POST(request: Request) {
         .filter(Boolean)
         .join("\n");
 
-    const supabase = await createClient();
-    let resolvedProductId: string | null = productId || null;
-    let resolvedProductName: string | null = null;
-    let resolvedProductSlug: string | null = productSlug || null;
+    try {
+        const supabase = await createClient();
+        let resolvedProductId: string | null = productId || null;
+        let resolvedProductName: string | null = null;
+        let resolvedProductSlug: string | null = productSlug || null;
 
-    if (productId || productSlug) {
-        const productLookup = productId
-            ? await supabase
-                .from("products")
-                .select("id, name, slug")
-                .eq("id", productId)
-                .maybeSingle()
-            : await supabase
-                .from("products")
-                .select("id, name, slug")
-                .eq("slug", productSlug)
-                .maybeSingle();
+        if (productId || productSlug) {
+            const productLookup = productId
+                ? await supabase
+                    .from("products")
+                    .select("id, name, slug")
+                    .eq("id", productId)
+                    .maybeSingle()
+                : await supabase
+                    .from("products")
+                    .select("id, name, slug")
+                    .eq("slug", productSlug)
+                    .maybeSingle();
 
-        if (productLookup.data) {
-            resolvedProductId = productLookup.data.id;
-            resolvedProductName = productLookup.data.name;
-            resolvedProductSlug = productLookup.data.slug;
+            if (productLookup.data) {
+                resolvedProductId = productLookup.data.id;
+                resolvedProductName = productLookup.data.name;
+                resolvedProductSlug = productLookup.data.slug;
+            }
         }
-    }
 
-    const { data: inserted, error } = await supabase.from("inquiries").insert({
-        full_name: fullName,
-        phone,
-        email: email || null,
-        city,
-        product_id: resolvedProductId,
-        inquiry_type: "purchase",
-        message: compiledMessage || null,
-        source: "web-form",
-    }).select("id, status").single();
+        const { data: inserted, error } = await supabase.from("inquiries").insert({
+            full_name: fullName,
+            phone,
+            email: email || null,
+            city,
+            product_id: resolvedProductId,
+            inquiry_type: "purchase",
+            message: compiledMessage || null,
+            source: "web-form",
+        }).select("id, status").maybeSingle();
 
-    if (error) {
+        if (error) {
+            console.error("[inquiry] Supabase error:", error);
+            if (wantsJson) {
+                return NextResponse.json(
+                    { ok: false, error: "Could not submit inquiry. Please try again." },
+                    { status: 500 }
+                );
+            }
+            return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
+        }
+
+        await sendInquiryNotification({
+            source: "product",
+            inquiryType: "purchase",
+            fullName,
+            phone,
+            email: email || null,
+            city,
+            message: compiledMessage || null,
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+            productName: resolvedProductName,
+            productSlug: resolvedProductSlug,
+        });
+
+        await sendCustomerConfirmation({
+            customerName: fullName,
+            customerEmail: email,
+            inquiryType: "purchase",
+            source: "product",
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+        });
+
+        if (wantsJson) {
+            return NextResponse.json({
+                ok: true,
+                inquiryId: inserted?.id,
+                status: inserted?.status,
+            });
+        }
+
+        return NextResponse.redirect(new URL(`${safeReturnUrl}?submitted=1`, request.url), 303);
+    } catch (err) {
+        console.error("[inquiry] Unexpected error:", err);
         if (wantsJson) {
             return NextResponse.json(
-                { ok: false, error: "Could not submit inquiry. Please try again." },
+                { ok: false, error: "An unexpected error occurred. Please try again." },
                 { status: 500 }
             );
         }
         return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
     }
-
-    await sendInquiryNotification({
-        source: "product",
-        inquiryType: "purchase",
-        fullName,
-        phone,
-        email: email || null,
-        city,
-        message: compiledMessage || null,
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-        productName: resolvedProductName,
-        productSlug: resolvedProductSlug,
-    });
-
-    await sendCustomerConfirmation({
-        customerName: fullName,
-        customerEmail: email,
-        inquiryType: "purchase",
-        source: "product",
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-    });
-
-    if (wantsJson) {
-        return NextResponse.json({
-            ok: true,
-            inquiryId: inserted?.id,
-            status: inserted?.status,
-        });
-    }
-
-    return NextResponse.redirect(new URL(`${safeReturnUrl}?submitted=1`, request.url), 303);
 }

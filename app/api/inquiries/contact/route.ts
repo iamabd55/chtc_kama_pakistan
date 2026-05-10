@@ -47,41 +47,47 @@ export async function POST(request: Request) {
         ? `[${subject.replace(/-/g, " ")}] ${message}`.trim()
         : message;
 
-    const supabase = await createClient();
-    const { data: inserted, error } = await supabase.from("inquiries").insert({
-        full_name: fullName,
-        phone,
-        email: email || null,
-        city,
-        inquiry_type: inquiryType,
-        message: prefixedMessage || null,
-        source: "web-form",
-    }).select("id, status").single();
+    try {
+        const supabase = await createClient();
+        const { data: inserted, error } = await supabase.from("inquiries").insert({
+            full_name: fullName,
+            phone,
+            email: email || null,
+            city,
+            inquiry_type: inquiryType,
+            message: prefixedMessage || null,
+            source: "web-form",
+        }).select("id, status").maybeSingle();
 
-    if (error) {
+        if (error) {
+            console.error("[inquiry] Supabase error:", error);
+            return NextResponse.redirect(new URL("/contact?error=1", request.url), 303);
+        }
+
+        await sendInquiryNotification({
+            source: "contact",
+            inquiryType,
+            fullName,
+            phone,
+            email: email || null,
+            city,
+            message: prefixedMessage || null,
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+        });
+
+        await sendCustomerConfirmation({
+            customerName: fullName,
+            customerEmail: email,
+            inquiryType,
+            source: "contact",
+            inquiryId: inserted?.id,
+            inquiryStatus: inserted?.status,
+        });
+
+        return NextResponse.redirect(new URL("/contact?submitted=1", request.url), 303);
+    } catch (err) {
+        console.error("[inquiry] Unexpected error:", err);
         return NextResponse.redirect(new URL("/contact?error=1", request.url), 303);
     }
-
-    await sendInquiryNotification({
-        source: "contact",
-        inquiryType,
-        fullName,
-        phone,
-        email: email || null,
-        city,
-        message: prefixedMessage || null,
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-    });
-
-    await sendCustomerConfirmation({
-        customerName: fullName,
-        customerEmail: email,
-        inquiryType,
-        source: "contact",
-        inquiryId: inserted?.id,
-        inquiryStatus: inserted?.status,
-    });
-
-    return NextResponse.redirect(new URL("/contact?submitted=1", request.url), 303);
 }
