@@ -101,7 +101,6 @@ export async function POST(request: Request) {
             source: "web-form",
         };
 
-        let inserted: { id?: string; status?: string } | null = null;
         let { error } = await supabase
             .from("inquiries")
             .insert(insertPayload);
@@ -138,8 +137,8 @@ export async function POST(request: Request) {
             email: email || null,
             city,
             message: messageParts.join("\n") || null,
-            inquiryId: inserted?.id,
-            inquiryStatus: inserted?.status,
+            inquiryId: undefined,
+            inquiryStatus: undefined,
             productName: resolvedProductName,
             productSlug: resolvedProductSlug,
         });
@@ -149,8 +148,8 @@ export async function POST(request: Request) {
             customerEmail: email,
             inquiryType,
             source: "quote",
-            inquiryId: inserted?.id,
-            inquiryStatus: inserted?.status,
+            inquiryId: undefined,
+            inquiryStatus: undefined,
         });
 
         return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
