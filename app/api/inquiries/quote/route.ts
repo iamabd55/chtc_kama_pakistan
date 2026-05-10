@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 import { sendCustomerConfirmation } from "@/lib/notifications/customerConfirmation";
 import {
@@ -52,7 +53,19 @@ export async function POST(request: Request) {
     ].filter(Boolean);
 
     try {
-        const supabase = await createClient();
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const supabase = serviceRoleKey
+            ? createServiceClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                serviceRoleKey,
+                { auth: { autoRefreshToken: false, persistSession: false } }
+            )
+            : await createClient();
+
+        if (!serviceRoleKey) {
+            console.warn("[inquiry] SUPABASE_SERVICE_ROLE_KEY is missing, using anon server client fallback");
+        }
+
         let resolvedProductId: string | null = selectedProductId || null;
         let resolvedProductName: string | null = null;
         let resolvedProductSlug: string | null = requestedProductSlug || null;
@@ -77,7 +90,7 @@ export async function POST(request: Request) {
             }
         }
 
-        const { data: inserted, error } = await supabase.from("inquiries").insert({
+        const insertPayload = {
             full_name: fullName,
             phone,
             email: email || null,
@@ -86,10 +99,38 @@ export async function POST(request: Request) {
             inquiry_type: inquiryType,
             message: messageParts.join("\n") || null,
             source: "web-form",
-        }).select("id, status").maybeSingle();
+        };
+
+        let { data: inserted, error } = await supabase
+            .from("inquiries")
+            .insert(insertPayload)
+            .select("id, status")
+            .maybeSingle();
+
+        if (error && serviceRoleKey) {
+            console.error("[inquiry] Service-role insert failed, retrying with anon client", {
+                message: error.message,
+                code: error.code,
+            });
+
+            const anonClient = await createClient();
+            const anonInsert = await anonClient
+                .from("inquiries")
+                .insert(insertPayload)
+                .select("id, status")
+                .maybeSingle();
+
+            inserted = anonInsert.data;
+            error = anonInsert.error;
+        }
 
         if (error) {
-            console.error("[inquiry] Supabase error:", error);
+            console.error("[inquiry] Supabase error:", {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+            });
             return NextResponse.redirect(new URL("/get-quote?error=supabase", request.url), 303);
         }
 
