@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 import { sendCustomerConfirmation } from "@/lib/notifications/customerConfirmation";
 import {
@@ -62,7 +63,19 @@ export async function POST(request: Request) {
         .join("\n");
 
     try {
-        const supabase = await createClient();
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const supabase = serviceRoleKey
+            ? createServiceClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                serviceRoleKey,
+                { auth: { autoRefreshToken: false, persistSession: false } }
+            )
+            : await createClient();
+
+        if (!serviceRoleKey) {
+            console.warn("[inquiry] SUPABASE_SERVICE_ROLE_KEY is missing, using anon server client fallback");
+        }
+
         let resolvedProductId: string | null = productId || null;
         let resolvedProductName: string | null = null;
         let resolvedProductSlug: string | null = productSlug || null;
@@ -87,7 +100,7 @@ export async function POST(request: Request) {
             }
         }
 
-        const { data: inserted, error } = await supabase.from("inquiries").insert({
+        const insertPayload = {
             full_name: fullName,
             phone,
             email: email || null,
@@ -96,10 +109,28 @@ export async function POST(request: Request) {
             inquiry_type: "purchase",
             message: compiledMessage || null,
             source: "web-form",
-        }).select("id, status").maybeSingle();
+        };
+
+        let { error } = await supabase.from("inquiries").insert(insertPayload);
+
+        if (error && serviceRoleKey) {
+            console.error("[inquiry] Service-role insert failed, retrying with anon client", {
+                message: error.message,
+                code: error.code,
+            });
+
+            const anonClient = await createClient();
+            const anonInsert = await anonClient.from("inquiries").insert(insertPayload);
+            error = anonInsert.error;
+        }
 
         if (error) {
-            console.error("[inquiry] Supabase error:", error);
+            console.error("[inquiry] Supabase error:", {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+            });
             if (wantsJson) {
                 return NextResponse.json(
                     { ok: false, error: "Could not submit inquiry. Please try again." },
@@ -117,8 +148,8 @@ export async function POST(request: Request) {
             email: email || null,
             city,
             message: compiledMessage || null,
-            inquiryId: inserted?.id,
-            inquiryStatus: inserted?.status,
+            inquiryId: undefined,
+            inquiryStatus: undefined,
             productName: resolvedProductName,
             productSlug: resolvedProductSlug,
         });
@@ -128,15 +159,15 @@ export async function POST(request: Request) {
             customerEmail: email,
             inquiryType: "purchase",
             source: "product",
-            inquiryId: inserted?.id,
-            inquiryStatus: inserted?.status,
+            inquiryId: undefined,
+            inquiryStatus: undefined,
         });
 
         if (wantsJson) {
             return NextResponse.json({
                 ok: true,
-                inquiryId: inserted?.id,
-                status: inserted?.status,
+                inquiryId: null,
+                status: null,
             });
         }
 
