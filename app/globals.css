@@ -159,6 +159,7 @@
 
 /* Firefox */
 html {
+  position: relative;
   font-size: 100%;
   scrollbar-width: thin;
   scrollbar-color: #0364ce hsl(210 20% 96%);
