@@ -9,6 +9,8 @@ export type PublicSiteSettings = {
     companyTagline: string;
     footerText: string;
     socialLinks: Record<string, string>;
+    announcementBannerEnabled: boolean;
+    announcementBannerMessage: string;
 };
 
 export const DEFAULT_PUBLIC_SETTINGS: PublicSiteSettings = {
@@ -20,6 +22,8 @@ export const DEFAULT_PUBLIC_SETTINGS: PublicSiteSettings = {
     companyTagline: "Driven by Al Nasir Motors",
     footerText: "© 2026 Al Nasir Motors Pakistan. All rights reserved.",
     socialLinks: {},
+    announcementBannerEnabled: false,
+    announcementBannerMessage: "",
 };
 
 export function normalizeSiteSettings(data: SiteSettings | null): PublicSiteSettings {
@@ -43,6 +47,9 @@ export function normalizeSiteSettings(data: SiteSettings | null): PublicSiteSett
         companyTagline: data.company_tagline || DEFAULT_PUBLIC_SETTINGS.companyTagline,
         footerText: data.footer_text || DEFAULT_PUBLIC_SETTINGS.footerText,
         socialLinks,
+        announcementBannerEnabled: data.announcement_banner_enabled ?? DEFAULT_PUBLIC_SETTINGS.announcementBannerEnabled,
+        announcementBannerMessage:
+            data.announcement_banner_message?.trim() || DEFAULT_PUBLIC_SETTINGS.announcementBannerMessage,
     };
 }
 
