@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthorizedAdminClient } from "@/lib/supabase/adminAuthorizedClient";
 import { sendInquiryStatusUpdate } from "@/lib/notifications/customerConfirmation";
 
 const ALLOWED_STATUSES = new Set([
@@ -10,56 +10,15 @@ const ALLOWED_STATUSES = new Set([
     "closed",
 ]);
 
-async function requireActiveAdmin() {
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
-    }
-
-    const { data: profile, error: profileError } = await supabase
-        .from("admin_profiles")
-        .select("is_active")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-    // Keep API auth behavior aligned with proxy.ts while RBAC table is unavailable.
-    const tableMissing = Boolean(
-        profileError && /admin_profiles/i.test(profileError.message)
-    );
-
-    if (profileError && !tableMissing) {
-        return {
-            error: NextResponse.json(
-                { error: "Could not verify admin profile" },
-                { status: 500 }
-            ),
-        };
-    }
-
-    if (tableMissing) {
-        return { supabase };
-    }
-
-    if (!profile || profile.is_active !== true) {
-        return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
-    }
-
-    return { supabase };
-}
-
 export async function PATCH(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const auth = await requireActiveAdmin();
-    if (auth.error) return auth.error;
+    const auth = await getAuthorizedAdminClient();
+    if ("error" in auth) return auth.error;
 
     const { id } = await params;
-    const { supabase } = auth;
+    const { adminClient: supabase } = auth;
 
     const body = await request.json().catch(() => ({}));
 
@@ -124,11 +83,11 @@ export async function DELETE(
     _request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const auth = await requireActiveAdmin();
-    if (auth.error) return auth.error;
+    const auth = await getAuthorizedAdminClient();
+    if ("error" in auth) return auth.error;
 
     const { id } = await params;
-    const { supabase } = auth;
+    const { adminClient: supabase } = auth;
 
     const { error } = await supabase.from("inquiries").delete().eq("id", id);
 
