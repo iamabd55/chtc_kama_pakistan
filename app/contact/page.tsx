@@ -6,6 +6,7 @@ interface ContactPageProps {
     searchParams?: Promise<{
         submitted?: string;
         error?: string;
+        ref?: string;
     }>;
 }
 
@@ -13,6 +14,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     const resolved = searchParams ? await searchParams : undefined;
     const isSubmitted = resolved?.submitted === "1";
     const hasError = resolved?.error === "1";
+    const inquiryReference = resolved?.ref?.trim() ?? "";
     const settings = await getPublicSiteSettings();
     const socialLinks = settings?.social_links && typeof settings.social_links === "object"
         ? (Object.entries(settings.social_links).filter(([, value]) => typeof value === "string" && value.trim().length > 0) as Array<[string, string]>)
@@ -67,13 +69,19 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             </section>
             <section className="py-20">
                 <div className="container">
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Contact Form */}
                         <div className="bg-card border rounded-lg p-8">
                             <h2 className="font-display font-bold text-2xl text-foreground mb-6">Send us a Message</h2>
                             {isSubmitted && (
                                 <div className="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700">
                                     Thanks. Your inquiry has been submitted and our team will contact you shortly.
+                                    {inquiryReference && (
+                                        <span className="mt-1 block font-semibold">Reference: {inquiryReference}</span>
+                                    )}
+                                    <a href={`/track-inquiry${inquiryReference ? `?ref=${encodeURIComponent(inquiryReference)}` : ""}`} className="mt-2 inline-flex text-xs font-semibold uppercase tracking-wider text-green-800 underline underline-offset-4">
+                                        Track inquiry status
+                                    </a>
                                 </div>
                             )}
                             {hasError && (
@@ -105,19 +113,22 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
 
                         {/* Contact Info */}
                         <div className="space-y-8">
-                            {contactInfo.map((item) => (
-                                <div key={item.title} className="flex gap-4">
-                                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
-                                        <item.icon className="w-6 h-6 text-primary" />
+                            {contactInfo.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <div key={item.title} className="flex gap-4">
+                                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                            <Icon className="w-6 h-6 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-display font-semibold text-foreground mb-1">{item.title}</h3>
+                                            {item.lines.map((line) => (
+                                                <p key={line} className="text-muted-foreground text-sm">{line}</p>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-display font-semibold text-foreground mb-1">{item.title}</h3>
-                                        {item.lines.map((line) => (
-                                            <p key={line} className="text-muted-foreground text-sm">{line}</p>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
 
                             {socialLinks.length > 0 && (
                                 <div className="pt-2">

@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PublicSiteSettings } from "@/hooks/useSiteSettings";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
@@ -173,6 +174,8 @@ const Header = ({ settings }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md shadow-sm">
+      <AnnouncementBanner settings={settings} />
+
       {/* Top bar — hides on scroll down and returns on scroll up */}
       <div
         className={`bg-primary overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${showTopBar ? "max-h-8 opacity-100" : "max-h-0 opacity-0"}`}

@@ -8,24 +8,30 @@ import StatusBadge from "@/components/admin/StatusBadge";
 import AvatarLabel from "@/components/admin/AvatarLabel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { adminDb } from "@/lib/supabase/adminClient";
 import { Search, Pencil, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { Inquiry } from "@/lib/supabase/types";
 
-const statuses = [
-    "new",
-    "contacted",
-    "in-progress",
-    "converted",
-    "closed",
+const statusOptions = [
+    { value: "new", label: "Received" },
+    { value: "in-progress", label: "In Review" },
+    { value: "converted", label: "Responded" },
 ] as const;
+
+const statusLabels: Record<Inquiry["status"], string> = {
+    new: "Received",
+    contacted: "In Review",
+    "in-progress": "In Review",
+    converted: "Responded",
+    closed: "Responded",
+};
 
 type InquiryWithProduct = Inquiry & {
     product: {
@@ -42,6 +48,22 @@ type InquiryDraft = {
     assigned_to: string;
     follow_up_date: string;
 };
+
+function getInquiryNote(message: string | null | undefined) {
+    if (!message) return null;
+
+    const lines = message
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+    if (lines.length === 0) return null;
+
+    const metadataPrefixes = ["Company:", "Request Type:", "Vehicle Category:", "Selected Product ID:", "Requested Product Slug:"];
+    const noteLines = lines.filter((line) => !metadataPrefixes.some((prefix) => line.startsWith(prefix)));
+
+    return (noteLines.length > 0 ? noteLines : lines).join(" ");
+}
 
 const AdminInquiries = () => {
     const searchParams = useSearchParams();
@@ -62,16 +84,30 @@ const AdminInquiries = () => {
     });
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
 
     const fetchData = async () => {
         setLoading(true);
-        let query = adminDb
-            .from("inquiries")
-            .select("*, product:products(id, name, slug, brand)")
-            .order("created_at", { ascending: false });
-        if (filterStatus !== "all") query = query.eq("status", filterStatus);
-        const { data } = await query;
-        setInquiries((data as InquiryWithProduct[]) || []);
+        setFetchError(null);
+        const params = new URLSearchParams();
+        if (filterStatus !== "all") params.set("status", filterStatus);
+        const qs = params.toString();
+        const res = await fetch(`/api/admin/inquiries${qs ? `?${qs}` : ""}`, {
+            credentials: "same-origin",
+        });
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            console.error("inquiries fetch failed", payload);
+            setFetchError(
+                typeof payload?.error === "string"
+                    ? payload.error
+                    : "Could not load inquiries"
+            );
+            setInquiries([]);
+        } else {
+            setInquiries((payload.inquiries as InquiryWithProduct[]) || []);
+        }
         setLoading(false);
     };
 
@@ -106,7 +142,7 @@ const AdminInquiries = () => {
         if (!selected || !detailOpen) return;
 
         setDraft({
-            status: selected.status,
+            status: selected.status === "contacted" ? "in-progress" : selected.status,
             notes: selected.notes || "",
             assigned_to: selected.assigned_to || "",
             follow_up_date: selected.follow_up_date || "",
@@ -241,6 +277,47 @@ const AdminInquiries = () => {
         await fetchData();
     };
 
+    const bulkDeleteInquiries = async () => {
+        const confirmMsg =
+            filterStatus === "all"
+                ? `Delete ALL ${inquiries.length} inquiries permanently? This action cannot be undone.`
+                : `Delete all ${inquiries.filter((i) => i.status === filterStatus).length} inquiries with status "${statusLabels[filterStatus as keyof typeof statusLabels]}"? This action cannot be undone.`;
+
+        const confirmed = window.confirm(confirmMsg);
+        if (!confirmed) return;
+
+        setBulkDeleting(true);
+        const response = await fetch("/api/admin/inquiries/bulk-delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                scope: filterStatus === "all" ? "all" : "filtered",
+                filterStatus: filterStatus === "all" ? null : filterStatus,
+            }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        setBulkDeleting(false);
+
+        if (!response.ok) {
+            toast({
+                title: "Error",
+                description: payload?.error || "Could not delete inquiries",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        toast({
+            title: "Success",
+            description: `Deleted ${payload.deletedCount} inquiry/inquiries`,
+        });
+        if (detailOpen && selected) {
+            setDetailOpen(false);
+            setSelected(null);
+        }
+        await fetchData();
+    };
+
     const columns = [
         {
             header: "Name",
@@ -324,19 +401,36 @@ const AdminInquiries = () => {
             title="Inquiries"
             subtitle={`${inquiries.length} total inquiries`}
         >
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1 max-w-sm">
+            {fetchError && (
+                <div
+                    className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                    role="alert"
+                >
+                    {fetchError}
+                </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <div className="relative flex-1 max-w-full sm:max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         placeholder="Search by name, city, phone..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 w-full"
                     />
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2">
                     <Button size="sm" variant="outline" onClick={exportCsv}>
                         Export CSV
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={bulkDeleteInquiries}
+                        disabled={bulkDeleting || inquiries.length === 0}
+                    >
+                        {bulkDeleting ? "Deleting..." : "Delete All"}
                     </Button>
                     <Button
                         size="sm"
@@ -345,15 +439,14 @@ const AdminInquiries = () => {
                     >
                         All
                     </Button>
-                    {statuses.map((s) => (
+                    {statusOptions.map((status) => (
                         <Button
-                            key={s}
+                            key={status.value}
                             size="sm"
-                            variant={filterStatus === s ? "default" : "outline"}
-                            onClick={() => setFilterStatus(s)}
-                            className="capitalize"
+                            variant={filterStatus === status.value ? "default" : "outline"}
+                            onClick={() => setFilterStatus(status.value)}
                         >
-                            {s.replace("-", " ")}
+                            {status.label}
                         </Button>
                     ))}
                 </div>
@@ -367,131 +460,172 @@ const AdminInquiries = () => {
             />
 
             <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-                <DialogContent className="max-w-lg">
-                    <DialogHeader>
-                        <DialogTitle className="font-display">Inquiry Details</DialogTitle>
-                    </DialogHeader>
-                    {selected && (
-                        <div className="space-y-4 mt-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <span className="text-muted-foreground">Name:</span>
-                                    <p className="font-medium">{selected.full_name}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Phone:</span>
-                                    <p className="font-medium">{selected.phone}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Email:</span>
-                                    <p className="font-medium">{selected.email || "—"}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">City:</span>
-                                    <p className="font-medium">{selected.city}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Type:</span>
-                                    <p className="font-medium capitalize">
-                                        {selected.inquiry_type}
-                                    </p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Product:</span>
-                                    <p className="font-medium">{selected.product?.name || "—"}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Product Slug:</span>
-                                    <p className="font-medium">{selected.product?.slug || "—"}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Source:</span>
-                                    <p className="font-medium capitalize">{selected.source}</p>
-                                </div>
-                            </div>
-                            {selected.message && (
-                                <div>
-                                    <span className="text-sm text-muted-foreground">
-                                        Message:
-                                    </span>
-                                    <p className="text-sm bg-muted p-3 rounded-lg mt-1">
-                                        {selected.message}
-                                    </p>
-                                </div>
-                            )}
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">Status</label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value={draft.status}
-                                    onChange={(e) =>
-                                        setDraft((prev) => ({
-                                            ...prev,
-                                            status: e.target.value as Inquiry["status"],
-                                        }))
-                                    }
-                                >
-                                    {statuses.map((s) => (
-                                        <option key={s} value={s} className="capitalize">
-                                            {s.replace("-", " ")}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">Notes</label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                                    value={draft.notes}
-                                    onChange={(e) =>
-                                        setDraft((prev) => ({
-                                            ...prev,
-                                            notes: e.target.value,
-                                        }))
-                                    }
-                                    placeholder="Add internal notes..."
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">Assigned To (User UUID)</label>
-                                <Input
-                                    value={draft.assigned_to}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setDraft((prev) => ({ ...prev, assigned_to: value }));
-                                    }}
-                                    placeholder="Enter auth user UUID"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">Follow-up Date</label>
-                                <Input
-                                    type="date"
-                                    value={draft.follow_up_date}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setDraft((prev) => ({ ...prev, follow_up_date: value }));
-                                    }}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between gap-3 pt-2">
-                                <Button
-                                    variant="destructive"
-                                    onClick={() => {
-                                        void deleteInquiry();
-                                    }}
-                                    disabled={saving || deleting}
-                                >
-                                    {deleting ? "Deleting..." : "Delete Inquiry"}
-                                </Button>
-                                <Button onClick={saveInquiryChanges} disabled={saving || deleting}>
-                                    {saving ? "Saving..." : "Save Changes"}
-                                </Button>
-                            </div>
+    <DialogContent className="w-full sm:w-[95vw] max-w-[850px] p-0 gap-0 overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogTitle className="sr-only">Inquiry Details</DialogTitle>
+
+        {/* Header */}
+       {/* Header — remove the custom X button entirely */}
+<header className="border-b px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+    <div>
+        <h3 className="font-display text-lg sm:text-xl font-semibold">Inquiry Details</h3>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+            Review the public reference, status, and internal notes.
+        </p>
+    </div>
+</header>
+
+        {/* Scrollable body */}
+        {selected && (
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 min-h-0">
+                {/* Reference */}
+                <div className="mb-4">
+                    <div className="inline-flex items-center gap-3 rounded-lg border bg-muted/30 px-3 py-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                            Reference
+                        </span>
+                        <span className="font-mono text-sm font-semibold text-foreground">
+                            {selected.public_ref || selected.id}
+                        </span>
+                        <span className="text-xs text-muted-foreground">Public tracking ID</span>
+                    </div>
+                </div>
+
+                {/* Customer + Inquiry Info — always 2-col with compact spacing */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    {/* Customer Information */}
+                    <div className="col-span-2">
+                        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Customer Information</h4>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Name</div>
+                        <div className="font-medium text-sm">{selected.full_name}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Phone</div>
+                        <div className="font-medium text-sm">{selected.phone}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Email</div>
+                        <div className="font-medium text-sm break-all">{selected.email || "—"}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">City</div>
+                        <div className="font-medium text-sm">{selected.city}</div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="col-span-2 border-t mt-1 pt-3">
+                        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Inquiry Information</h4>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Type</div>
+                        <div className="font-medium text-sm capitalize">{selected.inquiry_type}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Product</div>
+                        <div className="font-medium text-sm">{selected.product?.name || "—"}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Source</div>
+                        <div className="font-medium text-sm capitalize">{selected.source}</div>
+                    </div>
+                    <div>
+                        <div className="text-xs text-muted-foreground">Date</div>
+                        <div className="font-medium text-sm">{new Date(selected.created_at).toLocaleString()}</div>
+                    </div>
+                </div>
+
+                {/* Message / Note */}
+                {getInquiryNote(selected.message) && (
+                    <div className="mt-4">
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Message / Note</h4>
+                        <div className="rounded-lg bg-muted p-3 text-sm leading-6">
+                            {getInquiryNote(selected.message)}
                         </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+                    </div>
+                )}
+
+                {/* Status & Notes — responsive with compact spacing */}
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label className="mb-1.5 block text-sm font-medium">Status</label>
+                        <select
+                            className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            value={draft.status}
+                            onChange={(e) => setDraft((prev) => ({ ...prev, status: e.target.value as Inquiry["status"] }))}
+                        >
+                            {statusOptions.map((s) => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-sm font-medium">Notes</label>
+                        <textarea
+                            className="h-[72px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                            value={draft.notes}
+                            onChange={(e) => setDraft((prev) => ({ ...prev, notes: e.target.value }))}
+                            placeholder="Add internal notes..."
+                        />
+                    </div>
+                </div>
+
+                {/* Internal handling */}
+                <details className="mt-4 rounded-lg border bg-muted/30 px-3 py-2">
+                    <summary className="cursor-pointer text-sm font-medium text-foreground select-none">
+                        Internal handling
+                    </summary>
+                    <div className="mt-3 space-y-3">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">Assigned To</label>
+                            <Input
+                                value={draft.assigned_to}
+                                onChange={(e) =>
+                                    setDraft((prev) => ({ ...prev, assigned_to: e.target.value }))
+                                }
+                                placeholder="Enter auth user UUID"
+                            />
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">Follow-up Date</label>
+                            <Input
+                                type="date"
+                                value={draft.follow_up_date}
+                                onChange={(e) =>
+                                    setDraft((prev) => ({ ...prev, follow_up_date: e.target.value }))
+                                }
+                            />
+                        </div>
+                    </div>
+                </details>
+            </div>
+        )}
+
+        {/* Footer — always visible, compact and responsive */}
+        <footer className="flex-shrink-0 border-t px-4 sm:px-6 py-3 bg-background">
+            <div className="flex items-center justify-between gap-2">
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => void deleteInquiry()}
+                    disabled={saving || deleting}
+                >
+                    {deleting ? "Deleting..." : "Delete"}
+                </Button>
+                <div className="flex gap-2">
+                    <DialogClose asChild>
+                        <Button variant="outline" size="sm" disabled={saving || deleting}>
+                            Close
+                        </Button>
+                    </DialogClose>
+                    <Button size="sm" onClick={saveInquiryChanges} disabled={saving || deleting}>
+                        {saving ? "Saving..." : "Save Changes"}
+                    </Button>
+                </div>
+            </div>
+        </footer>
+    </DialogContent>
+</Dialog>
         </AdminLayout>
     );
 };

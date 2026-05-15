@@ -17,10 +17,10 @@ import {
     Sparkles,
     Rocket,
     X,
-    Images,
-    Award,
+    MessageCircle,
     Users,
     UserCog,
+    Activity,
 } from "lucide-react";
 import { adminDb } from "@/lib/supabase/adminClient";
 import Image from "next/image";
@@ -35,7 +35,10 @@ interface AdminSidebarProps {
 const menuGroups = [
     {
         label: "Overview",
-        items: [{ label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard", hint: "Overview" }],
+        items: [
+            { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard", hint: "Overview" },
+            { label: "Analytics", icon: Activity, href: "/admin/analytics", hint: "Insights" },
+        ],
     },
     {
         label: "Commerce",
@@ -65,9 +68,7 @@ const menuGroups = [
     {
         label: "Content",
         items: [
-            { label: "Client Logos", icon: Images, href: "/admin/clients", hint: "Trust" },
-            { label: "Gallery", icon: Images, href: "/admin/gallery", hint: "Media" },
-            { label: "Certifications", icon: Award, href: "/admin/certifications", hint: "Compliance" },
+            { label: "Testimonials", icon: MessageCircle, href: "/admin/testimonials", hint: "Reviews" },
         ],
     },
 ];
@@ -88,13 +89,13 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 
     return (
         <aside className={cn(
-            "inset-y-0 left-0 z-50 w-[300px] flex flex-col bg-[linear-gradient(180deg,#06172f_0%,#0a1730_36%,#101521_100%)] text-white border-r border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.35)]",
+            "inset-y-0 left-0 z-50 w-[256px] flex flex-col bg-[linear-gradient(180deg,#06172f_0%,#0a1730_36%,#101521_100%)] text-white border-r border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.35)]",
             className
         )}>
             <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_30%_10%,rgba(255,255,255,0.24),transparent_35%),radial-gradient(circle_at_80%_40%,rgba(211,151,70,0.28),transparent_30%)]" />
 
             {/* Brand */}
-            <div className="relative px-5 py-5 border-b border-white/10">
+            <div className="relative px-4 py-4 border-b border-white/10">
                 {onRequestClose && (
                     <button
                         type="button"
@@ -105,22 +106,22 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                         <X className="h-4 w-4" />
                     </button>
                 )}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-white/55 font-semibold mb-2">Control Center</p>
-                    <div className="relative h-[52px] w-[170px]">
+                    <div className="relative h-[44px] w-[154px]">
                         <Image
                             src="/images/al-nasir-logo-white.webp"
                             alt="Al Nasir Motors"
                             fill
                             className="object-contain"
-                            sizes="170px"
+                            sizes="154px"
                             loading="lazy"
                         />
                     </div>
-                    <p className="font-display text-lg font-bold tracking-wide mt-2">Admin Workspace</p>
+                    <p className="font-display text-base font-bold tracking-wide mt-2">Admin Workspace</p>
                 </div>
 
-                <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 flex items-center justify-between">
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs text-white/80">
                         <ShieldCheck className="w-4 h-4 text-emerald-300" />
                         Secure Session
@@ -131,28 +132,28 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 
             {/* Nav */}
             <nav
-                className="relative flex-1 py-4 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(59,130,246,0.75)_rgba(255,255,255,0.08)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-blue-300 [&::-webkit-scrollbar-thumb]:to-blue-500 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-white/20 [&::-webkit-scrollbar-thumb:hover]:from-blue-200 [&::-webkit-scrollbar-thumb:hover]:to-cyan-400"
+                className="relative flex-1 py-3 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(59,130,246,0.75)_rgba(255,255,255,0.08)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-blue-300 [&::-webkit-scrollbar-thumb]:to-blue-500 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-white/20 [&::-webkit-scrollbar-thumb:hover]:from-blue-200 [&::-webkit-scrollbar-thumb:hover]:to-cyan-400"
             >
                 {menuGroups.map((group) => (
-                    <div key={group.label} className="mb-4">
-                        <p className="px-5 mb-2 text-[10px] uppercase tracking-[0.22em] text-white/45 font-semibold">{group.label}</p>
-                        <ul className="space-y-1 px-3">
+                    <div key={group.label} className="mb-3">
+                        <p className="px-4 mb-2 text-[10px] uppercase tracking-[0.22em] text-white/45 font-semibold">{group.label}</p>
+                        <ul className="space-y-1 px-2.5">
                             {group.items.map((item) => {
                                 const active = isActive(item.href);
                                 return (
                                     <li key={item.href}>
                                         <Link href={item.href}
                                             onClick={onNavigate}
-                                            className={`group relative flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl transition-all duration-200 ${active
+                                            className={`group relative flex items-center justify-between gap-2 px-3 py-2 rounded-xl transition-all duration-200 ${active
                                                 ? "bg-gradient-to-r from-primary/90 to-primary text-white shadow-lg shadow-primary/20"
                                                 : "text-white/70 hover:text-white hover:bg-white/8"
                                                 }`}
                                          prefetch={false}>
                                             <span className="flex items-center gap-3 min-w-0">
-                                                <span className={`flex items-center justify-center w-8 h-8 rounded-lg border ${active ? "bg-white/15 border-white/20" : "bg-white/5 border-white/10 group-hover:bg-white/10"}`}>
-                                                    <item.icon className="w-4.5 h-4.5 flex-shrink-0" />
+                                                <span className={`flex items-center justify-center w-7 h-7 rounded-lg border ${active ? "bg-white/15 border-white/20" : "bg-white/5 border-white/10 group-hover:bg-white/10"}`}>
+                                                    <item.icon className="w-4 h-4 flex-shrink-0" />
                                                 </span>
-                                                <span className="truncate text-sm font-medium">{item.label}</span>
+                                                <span className="truncate text-[13px] font-medium">{item.label}</span>
                                             </span>
                                             <span className={`text-[10px] uppercase tracking-wide ${active ? "text-white/80" : "text-white/45 group-hover:text-white/70"}`}>
                                                 {item.hint}
@@ -168,7 +169,7 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 
             {/* Footer actions */}
             <div className="relative border-t border-white/10 p-3">
-                <div className="mb-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 flex items-center gap-2 text-xs text-white/75">
+                <div className="mb-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2 flex items-center gap-2 text-xs text-white/75">
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                     Premium Control Mode
                 </div>
@@ -178,7 +179,7 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                 </div>
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-xl text-sm font-semibold text-white/85 bg-white/8 hover:bg-white/14 border border-white/10 transition-colors"
+                    className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded-xl text-sm font-semibold text-white/85 bg-white/8 hover:bg-white/14 border border-white/10 transition-colors"
                 >
                     <LogOut className="w-4 h-4" />
                     Sign out

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminDb } from "@/lib/supabase/adminClient";
 import { Save } from "lucide-react";
@@ -62,10 +63,22 @@ const AdminSettings = () => {
             google_maps_embed: settings.google_maps_embed || null,
             social_links: settings.social_links || {},
             hero_slides: parsedHeroSlides,
+            announcement_banner_enabled: settings.announcement_banner_enabled ?? false,
+            announcement_banner_message: settings.announcement_banner_message || null,
             company_tagline: settings.company_tagline || null,
             footer_text: settings.footer_text || null,
             updated_at: new Date().toISOString(),
         };
+
+        if (payload.announcement_banner_enabled && !payload.announcement_banner_message?.trim()) {
+            toast({
+                title: "Announcement message required",
+                description: "Please enter a banner message before turning it on.",
+                variant: "destructive",
+            });
+            setSaving(false);
+            return;
+        }
 
         const { error } = await adminDb
             .from("site_settings")
@@ -285,6 +298,58 @@ const AdminSettings = () => {
                                 }
                             />
                         </div>
+                    </div>
+                </motion.div>
+
+                {/* Announcement Banner */}
+                <motion.div
+                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.25, ease }}
+                >
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                            <h2 className="font-display text-lg font-bold text-foreground">
+                                Announcement Banner
+                            </h2>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Show a short global notice across the public site.
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-full border px-3 py-2">
+                            <Switch
+                                checked={settings.announcement_banner_enabled ?? false}
+                                onCheckedChange={(checked) =>
+                                    setSettings({
+                                        ...settings,
+                                        announcement_banner_enabled: checked,
+                                    })
+                                }
+                            />
+                            <span className="text-sm font-medium">
+                                {settings.announcement_banner_enabled ? "Enabled" : "Disabled"}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium mb-1 block">
+                            Banner Message
+                        </label>
+                        <p className="text-xs text-muted-foreground mb-2">
+                            Add one message per line to create a rotating ticker.
+                        </p>
+                        <textarea
+                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[96px]"
+                            placeholder={"Example: Eid holiday closure on Wednesday and Thursday.\nNew model launch arriving next week."}
+                            value={settings.announcement_banner_message || ""}
+                            onChange={(e) =>
+                                setSettings({
+                                    ...settings,
+                                    announcement_banner_message: e.target.value,
+                                })
+                            }
+                        />
                     </div>
                 </motion.div>
 

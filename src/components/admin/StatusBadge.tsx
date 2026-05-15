@@ -15,6 +15,16 @@ const statusColors: Record<string, string> = {
     hired: "bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 border-emerald-200",
     active: "bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 border-emerald-200",
     inactive: "bg-gradient-to-r from-slate-100 to-slate-50 text-slate-600 border-slate-200",
+    pending: "bg-gradient-to-r from-amber-100 to-amber-50 text-amber-700 border-amber-200",
+    approved: "bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 border-emerald-200",
+};
+
+const statusLabels: Record<string, string> = {
+    new: "Received",
+    contacted: "In Review",
+    "in-progress": "In Review",
+    converted: "Responded",
+    closed: "Responded",
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -23,9 +33,9 @@ const StatusBadge = ({ status }: { status: string }) => {
     return (
         <Badge
             variant="outline"
-            className={`capitalize text-[11px] font-semibold px-2.5 py-1 border ${colors}`}
+            className={`capitalize text-[10px] font-semibold px-2 py-0.5 border ${colors}`}
         >
-            {status.replace("-", " ")}
+            {statusLabels[status] || status.replace("-", " ")}
         </Badge>
     );
 };

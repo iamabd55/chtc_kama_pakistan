@@ -32,7 +32,7 @@ function DataTable<T extends { id: string }>({
     if (loading) {
         return (
             <div className="bg-white/85 rounded-2xl border border-slate-200 overflow-hidden shadow-[0_10px_24px_rgba(11,29,58,0.08)]">
-                <div className="p-12 text-center text-slate-500">
+                <div className="p-10 text-center text-sm text-slate-500">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
                     Loading records...
                 </div>
@@ -42,14 +42,14 @@ function DataTable<T extends { id: string }>({
 
     return (
         <div className="bg-white/90 rounded-2xl border border-slate-200 overflow-hidden shadow-[0_10px_24px_rgba(11,29,58,0.08)]">
-            <div className="max-h-[72vh] overflow-auto">
+            <div className="max-h-[55vh] md:max-h-[68vh] overflow-auto">
                 <Table>
                     <TableHeader className="sticky top-0 z-10 backdrop-blur bg-slate-50/95">
                         <TableRow className="hover:bg-transparent border-b border-slate-200">
                         {columns.map((col, i) => (
                             <TableHead
                                 key={i}
-                                className={`font-display font-semibold text-slate-700 uppercase tracking-[0.08em] text-[11px] ${col.className || ""}`}
+                                className={`h-10 sm:h-11 font-display font-semibold text-slate-700 uppercase tracking-[0.08em] text-[10px] ${col.className || ""}`}
                             >
                                 {col.header}
                             </TableHead>
@@ -61,7 +61,7 @@ function DataTable<T extends { id: string }>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="text-center py-14 text-slate-500"
+                                    className="text-center py-10 text-slate-500"
                                 >
                                     {emptyMessage}
                                 </TableCell>
@@ -70,11 +70,11 @@ function DataTable<T extends { id: string }>({
                             data.map((row) => (
                                 <TableRow
                                     key={row.id}
-                                    className={`${onRowClick ? "cursor-pointer" : ""} border-slate-100 hover:bg-primary/5 transition-colors`}
+                                    className={`${onRowClick ? "cursor-pointer" : ""} h-12 border-slate-100 hover:bg-primary/5 transition-colors`}
                                     onClick={() => onRowClick?.(row)}
                                 >
                                     {columns.map((col, i) => (
-                                        <TableCell key={i} className={`${col.className || ""} text-slate-800`}>
+                                        <TableCell key={i} className={`${col.className || ""} px-3 py-2 sm:px-4 sm:py-3 text-sm align-middle text-slate-800`}>
                                             {typeof col.accessor === "function"
                                                 ? col.accessor(row)
                                                 : (row[col.accessor] as ReactNode)}

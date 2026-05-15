@@ -9,6 +9,7 @@ type InquiryNotificationPayload = {
     city: string;
     message: string | null;
     inquiryId?: string;
+    inquiryReference?: string;
     inquiryStatus?: string;
     productName?: string | null;
     productSlug?: string | null;
@@ -17,6 +18,7 @@ type InquiryNotificationPayload = {
 const toHtml = (payload: InquiryNotificationPayload) => {
     const fields = [
         ["Inquiry ID", payload.inquiryId || "-"],
+        ["Reference", payload.inquiryReference || "-"],
         ["Status", payload.inquiryStatus || "new"],
         ["Source", payload.source],
         ["Inquiry Type", payload.inquiryType],
@@ -70,9 +72,9 @@ export async function sendInquiryNotification(payload: InquiryNotificationPayloa
         await sendViaResend({
             from: notificationFrom,
             to: notificationTo,
-            subject: `New ${payload.inquiryType} inquiry${payload.productName ? ` for ${payload.productName}` : ""} from ${payload.fullName}`,
+            subject: `New ${payload.inquiryType} inquiry${payload.inquiryReference ? ` (#${payload.inquiryReference})` : ""}${payload.productName ? ` for ${payload.productName}` : ""} from ${payload.fullName}`,
             html: toHtml(payload),
-            text: `${payload.inquiryType} inquiry from ${payload.fullName} (${payload.phone}) - ${payload.city}${payload.inquiryId ? ` | ID: ${payload.inquiryId}` : ""}`,
+            text: `${payload.inquiryType} inquiry from ${payload.fullName} (${payload.phone}) - ${payload.city}${payload.inquiryReference ? ` | Ref: ${payload.inquiryReference}` : payload.inquiryId ? ` | ID: ${payload.inquiryId}` : ""}`,
         });
     } catch {
         // Notification should not break user submission.

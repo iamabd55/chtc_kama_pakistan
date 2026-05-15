@@ -1,12 +1,14 @@
 import { sendViaResend } from "@/lib/notifications/resend";
+import { formatInquiryReferenceFromId } from "@/lib/inquiries";
 
 type ConfirmationPayload = {
     customerName: string;
     customerEmail: string;
     inquiryType: string;
     source: "contact" | "quote" | "product" | "after-sales" | "news";
-  inquiryId?: string;
-  inquiryStatus?: string;
+    inquiryId?: string;
+    inquiryReference?: string;
+    inquiryStatus?: string;
 };
 
 const confirmationHtml = (payload: ConfirmationPayload) => `
@@ -31,7 +33,7 @@ const confirmationHtml = (payload: ConfirmationPayload) => `
       </p>
       <div style="background:#f1f5f9;border-radius:8px;padding:16px;margin:0 0 20px">
         <p style="margin:0;color:#64748b;font-size:13px"><strong>Inquiry ID:</strong> ${payload.inquiryId || "Pending"}</p>
-        <p style="margin:0;color:#64748b;font-size:13px"><strong>Reference:</strong> ${payload.source.toUpperCase()} inquiry</p>
+        <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Reference:</strong> ${payload.inquiryReference || (payload.inquiryId ? formatInquiryReferenceFromId(payload.inquiryId) : "Pending")}</p>
         <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Status:</strong> ${payload.inquiryStatus || "new"}</p>
         <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Submitted:</strong> ${new Date().toLocaleDateString("en-PK", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
       </div>
@@ -72,9 +74,9 @@ export async function sendCustomerConfirmation(payload: ConfirmationPayload) {
     await sendViaResend({
       from: fromEmail,
       to: payload.customerEmail,
-      subject: `Your inquiry has been received${payload.inquiryId ? ` (#${payload.inquiryId.slice(0, 8)})` : ""} — Al Nasir Motors Pakistan`,
+      subject: `Your inquiry has been received${payload.inquiryReference ? ` (#${payload.inquiryReference})` : payload.inquiryId ? ` (#${formatInquiryReferenceFromId(payload.inquiryId)})` : ""} — Al Nasir Motors Pakistan`,
       html: confirmationHtml(payload),
-      text: `Dear ${payload.customerName}, thank you for your ${payload.inquiryType} inquiry. Inquiry ID: ${payload.inquiryId || "pending"}. Current status: ${payload.inquiryStatus || "new"}. Our team will get back to you within 24 business hours. For immediate assistance, WhatsApp: +92 300 8665 060`,
+      text: `Dear ${payload.customerName}, thank you for your ${payload.inquiryType} inquiry. Reference: ${payload.inquiryReference || (payload.inquiryId ? formatInquiryReferenceFromId(payload.inquiryId) : "pending")}. Current status: ${payload.inquiryStatus || "new"}. Our team will get back to you within 24 business hours. For immediate assistance, WhatsApp: +92 300 8665 060`,
         });
     } catch {
         // Customer confirmation should never break the submission flow.
@@ -85,6 +87,7 @@ type StatusUpdatePayload = {
     customerName: string;
     customerEmail: string;
     inquiryId: string;
+  inquiryReference?: string;
     inquiryType: string;
     status: "new" | "contacted" | "in-progress" | "converted" | "closed";
     notes?: string | null;
@@ -107,6 +110,7 @@ const statusUpdateHtml = (payload: StatusUpdatePayload) => `
       </p>
       <div style="background:#f1f5f9;border-radius:8px;padding:16px;margin:0 0 20px">
         <p style="margin:0;color:#64748b;font-size:13px"><strong>Inquiry ID:</strong> ${payload.inquiryId}</p>
+        <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Reference:</strong> ${payload.inquiryReference || formatInquiryReferenceFromId(payload.inquiryId)}</p>
         <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Status:</strong> ${payload.status}</p>
         <p style="margin:4px 0 0;color:#64748b;font-size:13px"><strong>Updated:</strong> ${new Date().toLocaleDateString("en-PK", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
       </div>
@@ -126,9 +130,9 @@ export async function sendInquiryStatusUpdate(payload: StatusUpdatePayload) {
     await sendViaResend({
       from: fromEmail,
       to: payload.customerEmail,
-      subject: `Inquiry Update (#${payload.inquiryId.slice(0, 8)}) — ${payload.status}`,
+      subject: `Inquiry Update (#${payload.inquiryReference || formatInquiryReferenceFromId(payload.inquiryId)}) — ${payload.status}`,
       html: statusUpdateHtml(payload),
-      text: `Dear ${payload.customerName}, your ${payload.inquiryType} inquiry (${payload.inquiryId}) status is now ${payload.status}.${payload.notes ? ` Note: ${payload.notes}` : ""}`,
+      text: `Dear ${payload.customerName}, your ${payload.inquiryType} inquiry (${payload.inquiryReference || formatInquiryReferenceFromId(payload.inquiryId)}) status is now ${payload.status}.${payload.notes ? ` Note: ${payload.notes}` : ""}`,
         });
     } catch {
         // Status emails should not break admin actions.

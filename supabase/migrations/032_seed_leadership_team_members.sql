@@ -52,16 +52,6 @@ values
     3
   ),
   (
-    '11111111-1111-1111-1111-111111111204',
-    '11111111-1111-1111-1111-111111111111',
-    'Shaukat Hayat',
-    'Director',
-    '/images/al-bcf/core-team/director-1-Shaukat-hayat.webp',
-    'Supports governance and enterprise management across core business units.',
-    true,
-    4
-  ),
-  (
     '11111111-1111-1111-1111-111111111205',
     '11111111-1111-1111-1111-111111111111',
     'M. Izhar Ul Haq',
@@ -69,7 +59,7 @@ values
     '/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp',
     'Leads sales and marketing strategy, dealer engagement, and market expansion activities.',
     true,
-    5
+    4
   )
 on conflict (id) do update set
   team_id = excluded.team_id,

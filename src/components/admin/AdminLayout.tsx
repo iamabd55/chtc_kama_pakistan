@@ -119,15 +119,16 @@ const AdminLayout = ({
                 </>
             )}
 
-            <div className="relative lg:ml-[300px] transition-all duration-300 min-h-screen">
-                <header className="px-4 md:px-8 pt-4 md:pt-6 relative z-10">
+            <div className="relative lg:ml-[256px] transition-all duration-300 min-h-screen">
+                <div className="mx-auto flex w-full max-w-[1500px] flex-col">
+                <header className="px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5 relative z-10">
                     <div
-                        className={`rounded-2xl border px-5 md:px-7 py-4 md:py-5 ${minimalChrome
+                        className={`rounded-2xl border px-3 sm:px-5 md:px-6 py-3 sm:py-4 ${minimalChrome
                             ? "border-slate-200 bg-white shadow-sm"
                             : "border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(9,26,57,0.08)]"
                             }`}
                     >
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 sm:gap-3">
                             <div>
                                 <div className="mb-3 lg:hidden">
                                     <button
@@ -139,21 +140,21 @@ const AdminLayout = ({
                                         Menu
                                     </button>
                                 </div>
-                                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-primary">
+                                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] uppercase text-primary">
                                     Al Nasir Motors Pakistan
                                 </div>
                                 <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold mb-1">{sectionLabel}</p>
-                                <h1 className="font-display text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+                                <h1 className="font-display text-2xl md:text-[34px] font-black text-slate-900 leading-tight">
                                     {title}
                                 </h1>
                                 {subtitle && (
-                                    <p className="text-sm md:text-base text-slate-600 mt-1">
+                                    <p className="text-sm md:text-[15px] text-slate-600 mt-1 max-w-2xl">
                                         {subtitle}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="flex items-center gap-3 flex-wrap md:justify-end">
+                            <div className="flex items-center gap-2 flex-wrap md:justify-end">
                                 {!hideHeaderMeta && (
                                     <>
                                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-300/40 bg-emerald-100/70 text-emerald-900 text-xs font-semibold">
@@ -172,15 +173,16 @@ const AdminLayout = ({
                     </div>
                 </header>
 
-                <main className="px-4 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6">
+                <main className="px-3 sm:px-4 md:px-6 pb-6 md:pb-10 pt-3 sm:pt-4 md:pt-5">
                     {useContentCard ? (
-                        <div className="rounded-2xl border border-slate-200/70 bg-white/45 backdrop-blur-sm p-4 md:p-6 shadow-[0_8px_30px_rgba(9,26,57,0.06)]">
+                        <div className="rounded-2xl border border-slate-200/70 bg-white/45 backdrop-blur-sm p-2.5 sm:p-3.5 md:p-5 shadow-[0_8px_30px_rgba(9,26,57,0.06)]">
                             {children}
                         </div>
                     ) : (
                         children
                     )}
                 </main>
+                </div>
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ import {
     isValidLocalPhone,
     isValidEmail,
 } from "@/lib/validation/inquiry";
+import { formatInquiryReferenceFromId } from "@/lib/inquiries";
 
 export async function POST(request: Request) {
     const wantsJson =
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
             message: compiledMessage || null,
             source: "web-form",
         })
-        .select("id, status")
+        .select("id, status, public_ref")
         .single();
 
     if (error) {
@@ -88,6 +89,8 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
     }
 
+    const inquiryReference = inserted?.public_ref || (inserted?.id ? formatInquiryReferenceFromId(inserted.id) : undefined);
+
     await sendInquiryNotification({
         source: "news",
         inquiryType: "general",
@@ -97,6 +100,7 @@ export async function POST(request: Request) {
         city,
         message: compiledMessage || null,
         inquiryId: inserted?.id,
+        inquiryReference,
         inquiryStatus: inserted?.status,
         productName: newsTitle || null,
         productSlug: newsSlug || null,
@@ -108,6 +112,7 @@ export async function POST(request: Request) {
         inquiryType: "general",
         source: "news",
         inquiryId: inserted?.id,
+        inquiryReference,
         inquiryStatus: inserted?.status,
     });
 
@@ -115,9 +120,17 @@ export async function POST(request: Request) {
         return NextResponse.json({
             ok: true,
             inquiryId: inserted?.id,
+            reference: inquiryReference,
             status: inserted?.status,
         });
     }
 
-    return NextResponse.redirect(new URL(`${safeReturnUrl}?submitted=1`, request.url), 303);
+    // Redirect to tracker page to show status
+    return NextResponse.redirect(
+        new URL(
+            `/track-inquiry${inquiryReference ? `?ref=${encodeURIComponent(inquiryReference)}` : ""}`,
+            request.url
+        ),
+        303
+    );
 }

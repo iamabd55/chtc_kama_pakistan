@@ -28,7 +28,6 @@ const teamFounders = [
 
 const teamLeaders = [
     { name: "Muneeb Ibrahim", role: "CEO", src: "/images/al-bcf/core-team/ceo.webp" },
-    { name: "Shaukat Hayat", role: "Director", src: "/images/al-bcf/core-team/director-1-Shaukat-hayat.webp" },
     { name: "M. Izhar Ul Haq", role: "Director", src: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp" },
 ];
 

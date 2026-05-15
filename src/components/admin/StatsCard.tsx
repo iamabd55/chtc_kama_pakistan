@@ -43,23 +43,23 @@ const StatsCard = ({
     const theme = colorMap[color];
 
     return (
-        <div className={`group relative overflow-hidden rounded-3xl border p-5 md:p-6 shadow-[0_12px_32px_rgba(13,35,67,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(13,35,67,0.13)] ${theme.shell}`}>
-            <div className={`pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-gradient-to-br ${theme.glow} blur-2xl`} />
+        <div className={`group relative overflow-hidden rounded-3xl border p-3 sm:p-4 md:p-5 shadow-[0_12px_32px_rgba(13,35,67,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(13,35,67,0.13)] ${theme.shell}`}>
+            <div className={`pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-gradient-to-br ${theme.glow} blur-2xl`} />
             <div className="relative flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                    <p className="text-[12px] uppercase tracking-[0.22em] font-semibold text-slate-500/95">{title}</p>
-                    <p className="mt-3 text-[2rem] md:text-[2.2rem] font-semibold leading-none text-slate-900 tabular-nums">
+                    <p className="text-[11px] uppercase tracking-[0.22em] font-semibold text-slate-500/95">{title}</p>
+                    <p className="mt-2 text-[1.5rem] sm:text-[1.75rem] md:text-[2rem] font-semibold leading-none text-slate-900 tabular-nums">
                         {value}
                     </p>
                     {trend && (
-                        <span className={`inline-flex items-center gap-1.5 mt-4 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${trendUp ? "text-emerald-800 bg-emerald-100/70 border-emerald-300/70" : "text-rose-800 bg-rose-100/70 border-rose-300/70"}`}>
-                            <span className="text-[10px] leading-none">{trendUp ? "▲" : "▼"}</span>
+                        <span className={`inline-flex items-center gap-1.5 mt-3 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${trendUp ? "text-emerald-800 bg-emerald-100/70 border-emerald-300/70" : "text-rose-800 bg-rose-100/70 border-rose-300/70"}`}>
+                            <span className="text-[9px] leading-none">{trendUp ? "▲" : "▼"}</span>
                             {trend}
                         </span>
                     )}
                 </div>
-                <div className={`h-14 w-14 shrink-0 rounded-2xl border backdrop-blur-sm flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${theme.icon}`}>
-                    <Icon className="w-6 h-6" strokeWidth={2.1} />
+                <div className={`h-12 w-12 shrink-0 rounded-2xl border backdrop-blur-sm flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${theme.icon}`}>
+                    <Icon className="w-5 h-5" strokeWidth={2.1} />
                 </div>
             </div>
         </div>

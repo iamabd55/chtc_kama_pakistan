@@ -22,9 +22,21 @@ const STATIC_ROUTES = [
     "/contact",
     "/careers",
     "/get-quote",
+    "/track-inquiry",
+    "/testimonials",
     "/privacy",
     "/terms",
 ];
+
+// Pages that should appear as Google sitelinks — given high priority
+const SITELINK_ROUTES = new Set([
+    "/products",
+    "/find-dealer",
+    "/get-quote",
+    "/after-sales",
+    "/brands",
+    "/contact",
+]);
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date();
@@ -33,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: absoluteUrl(route),
         lastModified: now,
         changeFrequency: route === "/" ? "daily" : "weekly",
-        priority: route === "/" ? 1 : 0.7,
+        priority: route === "/" ? 1 : SITELINK_ROUTES.has(route) ? 0.9 : 0.7,
     }));
 
     try {
