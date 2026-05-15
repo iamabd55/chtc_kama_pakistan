@@ -93,6 +93,8 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "Find a Dealer", href: "/find-dealer" },
                 { label: "After Sales", href: "/after-sales" },
                 { label: "Get a Quote", href: "/get-quote" },
+                { label: "Track Inquiry", href: "/track-inquiry" },
+                { label: "Testimonials", href: "/testimonials" },
                 { label: "Careers", href: "/careers" },
               ].map((link) => (
                 <li key={link.label}>
@@ -119,6 +121,7 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "Quality & Certifications", href: "/about/certifications" },
                 { label: "News & Events", href: "/news" },
                 { label: "Gallery", href: "/gallery" },
+                { label: "Testimonials", href: "/testimonials" },
               ].map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} prefetch={false} className="transition-all duration-300 hover:translate-x-1 hover:text-white">
