@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ChevronRight, ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { Search, ChevronRight, ChevronDown, SlidersHorizontal, X, GitCompareArrows, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Category, Product } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
@@ -158,33 +158,34 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
         <section className="py-12 md:py-20">
             <div className="container">
                 {/* ── Toolbar ── */}
-                <div className="flex flex-col gap-4 mb-10">
-                    {/* Search + Sort row */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        {/* Search */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                placeholder="Search vehicles..."
-                                className="w-full pl-10 pr-4 py-2.5 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-sm"
-                            />
-                            {search && (
-                                <button onClick={() => handleSearchChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            )}
-                        </div>
+                <div className="flex flex-col gap-3 mb-10">
 
-                        {/* Sort */}
-                        <div className="relative">
+                    {/* Row 1: Search — full width always */}
+                    <div className="relative">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            placeholder="Search vehicles..."
+                            className="w-full pl-10 pr-4 py-2.5 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-sm"
+                        />
+                        {search && (
+                            <button onClick={() => handleSearchChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Row 2: Sort + action buttons — all in one row on every screen size */}
+                    <div className="flex items-center gap-2">
+                        {/* Sort — grows to fill available space */}
+                        <div className="relative flex-1">
                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                             <select
                                 value={sort}
                                 onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                                className="appearance-none pl-4 pr-9 py-2.5 border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all cursor-pointer min-w-[170px]"
+                                className="appearance-none w-full pl-4 pr-9 py-2.5 border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all cursor-pointer"
                             >
                                 {SORT_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -192,21 +193,52 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
                             </select>
                         </div>
 
-                        {/* Mobile filter toggle */}
+                        {/* Compare button — visible on ALL screen sizes */}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (compareIds.length >= 2) {
+                                    window.location.href = `/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`;
+                                }
+                            }}
+                            title={compareIds.length < 2 ? "Select at least 2 vehicles to compare" : "Compare selected vehicles"}
+                            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border text-sm font-semibold transition-all duration-200 shrink-0 ${
+                                compareIds.length >= 2
+                                    ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-kama-blue-dark cursor-pointer"
+                                    : compareIds.length === 1
+                                    ? "bg-primary/10 text-primary border-primary/30 cursor-default"
+                                    : "bg-background text-muted-foreground border-border cursor-default"
+                            }`}
+                        >
+                            <GitCompareArrows className="w-4 h-4 shrink-0" />
+                            <span className="hidden xs:inline sm:inline">Compare</span>
+                            {compareIds.length > 0 && (
+                                <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-bold ${compareIds.length >= 2 ? "bg-white/25 text-white" : "bg-primary/20 text-primary"}`}>
+                                    {compareIds.length}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Filters toggle button */}
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="flex sm:hidden items-center justify-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                            className={`flex items-center gap-1.5 px-3.5 py-2.5 border rounded-lg text-sm font-medium transition-colors shrink-0 ${
+                                showFilters || hasActiveFilters
+                                    ? "bg-primary/10 text-primary border-primary/30"
+                                    : "bg-background text-foreground border-border hover:bg-muted"
+                            }`}
                         >
-                            <SlidersHorizontal className="w-4 h-4" />
-                            Filters
+                            <SlidersHorizontal className="w-4 h-4 shrink-0" />
+                            <span className="hidden xs:inline">Filters</span>
                             {hasActiveFilters && (
                                 <span className="w-2 h-2 rounded-full bg-primary" />
                             )}
                         </button>
                     </div>
 
-                    {/* Filters: Category + Brand pills */}
-                    <div className={`flex-col gap-4 ${showFilters ? "flex" : "hidden sm:flex"}`}>
+                    {/* Row 3: Filters panel — Category + Brand pills */}
+                    <div className={`flex-col gap-3 ${showFilters ? "flex" : "hidden sm:flex"}`}>
+
                         {/* Category pills */}
                         <div className="flex flex-wrap gap-2">
                             <button
@@ -432,36 +464,54 @@ export default function ProductsExplorer({ categories, products }: ProductsExplo
             </div>
         </section>
 
-        {compareIds.length > 0 && (
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,780px)] rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-xl shadow-[0_14px_40px_rgba(10,27,55,0.18)] px-4 py-3">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                        <p className="text-sm font-semibold text-slate-900">
-                            {compareIds.length} vehicle{compareIds.length > 1 ? "s" : ""} selected for comparison
+        {/* ── Floating Compare Bar ── */}
+        <AnimatePresence>
+            {compareIds.length > 0 && (
+                <motion.div
+                    initial={{ y: 80, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 80, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    className="fixed bottom-20 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[560px] z-50 rounded-2xl bg-kama-navy shadow-2xl px-4 py-3"
+                >
+                    <div className="flex items-center gap-3">
+                        {/* Count badge */}
+                        <span className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white/15 text-white text-sm font-black">
+                            {compareIds.length}
+                        </span>
+
+                        {/* Message */}
+                        <p className="flex-1 min-w-0 text-white text-sm font-semibold leading-tight truncate">
+                            {compareIds.length === 1 ? "Pick 1 more vehicle" : "Ready to compare!"}
                         </p>
-                        <p className="text-xs text-slate-500">Select up to 3 vehicles from the catalog.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
+
+                        {/* Clear */}
                         <button
                             type="button"
                             onClick={() => setCompareIds([])}
-                            className="px-3 py-2 text-xs font-semibold rounded-lg border hover:bg-muted transition-colors"
+                            title="Clear"
+                            className="shrink-0 text-white/50 hover:text-red-300 transition-colors"
                         >
-                            Clear
+                            <Trash2 className="w-4 h-4" />
                         </button>
-                        <Link href={`/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
-                            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
+
+                        {/* Compare */}
+                        <Link
+                            href={`/products/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
+                            className={`shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-bold transition-all ${
                                 compareIds.length >= 2
-                                    ? "bg-primary text-primary-foreground hover:bg-kama-blue-dark"
-                                    : "bg-slate-200 text-slate-500 pointer-events-none"
+                                    ? "bg-white text-kama-navy hover:bg-kama-gold"
+                                    : "bg-white/20 text-white/40 pointer-events-none"
                             }`}
+                            prefetch={false}
                         >
-                            Compare Now
+                            <GitCompareArrows className="w-4 h-4" />
+                            Compare
                         </Link>
                     </div>
-                </div>
-            </div>
-        )}
+                </motion.div>
+            )}
+        </AnimatePresence>
         </>
     );
 }
