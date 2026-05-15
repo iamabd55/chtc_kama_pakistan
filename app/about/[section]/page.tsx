@@ -39,12 +39,6 @@ const teamMembers = [
         bio: "Oversees execution, operational performance, and business transformation across departments.",
     },
     {
-        name: "Shaukat Hayat",
-        role: "Director",
-        photo_url: "/images/al-bcf/core-team/director-1-Shaukat-hayat.webp",
-        bio: "Supports governance and enterprise management across core business units.",
-    },
-    {
         name: "M. Izhar Ul Haq",
         role: "Director Sales & Marketing",
         photo_url: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp",
@@ -220,18 +214,27 @@ export default async function AboutSectionPage({ params }: AboutSectionPageProps
                     )}
 
                     {canonicalSection === "clients" && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
                             {clientData.map((client) => (
-                                <article key={client.id} className="rounded-xl border bg-card p-5 flex items-center gap-4">
-                                    <Image
-                                        src={resolveLogoUrl(client.logo_url)}
-                                        alt={client.name}
-                                        width={48}
-                                        height={48}
-                                        sizes="48px"
-                                        className="w-12 h-12 rounded-md object-cover bg-muted"
-                                     loading="lazy" />
-                                    <p className="font-semibold text-foreground">{client.name}</p>
+                                <article
+                                    key={client.id}
+                                    className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center justify-center gap-3 p-6"
+                                >
+                                    {/* Logo area — fixed height, contain so nothing is cropped */}
+                                    <div className="w-full flex items-center justify-center h-20 px-2">
+                                        <Image
+                                            src={resolveLogoUrl(client.logo_url)}
+                                            alt={client.name}
+                                            width={140}
+                                            height={80}
+                                            sizes="140px"
+                                            className="max-h-20 w-auto max-w-full object-contain"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                    <p className="text-sm font-semibold text-center text-foreground/80 leading-tight">
+                                        {client.name}
+                                    </p>
                                 </article>
                             ))}
                         </div>
