@@ -9,6 +9,7 @@ import {
     isValidLocalPhone,
     isValidEmail,
 } from "@/lib/validation/inquiry";
+import { formatInquiryReferenceFromId } from "@/lib/inquiries";
 
 export async function POST(request: Request) {
     const form = await request.formData();
@@ -28,8 +29,8 @@ export async function POST(request: Request) {
 
     const phone = normalizePhone(phoneRaw);
 
-    if (!fullName || !phone || !city || !vehicleCategory) {
-        console.warn('[inquiry] Validation failed - missing required fields', { fullName: Boolean(fullName), phone: Boolean(phone), city: Boolean(city), vehicleCategory: Boolean(vehicleCategory) });
+    if (!fullName || !phone || !email || !city || !vehicleCategory) {
+        console.warn('[inquiry] Validation failed - missing required fields', { fullName: Boolean(fullName), phone: Boolean(phone), email: Boolean(email), city: Boolean(city), vehicleCategory: Boolean(vehicleCategory) });
         return NextResponse.redirect(new URL("/get-quote?error=missing_fields", request.url), 303);
     }
 
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL("/get-quote?error=invalid_phone", request.url), 303);
     }
 
-    if (email && !isValidEmail(email)) {
+    if (!isValidEmail(email)) {
         console.warn('[inquiry] Validation failed - invalid email', { email });
         return NextResponse.redirect(new URL("/get-quote?error=invalid_email", request.url), 303);
     }
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
         const insertPayload = {
             full_name: fullName,
             phone,
-            email: email || null,
+            email,
             city,
             product_id: resolvedProductId,
             inquiry_type: inquiryType,
@@ -101,9 +102,11 @@ export async function POST(request: Request) {
             source: "web-form",
         };
 
-        let { error } = await supabase
+        let { data: inserted, error } = await supabase
             .from("inquiries")
-            .insert(insertPayload);
+            .insert(insertPayload)
+            .select("id, status, public_ref")
+            .maybeSingle();
 
         if (error && serviceRoleKey) {
             console.error("[inquiry] Service-role insert failed, retrying with anon client", {
@@ -114,8 +117,11 @@ export async function POST(request: Request) {
             const anonClient = await createClient();
             const anonInsert = await anonClient
                 .from("inquiries")
-                .insert(insertPayload);
+                .insert(insertPayload)
+                .select("id, status, public_ref")
+                .maybeSingle();
 
+            inserted = anonInsert.data;
             error = anonInsert.error;
         }
 
@@ -129,16 +135,19 @@ export async function POST(request: Request) {
             return NextResponse.redirect(new URL("/get-quote?error=supabase", request.url), 303);
         }
 
+        const inquiryReference = inserted?.public_ref || (inserted?.id ? formatInquiryReferenceFromId(inserted.id) : undefined);
+
         await sendInquiryNotification({
             source: "quote",
             inquiryType,
             fullName,
             phone,
-            email: email || null,
+            email,
             city,
             message: messageParts.join("\n") || null,
-            inquiryId: undefined,
-            inquiryStatus: undefined,
+            inquiryId: inserted?.id,
+            inquiryReference,
+            inquiryStatus: inserted?.status,
             productName: resolvedProductName,
             productSlug: resolvedProductSlug,
         });
@@ -148,11 +157,19 @@ export async function POST(request: Request) {
             customerEmail: email,
             inquiryType,
             source: "quote",
-            inquiryId: undefined,
-            inquiryStatus: undefined,
+            inquiryId: inserted?.id,
+            inquiryReference,
+            inquiryStatus: inserted?.status,
         });
 
-        return NextResponse.redirect(new URL("/get-quote?submitted=1", request.url), 303);
+        // Redirect to tracker page to show status
+        return NextResponse.redirect(
+            new URL(
+                `/track-inquiry${inquiryReference ? `?ref=${encodeURIComponent(inquiryReference)}` : ""}`,
+                request.url
+            ),
+            303
+        );
     } catch (err) {
         console.error("[inquiry] Unexpected error:", err);
         return NextResponse.redirect(new URL("/get-quote?error=server", request.url), 303);
