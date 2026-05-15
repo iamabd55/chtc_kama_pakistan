@@ -102,15 +102,138 @@ export default async function RootLayout({
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
         name: "Al Nasir Motors Pakistan",
         url: SITE_URL,
-        logo: absoluteUrl("/images/logo.webp"),
+        logo: {
+            "@type": "ImageObject",
+            url: absoluteUrl("/images/logo.webp"),
+            width: 300,
+            height: 60,
+        },
         email: initialSettings.supportEmail,
         telephone: initialSettings.officePhone,
         address: {
             "@type": "PostalAddress",
             streetAddress: initialSettings.officeAddress,
+            addressLocality: "Lahore",
+            addressRegion: "Punjab",
             addressCountry: "PK",
+        },
+        sameAs: [
+            "https://www.facebook.com/alnasirmotors",
+        ],
+    };
+
+    // WebSite schema — enables the Google Sitelinks Search Box
+    const webSiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "Al Nasir Motors Pakistan",
+        description: "Your trusted partner for commercial vehicles in Pakistan — mini trucks, light trucks, EV trucks, buses and special-purpose vehicles.",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${SITE_URL}/products?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+        },
+    };
+
+    // SiteNavigationElement schema — signals Google which pages should
+    // appear as sitelinks under the main search result
+    const navSchema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: "Al Nasir Motors Pakistan — Main Navigation",
+        itemListElement: [
+            {
+                "@type": "SiteNavigationElement",
+                position: 1,
+                name: "Products",
+                description: "Browse our full lineup of mini trucks, light trucks, EV trucks and buses.",
+                url: absoluteUrl("/products"),
+            },
+            {
+                "@type": "SiteNavigationElement",
+                position: 2,
+                name: "Find a Dealer",
+                description: "Locate your nearest Al Nasir Motors authorized dealer across Pakistan.",
+                url: absoluteUrl("/find-dealer"),
+            },
+            {
+                "@type": "SiteNavigationElement",
+                position: 3,
+                name: "Get a Quote",
+                description: "Request a price quote for any commercial vehicle in our range.",
+                url: absoluteUrl("/get-quote"),
+            },
+            {
+                "@type": "SiteNavigationElement",
+                position: 4,
+                name: "After Sales",
+                description: "Spare parts, scheduled maintenance, warranty and service appointments.",
+                url: absoluteUrl("/after-sales"),
+            },
+            {
+                "@type": "SiteNavigationElement",
+                position: 5,
+                name: "CHTC Brands",
+                description: "Explore KAMA, Kinwin and Joylong brand lineups available in Pakistan.",
+                url: absoluteUrl("/brands"),
+            },
+            {
+                "@type": "SiteNavigationElement",
+                position: 6,
+                name: "Contact Us",
+                description: "Get in touch with our team via phone, email, WhatsApp, or our contact form.",
+                url: absoluteUrl("/contact"),
+            },
+        ],
+    };
+
+    // LocalBusiness schema — improves the Google Knowledge Panel
+    const localBusinessSchema = {
+        "@context": "https://schema.org",
+        "@type": "AutoDealer",
+        "@id": `${SITE_URL}/#localbusiness`,
+        name: "Al Nasir Motors Pakistan",
+        url: SITE_URL,
+        telephone: initialSettings.officePhone || "+92 300 8665 060",
+        email: initialSettings.supportEmail || "info@alnasirmotors.com.pk",
+        image: absoluteUrl("/images/logo.webp"),
+        logo: absoluteUrl("/images/logo.webp"),
+        address: {
+            "@type": "PostalAddress",
+            streetAddress: initialSettings.officeAddress || "19-KM Multan Road",
+            addressLocality: "Lahore",
+            addressRegion: "Punjab",
+            addressCountry: "PK",
+        },
+        openingHoursSpecification: [
+            {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                opens: "09:00",
+                closes: "18:00",
+            },
+            {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Saturday"],
+                opens: "09:00",
+                closes: "14:00",
+            },
+        ],
+        priceRange: "$$",
+        currenciesAccepted: "PKR",
+        paymentAccepted: "Cash, Bank Transfer",
+        areaServed: {
+            "@type": "Country",
+            name: "Pakistan",
         },
     };
 
@@ -125,10 +248,11 @@ export default async function RootLayout({
                 {supabaseOrigin && <link rel="dns-prefetch" href={supabaseOrigin} />}
             </head>
             <body>
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-                />
+                {/* Structured Data — all four schemas for maximum Google rich result coverage */}
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }} />
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(navSchema) }} />
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
                 <GoogleAnalytics />
                 <ScrollProgress />
                 <TooltipProvider>
