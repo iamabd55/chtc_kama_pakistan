@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 type FormValues = {
     full_name: string;
@@ -61,6 +62,7 @@ export default function NewsInquiryForm({
     const [submitting, setSubmitting] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [reference, setReference] = useState<string | null>(null);
 
     const visibleErrors = useMemo(() => {
         const next: FieldErrors = {};
@@ -137,7 +139,20 @@ export default function NewsInquiryForm({
             setValues(emptyValues);
             setTouched({});
             setErrors({});
-            setSuccess("Inquiry submitted successfully. Our team will contact you shortly.");
+            const ref = typeof payload?.reference === "string" ? payload.reference : null;
+            setReference(ref);
+            setSuccess(
+                ref
+                    ? `Inquiry submitted successfully! Reference: ${ref}. Redirecting to tracker in 3 seconds...`
+                    : "Inquiry submitted successfully. Our team will contact you shortly."
+            );
+            
+            // Auto-redirect to tracker after 3 seconds
+            if (ref) {
+                setTimeout(() => {
+                    window.location.href = `/track-inquiry?ref=${encodeURIComponent(ref)}`;
+                }, 3000);
+            }
         } catch {
             setServerError("Network issue while submitting inquiry. Please try again.");
         } finally {
@@ -148,8 +163,13 @@ export default function NewsInquiryForm({
     return (
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             {success && (
-                <div className="rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-700">
-                    {success}
+                <div className="rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-green-700">
+                    <p className="font-semibold text-base mb-3">{success}</p>
+                    {reference && (
+                        <Link href={`/track-inquiry?ref=${encodeURIComponent(reference)}`} className="inline-block px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md text-sm transition-colors">
+                            Go to Tracker →
+                        </Link>
+                    )}
                 </div>
             )}
 
