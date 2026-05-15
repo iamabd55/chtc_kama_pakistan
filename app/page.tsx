@@ -3,8 +3,8 @@ import HeroSection from "@/components/home/HeroSection";
 import VehiclesSection from "@/components/home/VehiclesSection";
 import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import { getStorageUrl } from "@/lib/supabase/storage";
-import type { Dealer, SiteSettings } from "@/lib/supabase/types";
 import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
+import { fetchApprovedTestimonials } from "@/lib/testimonials";
 
 export const revalidate = 300;
 
@@ -28,8 +28,8 @@ const CTASection = dynamic(() => import("@/components/home/CTASection"), {
     loading: () => <div className="h-[360px] bg-[#0364CE]" aria-hidden="true" />,
 });
 
-const DealerSection = dynamic(() => import("@/components/home/DealerSection"), {
-    loading: () => <div className="h-[760px] bg-background" aria-hidden="true" />,
+const TestimonialsSection = dynamic(() => import("@/components/testimonials/TestimonialsSection"), {
+    loading: () => <div className="h-[480px] bg-background" aria-hidden="true" />,
 });
 
 type HeroSlideSettingsItem = {
@@ -47,17 +47,12 @@ const resolveHeroImage = (value: string) => {
 export default async function HomePage() {
     const supabase = createPublicServerClient();
 
-    // Fire all three independent network requests simultaneously to reduce TTFB
-    const [settings, { data: heroFiles }, { data: dealerRows }] = await Promise.all([
+    const [settings, { data: heroFiles }, testimonials] = await Promise.all([
         getPublicSiteSettings(),
         supabase.storage
             .from("images")
             .list("hero", { sortBy: { column: "name", order: "asc" } }),
-        supabase
-            .from("dealers")
-            .select("name, city, province, lat, lng, google_maps_url")
-            .eq("is_active", true)
-            .order("city", { ascending: true })
+        fetchApprovedTestimonials(supabase, 3),
     ]);
 
     const configuredSlides = (settings?.hero_slides ?? []) as HeroSlideSettingsItem[];
@@ -77,8 +72,6 @@ export default async function HomePage() {
 
     const heroSlides = heroSlidesFromSettings.length > 0 ? heroSlidesFromSettings : heroSlidesFromStorage;
 
-    const dealers = (dealerRows ?? []) as Pick<Dealer, "name" | "city" | "province" | "lat" | "lng" | "google_maps_url">[];
-
     return (
         <>
             <HeroSection slides={heroSlides} />
@@ -88,7 +81,9 @@ export default async function HomePage() {
             <BrandsSection />
             <FabricationSection />
             <CTASection />
-            <DealerSection dealers={dealers} />
+            {testimonials.length > 0 && (
+                <TestimonialsSection items={testimonials} variant="home" />
+            )}
         </>
     );
 }
