@@ -410,7 +410,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         <div className="rounded-2xl border bg-card p-7 md:p-10 shadow-sm">
                             <div className="max-w-3xl mb-8 md:mb-10">
                                 <p className="text-accent font-display font-bold text-xs uppercase tracking-[0.25em] mb-2">Direct Support</p>
-                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">Send Product Inquiry</h2>
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-4">Send Product Inquiry</h2>
                                 <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
                                     Use this form for technical questions, product compatibility, documentation, and guidance.
                                     For pricing and delivery offers, use the <span className="font-semibold text-foreground">Get a Quote</span> option.
