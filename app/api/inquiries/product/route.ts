@@ -9,6 +9,7 @@ import {
     isValidLocalPhone,
     isValidEmail,
 } from "@/lib/validation/inquiry";
+import { formatInquiryReferenceFromId } from "@/lib/inquiries";
 
 export async function POST(request: Request) {
     const wantsJson =
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     if (!isValidLocalPhone(phone)) {
-        const jsonResponse = fail("Phone must be exactly 11 digits without country code.", "phone");
+        const jsonResponse = fail("Please enter a valid Pakistani phone number (e.g. 0300-1234567).", "phone");
         if (jsonResponse) return jsonResponse;
         return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
     }
@@ -111,7 +112,11 @@ export async function POST(request: Request) {
             source: "web-form",
         };
 
-        let { error } = await supabase.from("inquiries").insert(insertPayload);
+        let { data: inserted, error } = await supabase
+            .from("inquiries")
+            .insert(insertPayload)
+            .select("id, status, public_ref")
+            .maybeSingle();
 
         if (error && serviceRoleKey) {
             console.error("[inquiry] Service-role insert failed, retrying with anon client", {
@@ -120,7 +125,12 @@ export async function POST(request: Request) {
             });
 
             const anonClient = await createClient();
-            const anonInsert = await anonClient.from("inquiries").insert(insertPayload);
+            const anonInsert = await anonClient
+                .from("inquiries")
+                .insert(insertPayload)
+                .select("id, status, public_ref")
+                .maybeSingle();
+            inserted = anonInsert.data;
             error = anonInsert.error;
         }
 
@@ -140,6 +150,8 @@ export async function POST(request: Request) {
             return NextResponse.redirect(new URL(`${safeReturnUrl}?error=1`, request.url), 303);
         }
 
+        const inquiryReference = inserted?.public_ref || (inserted?.id ? formatInquiryReferenceFromId(inserted.id) : undefined);
+
         await sendInquiryNotification({
             source: "product",
             inquiryType: "purchase",
@@ -148,8 +160,9 @@ export async function POST(request: Request) {
             email: email || null,
             city,
             message: compiledMessage || null,
-            inquiryId: undefined,
-            inquiryStatus: undefined,
+            inquiryId: inserted?.id,
+            inquiryReference,
+            inquiryStatus: inserted?.status,
             productName: resolvedProductName,
             productSlug: resolvedProductSlug,
         });
@@ -159,19 +172,28 @@ export async function POST(request: Request) {
             customerEmail: email,
             inquiryType: "purchase",
             source: "product",
-            inquiryId: undefined,
-            inquiryStatus: undefined,
+            inquiryId: inserted?.id,
+            inquiryReference,
+            inquiryStatus: inserted?.status,
         });
 
         if (wantsJson) {
             return NextResponse.json({
                 ok: true,
-                inquiryId: null,
-                status: null,
+                inquiryId: inserted?.id || null,
+                reference: inquiryReference,
+                status: inserted?.status || null,
             });
         }
 
-        return NextResponse.redirect(new URL(`${safeReturnUrl}?submitted=1`, request.url), 303);
+        // Redirect to tracker page to show status
+        return NextResponse.redirect(
+            new URL(
+                `/track-inquiry${inquiryReference ? `?ref=${encodeURIComponent(inquiryReference)}` : ""}`,
+                request.url
+            ),
+            303
+        );
     } catch (err) {
         console.error("[inquiry] Unexpected error:", err);
         if (wantsJson) {
