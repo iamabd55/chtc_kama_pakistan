@@ -40,6 +40,7 @@ export interface Product {
 
 export interface Inquiry {
     id: string;
+    public_ref: string | null;
     full_name: string;
     phone: string;
     email: string | null;
@@ -152,6 +153,8 @@ export interface SiteSettings {
         ctaText: string;
         ctaLink: string;
     }>;
+    announcement_banner_enabled: boolean;
+    announcement_banner_message: string | null;
     company_tagline: string | null;
     footer_text: string | null;
     updated_at: string;
@@ -223,6 +226,7 @@ export interface Testimonial {
     rating: number | null;
     status: "pending" | "approved" | "rejected";
     is_active: boolean;
+    display_order: number;
     created_at: string;
     updated_at: string;
 }
