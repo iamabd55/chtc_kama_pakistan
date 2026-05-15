@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sendInquiryNotification } from "@/lib/notifications/inquiryNotifications";
 import { sendCustomerConfirmation } from "@/lib/notifications/customerConfirmation";
 import {
@@ -8,6 +8,7 @@ import {
     isValidLocalPhone,
     isValidEmail,
 } from "@/lib/validation/inquiry";
+import { formatInquiryReferenceFromId } from "@/lib/inquiries";
 
 export async function POST(request: Request) {
     const form = await request.formData();
@@ -42,7 +43,10 @@ export async function POST(request: Request) {
         .filter(Boolean)
         .join("\n");
 
-    const supabase = await createClient();
+    const supabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
     const { data: inserted, error } = await supabase.from("inquiries").insert({
         full_name: fullName,
         phone,
@@ -51,11 +55,13 @@ export async function POST(request: Request) {
         inquiry_type: inquiryType,
         message: compiledMessage || null,
         source: "web-form",
-    }).select("id, status").single();
+    }).select("id, status, public_ref").single();
 
     if (error) {
         return NextResponse.redirect(new URL("/after-sales?error=1", request.url), 303);
     }
+
+    const inquiryReference = inserted?.public_ref || (inserted?.id ? formatInquiryReferenceFromId(inserted.id) : undefined);
 
     await sendInquiryNotification({
         source: "after-sales",
@@ -66,6 +72,7 @@ export async function POST(request: Request) {
         city,
         message: compiledMessage || null,
         inquiryId: inserted?.id,
+        inquiryReference,
         inquiryStatus: inserted?.status,
         productSlug: product || null,
     });
@@ -76,8 +83,16 @@ export async function POST(request: Request) {
         inquiryType,
         source: "after-sales",
         inquiryId: inserted?.id,
+        inquiryReference,
         inquiryStatus: inserted?.status,
     });
 
-    return NextResponse.redirect(new URL("/after-sales?submitted=1", request.url), 303);
+        // Redirect to tracker page to show status
+        return NextResponse.redirect(
+            new URL(
+                `/track-inquiry${inquiryReference ? `?ref=${encodeURIComponent(inquiryReference)}` : ""}`,
+                request.url
+            ),
+            303
+        );
 }
