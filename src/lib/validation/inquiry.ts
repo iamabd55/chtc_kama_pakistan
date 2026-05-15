@@ -16,7 +16,11 @@ export const normalizePhone = (value: string) => {
     return digits;
 };
 
-export const isValidLocalPhone = (value: string) => /^03\d{9}$/.test(value);
+// Accept Pakistani mobile (03X-XXXXXXX = 11 digits) and
+// landline numbers (0XX-XXXXXXX = 10-11 digits) after normalisation.
+// normalizePhone() already strips all non-digits and converts +92/0092 → 0.
+export const isValidLocalPhone = (value: string) =>
+    /^0\d{9,10}$/.test(value);
 
 export const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
