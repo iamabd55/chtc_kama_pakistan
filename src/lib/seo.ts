@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const FALLBACK_SITE_URL = "https://www.alnasirmotors.com.pk";
+const FALLBACK_SITE_URL = "https://www.alnasirmotors.com";
 
 const FALLBACK_OG_IMAGE_PATH = "/opengraph-image";
 

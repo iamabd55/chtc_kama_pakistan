@@ -10,6 +10,8 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Poppins, Rajdhani, DM_Sans } from "next/font/google";
 import { normalizeSiteSettings } from "@/lib/siteSettings";
 import { getPublicSiteSettings } from "@/lib/supabase/publicSettings";
+import { createPublicServerClient } from "@/lib/supabase/publicServer";
+import type { NavProduct } from "@/components/Header";
 
 const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
     ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
@@ -92,12 +94,36 @@ export const metadata: Metadata = {
     },
 };
 
+export const revalidate = 300;
+
 export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const initialSettings = normalizeSiteSettings(await getPublicSiteSettings());
+    const supabase = createPublicServerClient();
+    const [initialSettings, { data: rawNavProducts }] = await Promise.all([
+        getPublicSiteSettings().then(normalizeSiteSettings),
+        supabase
+            .from("products")
+            .select("name, slug, brand, category:categories(slug)")
+            .eq("is_active", true)
+            .order("name", { ascending: true }),
+    ]);
+
+    const navProducts: NavProduct[] = (rawNavProducts ?? []).map((p) => {
+        const category = p.category as { slug: string } | { slug: string }[] | null;
+        const categorySlug = Array.isArray(category)
+            ? category[0]?.slug ?? ""
+            : category?.slug ?? "";
+
+        return {
+            name: p.name,
+            slug: p.slug,
+            brand: p.brand as NavProduct["brand"],
+            categorySlug,
+        };
+    });
 
     const organizationSchema = {
         "@context": "https://schema.org",
@@ -258,7 +284,7 @@ export default async function RootLayout({
                 <TooltipProvider>
                     <Toaster />
                     <Sonner />
-                    <ConditionalLayout initialSettings={initialSettings}>{children}</ConditionalLayout>
+                    <ConditionalLayout initialSettings={initialSettings} navProducts={navProducts}>{children}</ConditionalLayout>
                 </TooltipProvider>
             </body>
         </html>

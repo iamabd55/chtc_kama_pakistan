@@ -1,13 +1,13 @@
 "use client";
 import Image from 'next/image';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { adminDb } from "@/lib/supabase/adminClient";
-import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, Upload, ImagePlus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
     Dialog,
@@ -102,6 +102,28 @@ const AdminProducts = () => {
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [currentPage, setCurrentPage] = useState(1);
 
+    // ── Upload state ──
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+    const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+    const [extraFiles, setExtraFiles] = useState<File[]>([]);
+    const [extraPreviews, setExtraPreviews] = useState<string[]>([]);
+    const [uploading, setUploading] = useState(false);
+    const thumbnailInputRef = useRef<HTMLInputElement>(null);
+    const extraInputRef = useRef<HTMLInputElement>(null);
+
+    const uploadFile = async (file: File, slug: string): Promise<string> => {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `products/${slug}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await adminDb.storage.from("images").upload(path, file, { upsert: true, contentType: file.type });
+        if (error) throw new Error(error.message);
+        return path;
+    };
+
+    const warnSize = (file: File) => {
+        if (file.size > 400 * 1024)
+            toast({ title: "Large file", description: `${file.name}: ${(file.size / 1024).toFixed(0)} KB — aim for under 300 KB for best performance.`, variant: "destructive" });
+    };
+
     const fetchData = async () => {
         setLoading(true);
         const [p, c] = await Promise.all([
@@ -193,76 +215,71 @@ const AdminProducts = () => {
     const startIndex = (safePage - 1) * PAGE_SIZE;
     const paginated = filtered.slice(startIndex, startIndex + PAGE_SIZE);
 
+    const resetUpload = () => { setThumbnailFile(null); setThumbnailPreview(""); setExtraFiles([]); setExtraPreviews([]); };
+
     const openNew = () => {
-        setEditingProduct({
-            brand: "kama",
-            is_active: true,
-            is_featured: false,
-            images: [],
-            features: [],
-            specs: {},
-        });
+        setEditingProduct({ brand: "kama", is_active: true, is_featured: false, images: [], features: [], specs: {} });
+        resetUpload();
         setDialogOpen(true);
     };
 
     const openEdit = (p: Product) => {
         setEditingProduct({ ...p });
+        resetUpload();
         setDialogOpen(true);
     };
 
     const handleSave = async () => {
-        if (
-            !editingProduct?.name ||
-            !editingProduct?.slug ||
-            !editingProduct?.category_id ||
-            !editingProduct?.thumbnail
-        ) {
-            toast({
-                title: "Missing fields",
-                description: "Name, slug, category, and thumbnail are required.",
-                variant: "destructive",
-            });
+        const hasThumb = !!editingProduct?.thumbnail || !!thumbnailFile;
+        if (!editingProduct?.name || !editingProduct?.category_id || !hasThumb) {
+            toast({ title: "Missing fields", description: "Name, category, and thumbnail are required.", variant: "destructive" });
             return;
         }
-        setSaving(true);
-
+        setSaving(true); setUploading(true);
+        const slug = toSlug(editingProduct.name);
+        let thumbnailPath = editingProduct.thumbnail || "";
+        let imagePaths = [...(editingProduct.images || [])];
+        try {
+            if (thumbnailFile) thumbnailPath = await uploadFile(thumbnailFile, slug);
+            if (extraFiles.length > 0) {
+                const up = await Promise.all(extraFiles.map((f) => uploadFile(f, slug)));
+                imagePaths = [...imagePaths, ...up];
+            }
+        } catch (err) {
+            toast({ title: "Upload failed", description: String(err), variant: "destructive" });
+            setSaving(false); setUploading(false); return;
+        }
+        setUploading(false);
+        const catName = categories.find((c) => c.id === editingProduct.category_id)?.name ?? "";
+        const autoMeta = `${editingProduct.name} - ${catName} | Al Nasir Motors Pakistan`;
         const payload = {
             name: editingProduct.name,
-            slug: editingProduct.slug,
+            slug: editingProduct.id ? (editingProduct.slug || slug) : slug,
             brand: editingProduct.brand || "kama",
             category_id: editingProduct.category_id,
             short_description: editingProduct.short_description || null,
             model_year: editingProduct.model_year || null,
-            thumbnail: editingProduct.thumbnail,
-            images: editingProduct.images || [],
+            thumbnail: thumbnailPath,
+            images: imagePaths,
             specs: editingProduct.specs || {},
             features: editingProduct.features || [],
             brochure_url: editingProduct.brochure_url || null,
-            price_range: editingProduct.price_range || null,
+            price_range: null,
             is_featured: editingProduct.is_featured ?? false,
             is_active: editingProduct.is_active ?? true,
-            meta_title: editingProduct.meta_title || null,
-            meta_desc: editingProduct.meta_desc || null,
+            meta_title: autoMeta,
+            meta_desc: editingProduct.short_description || autoMeta,
         };
-
         if (editingProduct.id) {
-            const { error } = await adminDb
-                .from("products")
-                .update(payload)
-                .eq("id", editingProduct.id);
-            if (error)
-                toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Product updated" });
+            const { error } = await adminDb.from("products").update(payload).eq("id", editingProduct.id);
+            if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+            else { toast({ title: "Product updated" }); resetUpload(); }
         } else {
             const { error } = await adminDb.from("products").insert(payload);
-            if (error)
-                toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Product created" });
+            if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+            else { toast({ title: "Product created" }); resetUpload(); }
         }
-
-        setSaving(false);
-        setDialogOpen(false);
-        fetchData();
+        setSaving(false); setDialogOpen(false); fetchData();
     };
 
     const handleDelete = async (id: string) => {
@@ -673,268 +690,176 @@ const AdminProducts = () => {
                     </DialogHeader>
                     {editingProduct && (
                         <div className="grid grid-cols-2 gap-4 mt-4">
+
+                            {/* Name */}
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Name *</label>
-                                <Input
-                                    value={editingProduct.name || ""}
-                                    onChange={(e) => {
-                                        const name = e.target.value;
-                                        const previousAutoSlug = toSlug(editingProduct.name || "");
-                                        const shouldAutoSlug =
-                                            !editingProduct.id &&
-                                            (!editingProduct.slug || editingProduct.slug === previousAutoSlug);
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            name,
-                                            slug: shouldAutoSlug ? toSlug(name) : editingProduct.slug,
-                                        });
-                                    }}
-                                />
+                                <label className="text-sm font-medium mb-1 block">Product Name *</label>
+                                <Input placeholder="e.g. GM3 Series" value={editingProduct.name || ""} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">Slug *</label>
-                                <Input
-                                    value={editingProduct.slug || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({ ...editingProduct, slug: e.target.value })
-                                    }
-                                />
-                            </div>
+
+                            {/* Brand */}
                             <div>
                                 <label className="text-sm font-medium mb-1 block">Brand *</label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value={editingProduct.brand || "kama"}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            brand: e.target.value as Product["brand"],
-                                        })
-                                    }
-                                >
-                                    {brands.map((b) => (
-                                        <option key={b} value={b}>
-                                            {b.toUpperCase()}
-                                        </option>
-                                    ))}
+                                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editingProduct.brand || "kama"} onChange={(e) => setEditingProduct({ ...editingProduct, brand: e.target.value as Product["brand"] })}>
+                                    {brands.map((b) => <option key={b} value={b}>{b.toUpperCase()}</option>)}
                                 </select>
                             </div>
+
+                            {/* Category */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Category *
-                                </label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value={editingProduct.category_id || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            category_id: e.target.value,
-                                        })
-                                    }
-                                >
+                                <label className="text-sm font-medium mb-1 block">Category *</label>
+                                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editingProduct.category_id || ""} onChange={(e) => setEditingProduct({ ...editingProduct, category_id: e.target.value })}>
                                     <option value="">Select category</option>
-                                    {categories.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.name}
-                                        </option>
-                                    ))}
+                                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
                             </div>
+
+                            {/* Model Year + Flags */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Model Year
-                                </label>
-                                <Input
-                                    type="number"
-                                    value={editingProduct.model_year || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            model_year: parseInt(e.target.value) || null,
-                                        })
-                                    }
-                                />
+                                <label className="text-sm font-medium mb-1 block">Model Year</label>
+                                <Input type="number" placeholder={String(new Date().getFullYear())} value={editingProduct.model_year || ""} onChange={(e) => setEditingProduct({ ...editingProduct, model_year: parseInt(e.target.value) || null })} />
                             </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Thumbnail URL *
-                                </label>
-                                <Input
-                                    value={editingProduct.thumbnail || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            thumbnail: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Extra Images (one path per line)
-                                </label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-                                    value={serializeImages(editingProduct.images)}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            images: parseImages(e.target.value),
-                                        })
-                                    }
-                                    placeholder={"products/kinwin/labor-bus-9m/interior.png\nproducts/kinwin/labor-bus-9m/exterior-front.png"}
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Short Description
-                                </label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                                    value={editingProduct.short_description || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            short_description: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Features (one per line)
-                                </label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[110px]"
-                                    value={serializeList(editingProduct.features)}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            features: parseList(e.target.value),
-                                        })
-                                    }
-                                    placeholder={"High torque engine\nLow maintenance cost\nComfortable cabin"}
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Specifications (format: key: value)
-                                </label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[130px] font-mono"
-                                    value={serializeSpecs(editingProduct.specs as Record<string, string | number>)}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            specs: parseSpecs(e.target.value),
-                                        })
-                                    }
-                                    placeholder={"engine_power: 120 HP\npayload: 5 Ton\ntransmission: Manual"}
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Price Range
-                                </label>
-                                <Input
-                                    value={editingProduct.price_range || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            price_range: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Brochure URL
-                                </label>
-                                <Input
-                                    value={editingProduct.brochure_url || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            brochure_url: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Meta Title
-                                </label>
-                                <Input
-                                    value={editingProduct.meta_title || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            meta_title: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
-                                    Meta Description
-                                </label>
-                                <textarea
-                                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-                                    value={editingProduct.meta_desc || ""}
-                                    onChange={(e) =>
-                                        setEditingProduct({
-                                            ...editingProduct,
-                                            meta_desc: e.target.value,
-                                        })
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-2 flex items-center gap-6">
-                                <label className="flex items-center gap-2 text-sm">
-                                    <input
-                                        type="checkbox"
-                                        checked={editingProduct.is_active ?? true}
-                                        onChange={(e) =>
-                                            setEditingProduct({
-                                                ...editingProduct,
-                                                is_active: e.target.checked,
-                                            })
-                                        }
-                                    />
+                            <div className="flex items-end gap-6 pb-1">
+                                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input type="checkbox" checked={editingProduct.is_active ?? true} onChange={(e) => setEditingProduct({ ...editingProduct, is_active: e.target.checked })} />
                                     Active
                                 </label>
-                                <label className="flex items-center gap-2 text-sm">
-                                    <input
-                                        type="checkbox"
-                                        checked={editingProduct.is_featured ?? false}
-                                        onChange={(e) =>
-                                            setEditingProduct({
-                                                ...editingProduct,
-                                                is_featured: e.target.checked,
-                                            })
-                                        }
-                                    />
+                                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input type="checkbox" checked={editingProduct.is_featured ?? false} onChange={(e) => setEditingProduct({ ...editingProduct, is_featured: e.target.checked })} />
                                     Featured
                                 </label>
                             </div>
+
+                            {/* Thumbnail upload */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Thumbnail Image *</label>
+                                <p className="text-xs text-muted-foreground mb-2">Main product image displayed in listings. Keep under 300 KB for best performance.</p>
+                                <div
+                                    className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${thumbnailPreview || editingProduct.thumbnail ? "border-primary/40 bg-primary/5" : "border-slate-300 hover:border-primary/50 hover:bg-slate-50"}`}
+                                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        const file = e.dataTransfer.files[0];
+                                        if (!file || !file.type.startsWith("image/")) return;
+                                        warnSize(file);
+                                        setThumbnailFile(file);
+                                        setThumbnailPreview(URL.createObjectURL(file));
+                                    }}
+                                    onClick={() => thumbnailInputRef.current?.click()}
+                                >
+                                    {thumbnailPreview ? (
+                                        <img src={thumbnailPreview} alt="preview" className="mx-auto max-h-44 rounded-lg object-contain" />
+                                    ) : editingProduct.thumbnail ? (
+                                        <img src={getStorageUrl(editingProduct.thumbnail)} alt="current" className="mx-auto max-h-44 rounded-lg object-contain" />
+                                    ) : (
+                                        <div className="py-8 flex flex-col items-center gap-2 text-slate-400">
+                                            <Upload className="w-9 h-9" />
+                                            <p className="text-sm font-medium text-slate-600">Drag & drop or click to browse</p>
+                                            <p className="text-xs">JPG, PNG, WebP · Aim for under 300 KB</p>
+                                        </div>
+                                    )}
+                                    <input ref={thumbnailInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        warnSize(file);
+                                        setThumbnailFile(file);
+                                        setThumbnailPreview(URL.createObjectURL(file));
+                                    }} />
+                                </div>
+                                {(thumbnailPreview || editingProduct.thumbnail) && (
+                                    <button className="mt-1 text-xs text-rose-500 hover:underline" type="button" onClick={() => { setThumbnailFile(null); setThumbnailPreview(""); setEditingProduct({ ...editingProduct, thumbnail: "" }); }}>
+                                        Remove thumbnail
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Gallery images upload */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Gallery Images <span className="font-normal text-muted-foreground">(optional)</span></label>
+                                <p className="text-xs text-muted-foreground mb-2">Additional photos. Keep each under 300 KB.</p>
+                                <div
+                                    className="border-2 border-dashed border-slate-300 hover:border-primary/50 rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-slate-50"
+                                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+                                        files.forEach(warnSize);
+                                        setExtraFiles((prev) => [...prev, ...files]);
+                                        setExtraPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+                                    }}
+                                    onClick={() => extraInputRef.current?.click()}
+                                >
+                                    <div className="py-4 flex flex-col items-center gap-1 text-slate-400">
+                                        <ImagePlus className="w-7 h-7" />
+                                        <p className="text-sm font-medium text-slate-600">Drag & drop or click to add images</p>
+                                    </div>
+                                    <input ref={extraInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                                        const files = Array.from(e.target.files ?? []);
+                                        files.forEach(warnSize);
+                                        setExtraFiles((prev) => [...prev, ...files]);
+                                        setExtraPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+                                    }} />
+                                </div>
+                                {extraPreviews.length > 0 && (
+                                    <div className="mt-2 grid grid-cols-4 gap-2">
+                                        {extraPreviews.map((src, i) => (
+                                            <div key={i} className="relative group">
+                                                <img src={src} alt="" className="w-full h-20 object-cover rounded-md border" />
+                                                <button type="button" className="absolute top-1 right-1 bg-white/90 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setExtraFiles((p) => p.filter((_, fi) => fi !== i)); setExtraPreviews((p) => p.filter((_, pi) => pi !== i)); }}>
+                                                    <X className="w-3 h-3 text-rose-600" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {(editingProduct.images ?? []).length > 0 && (
+                                    <div className="mt-3">
+                                        <p className="text-xs text-muted-foreground mb-1">Saved images:</p>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {editingProduct.images!.map((src, i) => (
+                                                <div key={i} className="relative group">
+                                                    <img src={getStorageUrl(src)} alt="" className="w-full h-20 object-cover rounded-md border" />
+                                                    <button type="button" className="absolute top-1 right-1 bg-white/90 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setEditingProduct({ ...editingProduct, images: editingProduct.images!.filter((_, ii) => ii !== i) }); }}>
+                                                        <X className="w-3 h-3 text-rose-600" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Short Description */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Short Description</label>
+                                <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Brief overview shown on the product listing page..." value={editingProduct.short_description || ""} onChange={(e) => setEditingProduct({ ...editingProduct, short_description: e.target.value })} />
+                            </div>
+
+                            {/* Features */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Key Features</label>
+                                <p className="text-xs text-muted-foreground mb-1">One feature per line — each becomes a bullet point on the product page.</p>
+                                <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[110px]" value={serializeList(editingProduct.features)} onChange={(e) => setEditingProduct({ ...editingProduct, features: parseList(e.target.value) })} placeholder={"High torque Euro III engine\n49 passenger seats with reclining\nWABCO ABS+ASR brake system"} />
+                            </div>
+
+                            {/* Specs */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Specifications</label>
+                                <p className="text-xs text-muted-foreground mb-1">Format: <code className="bg-slate-100 px-1 rounded text-[11px]">Label: Value</code> — one per line. Displayed in the specifications table.</p>
+                                <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[130px] font-mono text-xs" value={serializeSpecs(editingProduct.specs as Record<string, string | number>)} onChange={(e) => setEditingProduct({ ...editingProduct, specs: parseSpecs(e.target.value) })} placeholder={"Engine: 375 HP YUCHAI Euro III\nSeating Capacity: 49\nFuel Tank: 600 L\nTransmission: 6-speed manual"} />
+                            </div>
+
+                            {/* Brochure */}
+                            <div className="col-span-2">
+                                <label className="text-sm font-medium mb-1 block">Brochure URL <span className="font-normal text-muted-foreground">(optional)</span></label>
+                                <Input value={editingProduct.brochure_url || ""} placeholder="https://..." onChange={(e) => setEditingProduct({ ...editingProduct, brochure_url: e.target.value })} />
+                            </div>
+
+                            {/* Actions */}
                             <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setDialogOpen(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    className="font-display font-semibold"
-                                >
-                                    {saving
-                                        ? "Saving..."
-                                        : editingProduct.id
-                                            ? "Update"
-                                            : "Create"}
+                                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#1E3A8A] hover:bg-[#1b347c]">
+                                    {uploading ? "Uploading..." : saving ? "Saving..." : editingProduct.id ? "Update Product" : "Create Product"}
                                 </Button>
                             </div>
                         </div>
