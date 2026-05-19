@@ -1,13 +1,13 @@
 "use client";
-import Image from 'next/image';
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import DataTable from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminDb } from "@/lib/supabase/adminClient";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
     Dialog,
@@ -19,12 +19,7 @@ import type { Category } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
 
 const toSlug = (value: string): string =>
-    value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
+    value.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -32,59 +27,94 @@ const AdminCategories = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Partial<Category> | null>(null);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
+
+    // Image upload state
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>("");
+    const [hoverFile, setHoverFile] = useState<File | null>(null);
+    const [hoverPreview, setHoverPreview] = useState<string>("");
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const hoverInputRef = useRef<HTMLInputElement>(null);
 
     const fetchData = async () => {
         setLoading(true);
-        const { data } = await adminDb
-            .from("categories")
-            .select("*")
-            .order("display_order");
+        const { data } = await adminDb.from("categories").select("*").order("display_order");
         setCategories((data as Category[]) || []);
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    useEffect(() => { fetchData(); }, []);
+
+    const warnSize = (file: File) => {
+        if (file.size > 400 * 1024)
+            toast({ title: "Large file", description: `${file.name}: ${(file.size / 1024).toFixed(0)} KB — aim for under 300 KB.`, variant: "destructive" });
+    };
+
+    const uploadFile = async (file: File, slug: string, suffix: string): Promise<string> => {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `categories/${slug}-${suffix}-${Date.now()}.${ext}`;
+        const { error } = await adminDb.storage.from("images").upload(path, file, { upsert: true, contentType: file.type });
+        if (error) throw new Error(error.message);
+        return path;
+    };
+
+    const resetUpload = () => {
+        setImageFile(null); setImagePreview("");
+        setHoverFile(null); setHoverPreview("");
+    };
 
     const openNew = () => {
-        setEditing({ is_active: true, display_order: 0 });
+        setEditing({ is_active: true, display_order: categories.length });
+        resetUpload();
         setDialogOpen(true);
     };
+
     const openEdit = (c: Category) => {
         setEditing({ ...c });
+        resetUpload();
         setDialogOpen(true);
     };
 
     const handleSave = async () => {
-        if (!editing?.name || !editing?.slug) {
-            toast({ title: "Name and slug are required", variant: "destructive" });
+        if (!editing?.name) {
+            toast({ title: "Name is required", variant: "destructive" });
             return;
         }
         setSaving(true);
+        setUploading(true);
+
+        const slug = editing.id ? (editing.slug || toSlug(editing.name)) : toSlug(editing.name);
+        let imagePath = editing.image || "";
+        let hoverPath = editing.hover_image || "";
+
+        try {
+            if (imageFile) imagePath = await uploadFile(imageFile, slug, "main");
+            if (hoverFile) hoverPath = await uploadFile(hoverFile, slug, "hover");
+        } catch (err: unknown) {
+            toast({ title: "Upload failed", description: String(err), variant: "destructive" });
+            setSaving(false); setUploading(false); return;
+        }
+        setUploading(false);
+
         const payload = {
             name: editing.name,
-            slug: editing.slug,
+            slug,
             description: editing.description || null,
-            image: editing.image || null,
-            hover_image: editing.hover_image || null,
-            display_order: editing.display_order || 0,
+            image: imagePath || null,
+            hover_image: hoverPath || null,
+            display_order: editing.display_order ?? 0,
             is_active: editing.is_active ?? true,
         };
 
         if (editing.id) {
-            const { error } = await adminDb
-                .from("categories")
-                .update(payload)
-                .eq("id", editing.id);
-            if (error)
-                toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Category updated" });
+            const { error } = await adminDb.from("categories").update(payload).eq("id", editing.id);
+            if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+            else { toast({ title: "Category updated" }); resetUpload(); }
         } else {
             const { error } = await adminDb.from("categories").insert(payload);
-            if (error)
-                toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Category created" });
+            if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+            else { toast({ title: "Category created" }); resetUpload(); }
         }
         setSaving(false);
         setDialogOpen(false);
@@ -93,24 +123,15 @@ const AdminCategories = () => {
 
     const handleDelete = async (id: string) => {
         if (!confirm("Delete this category?")) return;
-        const { error } = await adminDb
-            .from("categories")
-            .delete()
-            .eq("id", id);
-        if (error)
-            toast({ title: "Error", description: error.message, variant: "destructive" });
-        else {
-            toast({ title: "Category deleted" });
-            fetchData();
-        }
+        const { error } = await adminDb.from("categories").delete().eq("id", id);
+        if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+        else { toast({ title: "Category deleted" }); fetchData(); }
     };
 
     const columns = [
         {
             header: "Order",
-            accessor: (r: Category) => (
-                <span className="font-mono text-sm">{r.display_order}</span>
-            ),
+            accessor: (r: Category) => <span className="font-mono text-sm">{r.display_order}</span>,
             className: "w-[60px]",
         },
         {
@@ -118,12 +139,7 @@ const AdminCategories = () => {
             accessor: (r: Category) => (
                 <div className="flex items-center gap-3">
                     {r.image && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <Image
-                            src={getStorageUrl(r.image)}
-                            alt={r.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-muted"
-                         width={800} height={600}  loading="lazy" />
+                        <Image src={getStorageUrl(r.image)} alt={r.name} className="w-10 h-10 rounded-lg object-cover bg-muted" width={80} height={80} loading="lazy" />
                     )}
                     <div>
                         <p className="font-medium">{r.name}</p>
@@ -134,33 +150,16 @@ const AdminCategories = () => {
         },
         {
             header: "Status",
-            accessor: (r: Category) => (
-                <StatusBadge status={r.is_active ? "active" : "inactive"} />
-            ),
+            accessor: (r: Category) => <StatusBadge status={r.is_active ? "active" : "inactive"} />,
         },
         {
             header: "Actions",
             accessor: (r: Category) => (
                 <div className="flex gap-2">
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            openEdit(r);
-                        }}
-                    >
+                    <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); openEdit(r); }}>
                         <Pencil className="w-4 h-4" />
                     </Button>
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-destructive"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(r.id);
-                        }}
-                    >
+                    <Button size="sm" variant="ghost" className="text-destructive" onClick={(e) => { e.stopPropagation(); handleDelete(r.id); }}>
                         <Trash2 className="w-4 h-4" />
                     </Button>
                 </div>
@@ -168,6 +167,53 @@ const AdminCategories = () => {
             className: "w-[100px]",
         },
     ];
+
+    // Reusable upload zone
+    const UploadZone = ({
+        label, hint, preview, existingPath, inputRef, onFile, onClear,
+    }: {
+        label: string; hint?: string; preview: string; existingPath: string;
+        inputRef: React.RefObject<HTMLInputElement>;
+        onFile: (f: File) => void; onClear: () => void;
+    }) => (
+        <div>
+            <label className="text-sm font-medium mb-1 block">{label}</label>
+            {hint && <p className="text-xs text-muted-foreground mb-2">{hint}</p>}
+            <div
+                className={`border-2 border-dashed rounded-xl p-3 text-center cursor-pointer transition-colors ${preview || existingPath ? "border-primary/40 bg-primary/5" : "border-slate-300 hover:border-primary/50 hover:bg-slate-50"}`}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files[0];
+                    if (!file || !file.type.startsWith("image/")) return;
+                    warnSize(file); onFile(file);
+                }}
+                onClick={() => inputRef.current?.click()}
+            >
+                {preview ? (
+                    <img src={preview} alt="preview" className="mx-auto max-h-36 rounded-lg object-contain" />
+                ) : existingPath ? (
+                    <img src={getStorageUrl(existingPath)} alt="current" className="mx-auto max-h-36 rounded-lg object-contain" />
+                ) : (
+                    <div className="py-6 flex flex-col items-center gap-2 text-slate-400">
+                        <Upload className="w-8 h-8" />
+                        <p className="text-sm font-medium text-slate-600">Drag & drop or click to browse</p>
+                        <p className="text-xs">JPG, PNG, WebP · Aim for under 300 KB</p>
+                    </div>
+                )}
+                <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    warnSize(file); onFile(file);
+                }} />
+            </div>
+            {(preview || existingPath) && (
+                <button type="button" className="mt-1 text-xs text-rose-500 hover:underline" onClick={onClear}>
+                    Remove image
+                </button>
+            )}
+        </div>
+    );
 
     return (
         <AdminLayout
@@ -182,7 +228,7 @@ const AdminCategories = () => {
             <DataTable columns={columns} data={categories} loading={loading} />
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="font-display">
                             {editing?.id ? "Edit" : "Add"} Category
@@ -190,101 +236,75 @@ const AdminCategories = () => {
                     </DialogHeader>
                     {editing && (
                         <div className="space-y-4 mt-4">
+
+                            {/* Name */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Name *</label>
+                                <label className="text-sm font-medium mb-1 block">Category Name *</label>
                                 <Input
+                                    placeholder="e.g. Mini Truck"
                                     value={editing.name || ""}
-                                    onChange={(e) => {
-                                        const name = e.target.value;
-                                        const previousAutoSlug = toSlug(editing.name || "");
-                                        const shouldAutoSlug =
-                                            !editing.id &&
-                                            (!editing.slug || editing.slug === previousAutoSlug);
-                                        setEditing({
-                                            ...editing,
-                                            name,
-                                            slug: shouldAutoSlug ? toSlug(name) : editing.slug,
-                                        });
-                                    }}
+                                    onChange={(e) => setEditing({ ...editing, name: e.target.value })}
                                 />
                             </div>
+
+                            {/* Description */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Slug *</label>
-                                <Input
-                                    value={editing.slug || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, slug: e.target.value })
-                                    }
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Description
-                                </label>
+                                <label className="text-sm font-medium mb-1 block">Description</label>
                                 <textarea
                                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
+                                    placeholder="Brief description of this category..."
                                     value={editing.description || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, description: e.target.value })
-                                    }
+                                    onChange={(e) => setEditing({ ...editing, description: e.target.value })}
                                 />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Image URL
+
+                            {/* Category image */}
+                            <UploadZone
+                                label="Category Image"
+                                hint="Shown in the category listing. Keep under 300 KB."
+                                preview={imagePreview}
+                                existingPath={editing.image || ""}
+                                inputRef={imageInputRef}
+                                onFile={(f) => { setImageFile(f); setImagePreview(URL.createObjectURL(f)); }}
+                                onClear={() => { setImageFile(null); setImagePreview(""); setEditing({ ...editing, image: "" }); }}
+                            />
+
+                            {/* Hover image */}
+                            <UploadZone
+                                label="Hover Image (optional)"
+                                hint="Alternate image shown on hover interaction."
+                                preview={hoverPreview}
+                                existingPath={editing.hover_image || ""}
+                                inputRef={hoverInputRef}
+                                onFile={(f) => { setHoverFile(f); setHoverPreview(URL.createObjectURL(f)); }}
+                                onClear={() => { setHoverFile(null); setHoverPreview(""); setEditing({ ...editing, hover_image: "" }); }}
+                            />
+
+                            {/* Display order + Active */}
+                            <div className="flex items-center gap-6">
+                                <div className="flex-1">
+                                    <label className="text-sm font-medium mb-1 block">Display Order</label>
+                                    <Input
+                                        type="number"
+                                        value={editing.display_order ?? 0}
+                                        onChange={(e) => setEditing({ ...editing, display_order: parseInt(e.target.value) })}
+                                    />
+                                </div>
+                                <label className="flex items-center gap-2 text-sm cursor-pointer pt-6">
+                                    <input
+                                        type="checkbox"
+                                        checked={editing.is_active ?? true}
+                                        onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })}
+                                    />
+                                    Active
                                 </label>
-                                <Input
-                                    value={editing.image || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, image: e.target.value })
-                                    }
-                                />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Hover Image URL
-                                </label>
-                                <Input
-                                    value={editing.hover_image || ""}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, hover_image: e.target.value })
-                                    }
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium mb-1 block">
-                                    Display Order
-                                </label>
-                                <Input
-                                    type="number"
-                                    value={editing.display_order || 0}
-                                    onChange={(e) =>
-                                        setEditing({
-                                            ...editing,
-                                            display_order: parseInt(e.target.value),
-                                        })
-                                    }
-                                />
-                            </div>
-                            <label className="flex items-center gap-2 text-sm">
-                                <input
-                                    type="checkbox"
-                                    checked={editing.is_active ?? true}
-                                    onChange={(e) =>
-                                        setEditing({ ...editing, is_active: e.target.checked })
-                                    }
-                                />
-                                Active
-                            </label>
+
+                            {/* Actions */}
                             <div className="flex justify-end gap-3 pt-4 border-t">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setDialogOpen(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button onClick={handleSave} disabled={saving}>
-                                    {saving ? "Saving..." : "Save"}
+                                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#1E3A8A] hover:bg-[#1b347c]">
+                                    {uploading ? "Uploading..." : saving ? "Saving..." : editing.id ? "Update Category" : "Create Category"}
                                 </Button>
                             </div>
                         </div>

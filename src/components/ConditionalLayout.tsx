@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { PublicSiteSettings } from "@/lib/siteSettings";
+import type { NavProduct } from "@/components/Header";
 
 const Header = dynamic(() => import("@/components/Header"), {
     loading: () => null,
@@ -25,9 +26,11 @@ const WhatsAppButton = dynamic(() => import("@/components/WhatsAppButton"), {
 export default function ConditionalLayout({
     children,
     initialSettings,
+    navProducts,
 }: {
     children: React.ReactNode;
     initialSettings?: PublicSiteSettings;
+    navProducts?: NavProduct[];
 }) {
     const pathname = usePathname();
     const isAdmin = pathname?.startsWith("/admin");
@@ -74,7 +77,7 @@ export default function ConditionalLayout({
 
     return (
         <>
-            <Header settings={siteSettings} />
+            <Header settings={siteSettings} navProducts={navProducts} />
             <main className="relative flex-1">
                 {children}
             </main>
