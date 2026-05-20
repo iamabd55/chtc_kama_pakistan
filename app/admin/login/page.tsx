@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminDb } from "@/lib/supabase/adminClient";
+import { stampAdminSession } from "@/hooks/useAdminSession";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -34,14 +35,15 @@ const AdminLogin = () => {
                 variant: "destructive",
             });
         } else {
+            stampAdminSession(); // record session start for 1-hour expiry
             router.push("/admin/dashboard");
         }
     };
 
     return (
-        <div className="min-h-screen lg:min-h-[111.12vh] flex items-center justify-center bg-kama-gradient relative overflow-hidden">
+        <div className="admin-dark min-h-screen lg:min-h-[111.12vh] flex items-center justify-center bg-[#111318] relative overflow-hidden">
             {/* Background pattern */}
-            <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 opacity-[0.02]">
                 <div
                     className="absolute inset-0"
                     style={{
@@ -51,7 +53,7 @@ const AdminLogin = () => {
             </div>
 
             <div className="relative w-full max-w-md mx-4">
-                <div className="bg-card rounded-2xl shadow-2xl border p-8 md:p-10">
+                <div className="bg-[#1e2230] rounded-2xl shadow-2xl border border-white/[0.06] p-8 md:p-10">
                     {/* Logo */}
                     <div className="text-center mb-8">
                         <Image
@@ -61,17 +63,17 @@ const AdminLogin = () => {
                             height={56}
                             className="h-14 w-auto mx-auto mb-4"
                          loading="lazy" />
-                        <h1 className="font-display text-2xl font-bold text-foreground">
+                        <h1 className="font-display text-2xl font-bold text-white/85">
                             Admin Panel
                         </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-white/40 mt-1">
                             Sign in to manage your website
                         </p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="text-sm font-medium text-foreground mb-1.5 block">
+                            <label className="text-sm font-medium text-white/70 mb-1.5 block">
                                 Email Address
                             </label>
                             <Input
@@ -85,7 +87,7 @@ const AdminLogin = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-medium text-foreground mb-1.5 block">
+                            <label className="text-sm font-medium text-white/70 mb-1.5 block">
                                 Password
                             </label>
                             <div className="relative">
@@ -100,7 +102,7 @@ const AdminLogin = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
                                 >
                                     {showPassword ? (
                                         <EyeOff className="w-4 h-4" />
@@ -113,7 +115,7 @@ const AdminLogin = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-11 font-display font-semibold text-base"
+                            className="w-full h-11 font-display font-semibold text-base bg-[#e07a2f] hover:bg-[#c96a25] text-white"
                             disabled={loading}
                         >
                             {loading ? (
@@ -127,7 +129,7 @@ const AdminLogin = () => {
                         </Button>
                     </form>
 
-                    <p className="text-xs text-center text-muted-foreground mt-6">
+                    <p className="text-xs text-center text-white/30 mt-6">
                         Al Nasir Motors Pakistan — Internal Use Only
                     </p>
                 </div>

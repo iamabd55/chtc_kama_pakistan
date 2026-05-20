@@ -139,7 +139,7 @@ const AdminCareers = () => {
             accessor: (r: CareerPost) => (
                 <div>
                     <p className="font-medium">{r.title}</p>
-                    <p className="text-xs text-muted-foreground">{r.department}</p>
+                    <p className="text-xs text-white/40">{r.department}</p>
                 </div>
             ),
         },
@@ -200,13 +200,13 @@ const AdminCareers = () => {
             title="Career Posts"
             subtitle={`${posts.length} positions`}
             actions={
-                <Button onClick={openNew} className="font-display font-semibold">
+                <Button onClick={openNew} className="font-display font-semibold bg-[#e07a2f] hover:bg-[#c96a25]">
                     <Plus className="w-4 h-4 mr-2" /> Add Position
                 </Button>
             }
         >
             <div className="mb-6 max-w-sm relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <Input
                     placeholder="Search positions..."
                     value={search}
@@ -227,7 +227,7 @@ const AdminCareers = () => {
                     {editing && (
                         <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Title *</label>
+                                <label className="text-sm font-medium mb-1 block text-white/60">Title *</label>
                                 <Input
                                     value={editing.title || ""}
                                     onChange={(e) =>
@@ -236,7 +236,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Department *
                                 </label>
                                 <Input
@@ -247,7 +247,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Job Type</label>
+                                <label className="text-sm font-medium mb-1 block text-white/60">Job Type</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.job_type || "full-time"}
@@ -266,7 +266,7 @@ const AdminCareers = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Location</label>
+                                <label className="text-sm font-medium mb-1 block text-white/60">Location</label>
                                 <Input
                                     value={editing.location || ""}
                                     onChange={(e) =>
@@ -275,7 +275,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Deadline *
                                 </label>
                                 <Input
@@ -287,7 +287,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Description *
                                 </label>
                                 <textarea
@@ -299,7 +299,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Requirements (one per line)
                                 </label>
                                 <textarea
@@ -314,7 +314,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Responsibilities (one per line)
                                 </label>
                                 <textarea
@@ -329,7 +329,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/60">
                                     Salary Range
                                 </label>
                                 <Input
@@ -340,7 +340,7 @@ const AdminCareers = () => {
                                 />
                             </div>
                             <div className="flex items-end">
-                                <label className="flex items-center gap-2 text-sm">
+                                <label className="flex items-center gap-2 text-sm text-white/60">
                                     <input
                                         type="checkbox"
                                         checked={editing.is_active ?? true}
@@ -351,7 +351,7 @@ const AdminCareers = () => {
                                     Active
                                 </label>
                             </div>
-                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
+                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
                                 <Button
                                     variant="outline"
                                     onClick={() => setDialogOpen(false)}

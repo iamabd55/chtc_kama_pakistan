@@ -146,40 +146,13 @@ const AdminDashboard = () => {
     return (
         <AdminLayout
             title="Dashboard"
-            subtitle="Mission control for operations, sales pipeline, and content"
             useContentCard={false}
+            hideHeaderMeta
         >
             <div className="space-y-5">
-                {/* Quick Actions */}
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-[0_12px_28px_rgba(11,29,58,0.08)]">
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold mb-3">Quick Actions</p>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        {[
-                            { label: "Add Product", href: "/admin/products", icon: Package, color: "text-blue-600 bg-blue-50 border-blue-100" },
-                            { label: "Publish News", href: "/admin/news", icon: Newspaper, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
-                            { label: "Review Inquiries", href: "/admin/inquiries", icon: MessageSquare, color: "text-sky-600 bg-sky-50 border-sky-100" },
-                            { label: "Update Site Settings", href: "/admin/settings", icon: Settings, color: "text-amber-600 bg-amber-50 border-amber-100" },
-                        ].map((action) => (
-                            <Link key={action.label} href={action.href} className="group flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2.5 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm" prefetch={false}>
-                                <span className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center border ${action.color}`}>
-                                    <action.icon className="w-4 h-4" />
-                                </span>
-                                <span className="text-[13px] font-semibold text-slate-700 group-hover:text-slate-900">
-                                    {action.label}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Stats Grid — Row 1 */}
+                {/* ── Stats Grid Row 1 ── */}
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <StatsCard
-                        title="Total Products"
-                        value={stats.products}
-                        icon={Package}
-                        color="blue"
-                    />
+                    <StatsCard title="Total Products" value={stats.products} icon={Package} color="blue" />
                     <StatsCard
                         title="Inquiries Today"
                         value={stats.inquiriesToday}
@@ -188,79 +161,74 @@ const AdminDashboard = () => {
                         trend={`${stats.inquiries} total`}
                         trendUp
                     />
-                    <StatsCard
-                        title="News Posts"
-                        value={stats.news}
-                        icon={Newspaper}
-                        color="green"
-                    />
-                    <StatsCard
-                        title="Active Dealers"
-                        value={stats.dealers}
-                        icon={MapPin}
-                        color="blue"
-                    />
+                    <StatsCard title="News Posts" value={stats.news} icon={Newspaper} color="green" />
+                    <StatsCard title="Active Dealers" value={stats.dealers} icon={MapPin} color="blue" />
                 </div>
 
-                {/* Stats Grid — Row 2 */}
+                {/* ── Stats Grid Row 2 ── */}
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    <StatsCard
-                        title="Categories"
-                        value={stats.categories}
-                        icon={Users}
-                        color="blue"
-                    />
-                    <StatsCard
-                        title="Career Posts"
-                        value={stats.careers}
-                        icon={Briefcase}
-                        color="gold"
-                    />
-                    <StatsCard
-                        title="Job Applications"
-                        value={stats.applications}
-                        icon={FileText}
-                        color="green"
-                    />
-                    <StatsCard
-                        title="Total Inquiries"
-                        value={stats.inquiries}
-                        icon={TrendingUp}
-                        color="gold"
-                    />
+                    <StatsCard title="Categories" value={stats.categories} icon={Users} color="blue" />
+                    <StatsCard title="Career Posts" value={stats.careers} icon={Briefcase} color="gold" />
+                    <StatsCard title="Job Applications" value={stats.applications} icon={FileText} color="green" />
+                    <StatsCard title="Total Inquiries" value={stats.inquiries} icon={TrendingUp} color="gold" />
                 </div>
 
-                {/* Bottom row: Recent Inquiries + Sidebar */}
+                {/* ── Quick Actions ── */}
+                <section className="rounded-2xl border border-white/[0.06] bg-[#1e2230] p-4 md:p-5">
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-semibold mb-3">Quick Actions</p>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                        {[
+                            { label: "Add Product", href: "/admin/products", icon: Package, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+                            { label: "Publish News", href: "/admin/news", icon: Newspaper, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+                            { label: "Review Inquiries", href: "/admin/inquiries", icon: MessageSquare, color: "text-sky-400 bg-sky-500/10 border-sky-500/20" },
+                            { label: "Update Site Settings", href: "/admin/settings", icon: Settings, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+                        ].map((action) => (
+                            <Link
+                                key={action.label}
+                                href={action.href}
+                                className="group flex items-center gap-3 rounded-xl border border-white/[0.06] px-3 py-2.5 hover:bg-white/[0.02] hover:border-white/[0.1] transition-all"
+                                prefetch={false}
+                            >
+                                <span className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center border ${action.color}`}>
+                                    <action.icon className="w-4 h-4" />
+                                </span>
+                                <span className="text-[13px] font-semibold text-white/70 group-hover:text-white/90">
+                                    {action.label}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                {/* ── Bottom row: Recent Inquiries + Sidebar panels ── */}
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.25fr_0.95fr]">
                     {/* Recent Inquiries */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="px-5 py-4 border-b border-slate-100">
-                            <h2 className="font-display text-[17px] font-bold text-slate-900">
-                                Recent Inquiries
-                            </h2>
+                    <div className="bg-[#1e2230] rounded-2xl border border-white/[0.06] overflow-hidden">
+                        <div className="px-5 py-4 border-b border-white/[0.04]">
+                            <h2 className="font-display text-[17px] font-bold text-white/85">Recent Inquiries</h2>
                         </div>
-                        <div className="divide-y divide-slate-100">
+                        <div className="divide-y divide-white/[0.04]">
                             {loading ? (
-                                <div className="p-8 text-center text-sm text-muted-foreground">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
+                                <div className="p-8 text-center text-sm text-white/40">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#e07a2f] mx-auto" />
                                 </div>
                             ) : recentInquiries.length === 0 ? (
-                                <div className="py-10 text-center text-sm text-slate-400">
-                                    No inquiries yet
-                                </div>
+                                <div className="py-10 text-center text-sm text-white/30">No inquiries yet</div>
                             ) : (
                                 recentInquiries.map((inq) => (
-                                    <Link key={inq.id}
+                                    <Link
+                                        key={inq.id}
                                         href={`/admin/inquiries?inquiryId=${inq.id}`}
-                                        className="px-5 py-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors"
-                                        prefetch={false}>
+                                        className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                                        prefetch={false}
+                                    >
                                         <AvatarLabel
                                             name={inq.full_name}
                                             subtitle={`${inq.city} · ${inq.inquiry_type} · ${inq.phone}`}
                                         />
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                                             <StatusBadge status={inq.status} />
-                                            <span className="text-xs text-slate-400">
+                                            <span className="hidden sm:inline text-xs text-white/30">
                                                 {new Date(inq.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
@@ -272,28 +240,29 @@ const AdminDashboard = () => {
 
                     {/* Sidebar panels */}
                     <aside className="space-y-4">
-                        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                            <h3 className="font-display text-[16px] font-bold text-slate-900 mb-3">System Health</h3>
+                        {/* System Health */}
+                        <div className="rounded-2xl border border-white/[0.06] bg-[#1e2230] p-5">
+                            <h3 className="font-display text-[16px] font-bold text-white/85 mb-3">System Health</h3>
                             <div className="space-y-2 text-sm">
-                                <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2.5">
-                                    <span className="flex items-center gap-2 text-slate-700"><Database className="w-4 h-4 text-primary" /> Data Sync</span>
-                                    <StatusBadge status="active" />
-                                </div>
-                                <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2.5">
-                                    <span className="flex items-center gap-2 text-slate-700"><Shield className="w-4 h-4 text-primary" /> Auth Session</span>
-                                    <StatusBadge status="active" />
-                                </div>
-                                <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2.5">
-                                    <span className="flex items-center gap-2 text-slate-700"><Activity className="w-4 h-4 text-primary" /> API Workers</span>
-                                    <StatusBadge status="active" />
-                                </div>
+                                {[
+                                    { label: "Data Sync", icon: Database },
+                                    { label: "Auth Session", icon: Shield },
+                                    { label: "API Workers", icon: Activity },
+                                ].map(({ label, icon: Icon }) => (
+                                    <div key={label} className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
+                                        <span className="flex items-center gap-2 text-white/70">
+                                            <Icon className="w-4 h-4 text-[#e07a2f]" /> {label}
+                                        </span>
+                                        <StatusBadge status="active" />
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Announcement Banner Quick Control */}
-                        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        {/* Announcement Banner */}
+                        <div className="rounded-2xl border border-white/[0.06] bg-[#1e2230] p-5">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="font-display text-[16px] font-bold text-slate-900 flex items-center gap-2">
+                                <h3 className="font-display text-[16px] font-bold text-white/85 flex items-center gap-2">
                                     <Megaphone className="w-4 h-4 text-amber-500" />
                                     Announcement
                                 </h3>
@@ -305,16 +274,14 @@ const AdminDashboard = () => {
                                     />
                                     <label
                                         htmlFor="dashboard-banner-toggle"
-                                        className={`text-xs font-semibold cursor-pointer ${
-                                            bannerEnabled ? "text-amber-600" : "text-slate-400"
-                                        }`}
+                                        className={`text-xs font-semibold cursor-pointer ${bannerEnabled ? "text-amber-500" : "text-white/30"}`}
                                     >
                                         {bannerEnabled ? "Live" : "Off"}
                                     </label>
                                 </div>
                             </div>
                             <textarea
-                                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400 transition min-h-[72px]"
+                                className="w-full rounded-lg border border-white/[0.06] bg-[#171b26] px-3 py-2 text-sm text-white/85 placeholder:text-white/30 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400 transition min-h-[72px]"
                                 placeholder="e.g. Eid holiday closure — reopening Monday."
                                 value={bannerMessage}
                                 onChange={(e) => setBannerMessage(e.target.value)}
@@ -327,9 +294,9 @@ const AdminDashboard = () => {
                                 <Save className="w-3.5 h-3.5" />
                                 {bannerSaving ? "Saving…" : "Save Banner"}
                             </button>
-                            <p className="text-[11px] text-slate-400 mt-2 text-center">
+                            <p className="text-[11px] text-white/30 mt-2 text-center">
                                 Full settings →{" "}
-                                <a href="/admin/settings" className="underline hover:text-slate-600">Site Settings</a>
+                                <a href="/admin/settings" className="underline hover:text-white/50">Site Settings</a>
                             </p>
                         </div>
                     </aside>
@@ -340,4 +307,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

@@ -21,12 +21,14 @@ const services = [
     { icon: Heart, label: "Mobile Health Units", color: "bg-emerald-50 text-emerald-500 border-emerald-100" },
 ];
 
-const teamFounders = [
+type TeamMember = { name: string; role: string; src: string; suffix?: string };
+
+const teamFounders: TeamMember[] = [
     { name: "Basheer Ud Din Malik", suffix: "(Late)", role: "Founder", src: "/images/al-bcf/core-team/founder.webp" },
     { name: "Zaheer Ud Din Malik", role: "Chairman", src: "/images/al-bcf/core-team/chairman.webp" },
 ];
 
-const teamLeaders = [
+const teamLeaders: TeamMember[] = [
     { name: "Muneeb Ibrahim", role: "CEO", src: "/images/al-bcf/core-team/ceo.webp" },
     { name: "M. Izhar Ul Haq", role: "Director", src: "/images/al-bcf/core-team/director-2-M-Izhar-ul-haq.webp" },
 ];
@@ -296,64 +298,44 @@ export default function FabricationPage() {
                         </h2>
                     </div>
 
-                    {/* Founders row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-                        {teamFounders.map((m) => (
+                    {/* Unified 4-person grid — 2 col mobile, 4 col desktop */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        {[...teamFounders, ...teamLeaders].map((m) => (
                             <div
                                 key={m.name}
-                                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex items-stretch"
+                                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col group"
                             >
-                                {/* Portrait column */}
-                                <div className="w-24 sm:w-32 flex-shrink-0 relative bg-kama-gold/5">
+                                {/* Portrait — object-contain so full face always visible */}
+                                <div className="relative w-full bg-gradient-to-b from-gray-100 to-gray-50 overflow-hidden"
+                                    style={{ paddingBottom: "100%" }}>
                                     <Image
                                         src={m.src}
                                         alt={m.name}
                                         fill
-                                        className="object-cover object-top"
-                                        sizes="128px"
-                                     loading="lazy" />
+                                        className="object-contain object-center p-3 group-hover:scale-[1.03] transition-transform duration-500"
+                                        sizes="(max-width: 640px) 50vw, 25vw"
+                                        loading="lazy"
+                                    />
                                 </div>
+
                                 {/* Info */}
-                                <div className="flex flex-col justify-center p-5 sm:p-6 border-l-2 border-kama-gold/30">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.22em] text-kama-gold mb-1">{m.role}</span>
-                                    <h3 className="font-display font-black text-kama-navy text-base sm:text-lg leading-tight">
+                                <div className="p-3 sm:p-4 border-t-2 border-kama-gold/20 flex-1">
+                                    <h3 className="font-display font-black text-kama-navy text-sm sm:text-[15px] leading-tight">
                                         {m.name}
                                         {m.suffix && (
-                                            <span className="ml-1.5 text-xs font-normal text-gray-400">{m.suffix}</span>
+                                            <span className="ml-1.5 text-[10px] font-medium text-gray-400 normal-case tracking-normal">{m.suffix}</span>
                                         )}
                                     </h3>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Leadership row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                        {teamLeaders.map((m) => (
-                            <div
-                                key={m.name}
-                                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
-                            >
-                                {/* Portrait */}
-                                <div className="relative h-44 sm:h-52 w-full bg-gray-50">
-                                    <Image
-                                        src={m.src}
-                                        alt={m.name}
-                                        fill
-                                        className="object-cover object-top"
-                                        sizes="(max-width: 640px) 100vw, 33vw"
-                                     loading="lazy" />
-                                </div>
-                                {/* Info */}
-                                <div className="p-4 sm:p-5 border-t-2 border-primary/20">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.22em] text-primary mb-1 block">{m.role}</span>
-                                    <h3 className="font-display font-black text-kama-navy text-sm sm:text-base leading-tight">{m.name}</h3>
+                                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-kama-gold">
+                                        {m.role}
+                                    </p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
+
 
             {/* ══════════════════════════════════════════
                 REDIRECT CTA — the page's whole purpose

@@ -95,6 +95,7 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "Get a Quote", href: "/get-quote" },
                 { label: "Track Inquiry", href: "/track-inquiry" },
                 { label: "Testimonials", href: "/testimonials" },
+                { label: "Admin Panel", href: "/admin/dashboard" },
                 { label: "Careers", href: "/careers" },
               ].map((link) => (
                 <li key={link.label}>
@@ -122,6 +123,7 @@ const Footer = ({ settings }: FooterProps) => {
                 { label: "News & Events", href: "/news" },
                 { label: "Gallery", href: "/gallery" },
                 { label: "Testimonials", href: "/testimonials" },
+                { label: "Admin Panel", href: "/admin/dashboard" },
               ].map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} prefetch={false} className="transition-all duration-300 hover:translate-x-1 hover:text-white">

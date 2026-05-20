@@ -24,16 +24,16 @@ const brands = ["kama", "kinwin", "joylong", "chtc"] as const;
 const PAGE_SIZE = 10;
 
 const categoryBadgeStyles: Record<string, string> = {
-    "ev truck": "bg-blue-50 text-blue-700 border-blue-200",
-    bus: "bg-green-50 text-green-700 border-green-200",
-    truck: "bg-amber-50 text-amber-700 border-amber-200",
+    "ev truck": "bg-blue-500/15 text-blue-400/80 border-blue-400/20",
+    bus: "bg-green-500/15 text-green-400/80 border-green-400/20",
+    truck: "bg-amber-500/15 text-amber-400/80 border-amber-400/20",
 };
 
 const brandBadgeStyles: Record<string, string> = {
-    kama: "bg-blue-50 text-blue-700 border-blue-200",
-    kinwin: "bg-teal-50 text-teal-700 border-teal-200",
-    joylong: "bg-purple-50 text-purple-700 border-purple-200",
-    chtc: "bg-slate-100 text-slate-700 border-slate-200",
+    kama: "bg-blue-500/15 text-blue-400/80 border-blue-400/20",
+    kinwin: "bg-teal-500/15 text-teal-400/80 border-teal-400/20",
+    joylong: "bg-purple-500/15 text-purple-400/80 border-purple-400/20",
+    chtc: "bg-white/[0.06] text-white/60 border-white/[0.08]",
 };
 
 type SortKey = "name" | "slug" | "brand" | "category" | "status";
@@ -382,7 +382,7 @@ const AdminProducts = () => {
             title={
                 <div className="flex items-center gap-3">
                     <span>Products</span>
-                    <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-sm font-medium text-slate-600">
+                    <span className="inline-flex items-center rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-0.5 text-sm font-medium text-white/50">
                         {products.length}
                     </span>
                 </div>
@@ -390,7 +390,7 @@ const AdminProducts = () => {
             actions={
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     <div className="relative w-full md:w-[340px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                         <Input
                             placeholder="Search products by name..."
                             value={search}
@@ -398,7 +398,7 @@ const AdminProducts = () => {
                             className="pl-10"
                         />
                     </div>
-                    <Button onClick={openNew} className="font-semibold bg-[#1E3A8A] hover:bg-[#1b347c]">
+                    <Button onClick={openNew} className="font-semibold bg-[#e07a2f] hover:bg-[#c96a25]">
                         <Plus className="w-4 h-4 mr-2" /> Add Product
                     </Button>
                 </div>
@@ -408,15 +408,15 @@ const AdminProducts = () => {
             useContentCard={false}
         >
             <div className="space-y-4">
-                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <div className="rounded-xl border border-white/[0.06] bg-[#1e2230] px-4 py-3">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-white/40">
                             Showing {totalItems === 0 ? 0 : startIndex + 1}
                             –{Math.min(startIndex + PAGE_SIZE, totalItems)} of {totalItems} products
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                             <select
-                                className="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                className="h-9 rounded-md border border-white/[0.06] bg-[#171b26] px-3 text-sm text-white/85"
                                 value={filterBrand}
                                 onChange={(e) => setFilterBrand(e.target.value)}
                             >
@@ -428,7 +428,7 @@ const AdminProducts = () => {
                                 ))}
                             </select>
                             <select
-                                className="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                className="h-9 rounded-md border border-white/[0.06] bg-[#171b26] px-3 text-sm text-white/85"
                                 value={filterCategory}
                                 onChange={(e) => setFilterCategory(e.target.value)}
                             >
@@ -440,7 +440,7 @@ const AdminProducts = () => {
                                 ))}
                             </select>
                             <select
-                                className="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm"
+                                className="h-9 rounded-md border border-white/[0.06] bg-[#171b26] px-3 text-sm text-white/85"
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
                             >
@@ -453,8 +453,8 @@ const AdminProducts = () => {
                 </div>
 
                 {selectedIds.length > 0 && (
-                    <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm font-medium text-blue-800">
+                    <div className="rounded-xl border border-[#e07a2f]/20 bg-[#e07a2f]/10 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-[#e07a2f]">
                             {selectedIds.length} product(s) selected
                         </p>
                         <div className="flex items-center gap-2">
@@ -471,10 +471,10 @@ const AdminProducts = () => {
                     </div>
                 )}
 
-                <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="rounded-xl border border-white/[0.06] bg-[#1e2230] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[980px]">
-                            <thead className="bg-[#F8F9FA] border-b border-slate-200">
+                            <thead className="bg-[#171b26] border-b border-white/[0.06]">
                                 <tr>
                                     <th className="px-4 py-3 text-left">
                                         <Checkbox
@@ -484,8 +484,8 @@ const AdminProducts = () => {
                                             }
                                         />
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">Image</th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">Image</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">
                                         <button
                                             className="inline-flex items-center gap-1"
                                             onClick={() => handleSort("name")}
@@ -494,7 +494,7 @@ const AdminProducts = () => {
                                             <ArrowUpDown className="w-4 h-4" />
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">
                                         <button
                                             className="inline-flex items-center gap-1"
                                             onClick={() => handleSort("slug")}
@@ -503,7 +503,7 @@ const AdminProducts = () => {
                                             <ArrowUpDown className="w-4 h-4" />
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">
                                         <button
                                             className="inline-flex items-center gap-1"
                                             onClick={() => handleSort("brand")}
@@ -512,7 +512,7 @@ const AdminProducts = () => {
                                             <ArrowUpDown className="w-4 h-4" />
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">
                                         <button
                                             className="inline-flex items-center gap-1"
                                             onClick={() => handleSort("category")}
@@ -521,7 +521,7 @@ const AdminProducts = () => {
                                             <ArrowUpDown className="w-4 h-4" />
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">
                                         <button
                                             className="inline-flex items-center gap-1"
                                             onClick={() => handleSort("status")}
@@ -530,19 +530,19 @@ const AdminProducts = () => {
                                             <ArrowUpDown className="w-4 h-4" />
                                         </button>
                                     </th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-600">Actions</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-white/40">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={8} className="px-4 py-12 text-center text-slate-500">
+                                        <td colSpan={8} className="px-4 py-12 text-center text-white/40">
                                             Loading products...
                                         </td>
                                     </tr>
                                 ) : paginated.length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="px-4 py-12 text-center text-slate-500">
+                                        <td colSpan={8} className="px-4 py-12 text-center text-white/40">
                                             No products found
                                         </td>
                                     </tr>
@@ -552,10 +552,10 @@ const AdminProducts = () => {
                                         const categoryKey = categoryName.toLowerCase();
                                         const categoryClass =
                                             categoryBadgeStyles[categoryKey] ||
-                                            "bg-slate-100 text-slate-700 border-slate-200";
+                                            "bg-white/[0.06] text-white/60 border-white/[0.08]";
                                         const brandClass =
                                             brandBadgeStyles[row.brand] ||
-                                            "bg-slate-100 text-slate-700 border-slate-200";
+                                            "bg-white/[0.06] text-white/60 border-white/[0.08]";
                                         const categorySlug = getCategorySlug(row.category_id);
                                         const viewHref = categorySlug
                                             ? `/products/${categorySlug}/${row.slug}`
@@ -564,8 +564,8 @@ const AdminProducts = () => {
                                         return (
                                             <tr
                                                 key={row.id}
-                                                className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
-                                                    index % 2 === 0 ? "bg-white" : "bg-slate-50/40"
+                                                className={`border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors ${
+                                                    index % 2 === 0 ? "bg-transparent" : "bg-white/[0.01]"
                                                 }`}
                                             >
                                                 <td className="px-4 py-3">
@@ -581,11 +581,11 @@ const AdminProducts = () => {
                                                     <Image
                                                         src={getStorageUrl(row.thumbnail)}
                                                         alt={row.name}
-                                                        className="w-12 h-12 rounded-md object-cover bg-slate-100 border"
+                                                        className="w-12 h-12 rounded-md object-cover bg-white/[0.04] border border-white/[0.06]"
                                                      width={800} height={600}  loading="lazy" />
                                                 </td>
-                                                <td className="px-4 py-3 text-sm font-semibold text-slate-900">{row.name}</td>
-                                                <td className="px-4 py-3 text-sm text-slate-600">{row.slug}</td>
+                                                <td className="px-4 py-3 text-sm font-semibold text-white/85">{row.name}</td>
+                                                <td className="px-4 py-3 text-sm text-white/40">{row.slug}</td>
                                                 <td className="px-4 py-3">
                                                     <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${brandClass}`}>
                                                         {row.brand}
@@ -604,7 +604,7 @@ const AdminProducts = () => {
                                                                 void toggleStatus(row, checked)
                                                             }
                                                         />
-                                                        <span className="text-xs font-medium text-slate-600">
+                                                        <span className="text-xs font-medium text-white/40">
                                                             {row.is_active ? "Active" : "Inactive"}
                                                         </span>
                                                     </div>
@@ -647,7 +647,7 @@ const AdminProducts = () => {
                         </table>
                     </div>
 
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-white">
+                    <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06] bg-[#1e2230]">
                         <Button
                             size="sm"
                             variant="outline"
@@ -662,7 +662,7 @@ const AdminProducts = () => {
                                     key={page}
                                     size="sm"
                                     variant={safePage === page ? "default" : "outline"}
-                                    className={safePage === page ? "bg-[#1E3A8A] hover:bg-[#1b347c]" : ""}
+                                    className={safePage === page ? "bg-[#e07a2f] hover:bg-[#c96a25]" : ""}
                                     onClick={() => setCurrentPage(page)}
                                 >
                                     {page}
@@ -733,9 +733,9 @@ const AdminProducts = () => {
                             {/* Thumbnail upload */}
                             <div className="col-span-2">
                                 <label className="text-sm font-medium mb-1 block">Thumbnail Image *</label>
-                                <p className="text-xs text-muted-foreground mb-2">Main product image displayed in listings. Keep under 300 KB for best performance.</p>
+                                <p className="text-xs text-white/40 mb-2">Main product image displayed in listings. Keep under 300 KB for best performance.</p>
                                 <div
-                                    className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${thumbnailPreview || editingProduct.thumbnail ? "border-primary/40 bg-primary/5" : "border-slate-300 hover:border-primary/50 hover:bg-slate-50"}`}
+                                    className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${thumbnailPreview || editingProduct.thumbnail ? "border-[#e07a2f]/40 bg-[#e07a2f]/5" : "border-white/[0.1] hover:border-[#e07a2f]/50 bg-[#171b26]"}`}
                                     onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                     onDrop={(e) => {
                                         e.preventDefault();
@@ -752,9 +752,9 @@ const AdminProducts = () => {
                                     ) : editingProduct.thumbnail ? (
                                         <img src={getStorageUrl(editingProduct.thumbnail)} alt="current" className="mx-auto max-h-44 rounded-lg object-contain" />
                                     ) : (
-                                        <div className="py-8 flex flex-col items-center gap-2 text-slate-400">
+                                        <div className="py-8 flex flex-col items-center gap-2 text-white/30">
                                             <Upload className="w-9 h-9" />
-                                            <p className="text-sm font-medium text-slate-600">Drag & drop or click to browse</p>
+                                            <p className="text-sm font-medium text-white/40">Drag & drop or click to browse</p>
                                             <p className="text-xs">JPG, PNG, WebP · Aim for under 300 KB</p>
                                         </div>
                                     )}
@@ -775,10 +775,10 @@ const AdminProducts = () => {
 
                             {/* Gallery images upload */}
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Gallery Images <span className="font-normal text-muted-foreground">(optional)</span></label>
-                                <p className="text-xs text-muted-foreground mb-2">Additional photos. Keep each under 300 KB.</p>
+                                <label className="text-sm font-medium mb-1 block">Gallery Images <span className="font-normal text-white/40">(optional)</span></label>
+                                <p className="text-xs text-white/40 mb-2">Additional photos. Keep each under 300 KB.</p>
                                 <div
-                                    className="border-2 border-dashed border-slate-300 hover:border-primary/50 rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-slate-50"
+                                    className="border-2 border-dashed border-white/[0.1] hover:border-[#e07a2f]/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#171b26]"
                                     onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                     onDrop={(e) => {
                                         e.preventDefault();
@@ -789,9 +789,9 @@ const AdminProducts = () => {
                                     }}
                                     onClick={() => extraInputRef.current?.click()}
                                 >
-                                    <div className="py-4 flex flex-col items-center gap-1 text-slate-400">
+                                    <div className="py-4 flex flex-col items-center gap-1 text-white/30">
                                         <ImagePlus className="w-7 h-7" />
-                                        <p className="text-sm font-medium text-slate-600">Drag & drop or click to add images</p>
+                                        <p className="text-sm font-medium text-white/40">Drag & drop or click to add images</p>
                                     </div>
                                     <input ref={extraInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
                                         const files = Array.from(e.target.files ?? []);
@@ -805,7 +805,7 @@ const AdminProducts = () => {
                                         {extraPreviews.map((src, i) => (
                                             <div key={i} className="relative group">
                                                 <img src={src} alt="" className="w-full h-20 object-cover rounded-md border" />
-                                                <button type="button" className="absolute top-1 right-1 bg-white/90 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setExtraFiles((p) => p.filter((_, fi) => fi !== i)); setExtraPreviews((p) => p.filter((_, pi) => pi !== i)); }}>
+                                                <button type="button" className="absolute top-1 right-1 bg-black/70 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setExtraFiles((p) => p.filter((_, fi) => fi !== i)); setExtraPreviews((p) => p.filter((_, pi) => pi !== i)); }}>
                                                     <X className="w-3 h-3 text-rose-600" />
                                                 </button>
                                             </div>
@@ -814,12 +814,12 @@ const AdminProducts = () => {
                                 )}
                                 {(editingProduct.images ?? []).length > 0 && (
                                     <div className="mt-3">
-                                        <p className="text-xs text-muted-foreground mb-1">Saved images:</p>
+                                        <p className="text-xs text-white/40 mb-1">Saved images:</p>
                                         <div className="grid grid-cols-4 gap-2">
                                             {editingProduct.images!.map((src, i) => (
                                                 <div key={i} className="relative group">
                                                     <img src={getStorageUrl(src)} alt="" className="w-full h-20 object-cover rounded-md border" />
-                                                    <button type="button" className="absolute top-1 right-1 bg-white/90 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setEditingProduct({ ...editingProduct, images: editingProduct.images!.filter((_, ii) => ii !== i) }); }}>
+                                                    <button type="button" className="absolute top-1 right-1 bg-black/70 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setEditingProduct({ ...editingProduct, images: editingProduct.images!.filter((_, ii) => ii !== i) }); }}>
                                                         <X className="w-3 h-3 text-rose-600" />
                                                     </button>
                                                 </div>
@@ -838,27 +838,27 @@ const AdminProducts = () => {
                             {/* Features */}
                             <div className="col-span-2">
                                 <label className="text-sm font-medium mb-1 block">Key Features</label>
-                                <p className="text-xs text-muted-foreground mb-1">One feature per line — each becomes a bullet point on the product page.</p>
+                                <p className="text-xs text-white/40 mb-1">One feature per line — each becomes a bullet point on the product page.</p>
                                 <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[110px]" value={serializeList(editingProduct.features)} onChange={(e) => setEditingProduct({ ...editingProduct, features: parseList(e.target.value) })} placeholder={"High torque Euro III engine\n49 passenger seats with reclining\nWABCO ABS+ASR brake system"} />
                             </div>
 
                             {/* Specs */}
                             <div className="col-span-2">
                                 <label className="text-sm font-medium mb-1 block">Specifications</label>
-                                <p className="text-xs text-muted-foreground mb-1">Format: <code className="bg-slate-100 px-1 rounded text-[11px]">Label: Value</code> — one per line. Displayed in the specifications table.</p>
+                                <p className="text-xs text-white/30 mb-1">Format: <code className="bg-white/[0.06] px-1 rounded text-[11px]">Label: Value</code> — one per line. Displayed in the specifications table.</p>
                                 <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[130px] font-mono text-xs" value={serializeSpecs(editingProduct.specs as Record<string, string | number>)} onChange={(e) => setEditingProduct({ ...editingProduct, specs: parseSpecs(e.target.value) })} placeholder={"Engine: 375 HP YUCHAI Euro III\nSeating Capacity: 49\nFuel Tank: 600 L\nTransmission: 6-speed manual"} />
                             </div>
 
                             {/* Brochure */}
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Brochure URL <span className="font-normal text-muted-foreground">(optional)</span></label>
+                                <label className="text-sm font-medium mb-1 block">Brochure URL <span className="font-normal text-white/40">(optional)</span></label>
                                 <Input value={editingProduct.brochure_url || ""} placeholder="https://..." onChange={(e) => setEditingProduct({ ...editingProduct, brochure_url: e.target.value })} />
                             </div>
 
                             {/* Actions */}
-                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
+                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
                                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#1E3A8A] hover:bg-[#1b347c]">
+                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#e07a2f] hover:bg-[#c96a25]">
                                     {uploading ? "Uploading..." : saving ? "Saving..." : editingProduct.id ? "Update Product" : "Create Product"}
                                 </Button>
                             </div>

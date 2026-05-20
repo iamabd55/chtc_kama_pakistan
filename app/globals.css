@@ -135,6 +135,232 @@
   }
 }
 
+/* ── Admin Dark Theme ── */
+.admin-dark,
+[data-admin-theme="dark"] .admin-dark {
+  --background: 228 15% 9%;
+  --foreground: 220 13% 91%;
+  --card: 228 18% 14%;
+  --card-foreground: 220 13% 91%;
+  --popover: 228 18% 14%;
+  --popover-foreground: 220 13% 91%;
+  --primary: 24 75% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 228 16% 18%;
+  --secondary-foreground: 220 13% 91%;
+  --muted: 228 14% 17%;
+  --muted-foreground: 228 10% 55%;
+  --accent: 24 75% 53%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 228 12% 20%;
+  --input: 228 12% 20%;
+  --ring: 24 75% 53%;
+  --radius: 0.5rem;
+}
+
+/* ── Admin Light Theme ── */
+[data-admin-theme="light"] .admin-dark {
+  --background: 220 20% 97%;
+  --foreground: 222 22% 14%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 22% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 22% 14%;
+  --primary: 24 75% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 93%;
+  --secondary-foreground: 222 22% 14%;
+  --muted: 220 14% 93%;
+  --muted-foreground: 220 10% 46%;
+  --accent: 24 75% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 14% 88%;
+  --input: 220 14% 88%;
+  --ring: 24 75% 50%;
+  --radius: 0.5rem;
+}
+
+/* Light mode structural overrides */
+[data-admin-theme="light"] .admin-dark {
+  background-color: #f0f2f8;
+  color: #1a1e2e;
+}
+
+/* Light mode sidebar */
+[data-admin-theme="light"] .admin-dark aside {
+  background-color: #ffffff !important;
+  border-color: #e2e5ef !important;
+}
+
+/* Light mode top header */
+[data-admin-theme="light"] .admin-dark header {
+  background-color: rgba(240,242,248,0.95) !important;
+  border-color: #e2e5ef !important;
+}
+
+/* Light mode content cards */
+[data-admin-theme="light"] .admin-dark [class*="bg-\[#1e2230\]"],
+[data-admin-theme="light"] .admin-dark [class*="bg-\[#1a1e2e\]"],
+[data-admin-theme="light"] .admin-dark [class*="bg-\[#171b26\]"] {
+  background-color: #ffffff !important;
+}
+
+[data-admin-theme="light"] .admin-dark [class*="bg-\[#111318\]"] {
+  background-color: #f0f2f8 !important;
+}
+
+/* Light mode borders */
+[data-admin-theme="light"] .admin-dark [class*="border-white\/"] {
+  border-color: #e2e5ef !important;
+}
+
+/* Light mode text */
+[data-admin-theme="light"] .admin-dark [class*="text-white\/"] {
+  color: #1a1e2e !important;
+}
+
+[data-admin-theme="light"] .admin-dark [class*="text-white"] {
+  color: #1a1e2e !important;
+}
+
+/* Light mode inputs */
+[data-admin-theme="light"] .admin-dark input,
+[data-admin-theme="light"] .admin-dark textarea,
+[data-admin-theme="light"] .admin-dark select {
+  background-color: #f8f9fc !important;
+  border-color: #d8dce8 !important;
+  color: #1a1e2e !important;
+}
+[data-admin-theme="light"] .admin-dark input::placeholder,
+[data-admin-theme="light"] .admin-dark textarea::placeholder {
+  color: #8e95a8 !important;
+}
+[data-admin-theme="light"] .admin-dark input:focus,
+[data-admin-theme="light"] .admin-dark textarea:focus,
+[data-admin-theme="light"] .admin-dark select:focus {
+  border-color: hsl(24 75% 50%) !important;
+  box-shadow: 0 0 0 2px hsla(24,75%,50%,0.15) !important;
+}
+
+/* Light mode dialog */
+[data-admin-theme="light"] .admin-dark [data-state="open"][role="dialog"],
+[data-admin-theme="light"] .admin-dark [data-radix-popper-content-wrapper] {
+  background-color: #ffffff;
+  color: #1a1e2e;
+  border-color: #e2e5ef;
+}
+
+/* Light mode bottom nav */
+[data-admin-theme="light"] .admin-bottom-nav {
+  background: #ffffff !important;
+  border-top-color: #e2e5ef !important;
+}
+[data-admin-theme="light"] .admin-bottom-nav a,
+[data-admin-theme="light"] .admin-bottom-nav button {
+  color: #8e95a8;
+}
+[data-admin-theme="light"] .admin-bottom-nav a.active,
+[data-admin-theme="light"] .admin-bottom-nav button.active {
+  color: hsl(24 75% 50%);
+}
+
+/* Dark mode scrollbar */
+.admin-dark *::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-dark *::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.04);
+}
+.admin-dark *::-webkit-scrollbar-thumb {
+  background: rgba(224,122,47,0.5);
+  border-radius: 9999px;
+}
+/* Sidebar nav — hide scrollbar entirely */
+.admin-dark aside nav::-webkit-scrollbar {
+  display: none;
+}
+.admin-dark aside nav {
+  scrollbar-width: none;
+}
+
+
+/* Admin input/select/textarea dark overrides */
+.admin-dark input,
+.admin-dark textarea,
+.admin-dark select {
+  background-color: hsl(228 16% 12%) !important;
+  border-color: hsl(228 12% 22%) !important;
+  color: hsl(220 13% 91%) !important;
+}
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder {
+  color: hsl(228 10% 45%) !important;
+}
+.admin-dark input:focus,
+.admin-dark textarea:focus,
+.admin-dark select:focus {
+  border-color: hsl(24 75% 53%) !important;
+  box-shadow: 0 0 0 2px hsla(24,75%,53%,0.15) !important;
+}
+
+/* Admin dialog overlay */
+.admin-dark [data-state="open"][role="dialog"],
+.admin-dark [data-radix-popper-content-wrapper] {
+  color: hsl(220 13% 91%);
+}
+
+/* Admin bottom nav */
+.admin-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 60px;
+  background: hsl(228 18% 11%);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px;
+  backdrop-filter: blur(12px);
+}
+.admin-bottom-nav a,
+.admin-bottom-nav button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: hsl(228 10% 50%);
+  transition: color 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+.admin-bottom-nav a.active,
+.admin-bottom-nav button.active {
+  color: hsl(24 75% 53%);
+}
+.admin-bottom-nav a:hover,
+.admin-bottom-nav button:hover {
+  color: hsl(220 13% 85%);
+}
+
+@media (min-width: 1024px) {
+  .admin-bottom-nav {
+    display: none;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

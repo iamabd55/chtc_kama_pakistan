@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
@@ -13,18 +14,19 @@ import {
     Settings,
     LogOut,
     FileText,
-    ShieldCheck,
-    Sparkles,
-    Rocket,
     X,
     MessageCircle,
     Users,
     UserCog,
     Activity,
+    BarChart3,
+    Sun,
+    Moon,
 } from "lucide-react";
 import { adminDb } from "@/lib/supabase/adminClient";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useAdminTheme } from "@/hooks/useAdminTheme";
+import { clearAdminSession } from "@/hooks/useAdminSession";
 
 interface AdminSidebarProps {
     className?: string;
@@ -34,41 +36,37 @@ interface AdminSidebarProps {
 
 const menuGroups = [
     {
-        label: "Overview",
+        label: "Admin",
         items: [
-            { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard", hint: "Overview" },
-            { label: "Analytics", icon: Activity, href: "/admin/analytics", hint: "Insights" },
+            { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+            { label: "Products", icon: Package, href: "/admin/products" },
+            { label: "Categories", icon: FolderTree, href: "/admin/categories" },
+            { label: "Dealers", icon: MapPin, href: "/admin/dealers" },
+            { label: "Inquiries", icon: MessageSquare, href: "/admin/inquiries" },
+            { label: "News & Posts", icon: Newspaper, href: "/admin/news" },
         ],
     },
     {
-        label: "Commerce",
+        label: "Analytics",
         items: [
-            { label: "Products", icon: Package, href: "/admin/products", hint: "Inventory" },
-            { label: "Categories", icon: FolderTree, href: "/admin/categories", hint: "Taxonomy" },
-            { label: "Dealers", icon: MapPin, href: "/admin/dealers", hint: "Network" },
-        ],
-    },
-    {
-        label: "Customer Ops",
-        items: [
-            { label: "Inquiries", icon: MessageSquare, href: "/admin/inquiries", hint: "Leads" },
-            { label: "News & Posts", icon: Newspaper, href: "/admin/news", hint: "Content" },
+            { label: "Overview", icon: Activity, href: "/admin/analytics" },
+            { label: "Reports", icon: BarChart3, href: "/admin/analytics" },
         ],
     },
     {
         label: "People",
         items: [
-            { label: "Career Posts", icon: Briefcase, href: "/admin/careers", hint: "Hiring" },
-            { label: "Applications", icon: FileText, href: "/admin/applications", hint: "Recruitment" },
-            { label: "Team", icon: Users, href: "/admin/team", hint: "Leadership" },
-            { label: "Admin Users", icon: UserCog, href: "/admin/users", hint: "RBAC" },
-            { label: "Site Settings", icon: Settings, href: "/admin/settings", hint: "Global" },
+            { label: "Career Posts", icon: Briefcase, href: "/admin/careers" },
+            { label: "Applications", icon: FileText, href: "/admin/applications" },
+            { label: "Team", icon: Users, href: "/admin/team" },
+            { label: "Testimonials", icon: MessageCircle, href: "/admin/testimonials" },
         ],
     },
     {
-        label: "Content",
+        label: "Settings",
         items: [
-            { label: "Testimonials", icon: MessageCircle, href: "/admin/testimonials", hint: "Reviews" },
+            { label: "Site Settings", icon: Settings, href: "/admin/settings" },
+            { label: "Users", icon: UserCog, href: "/admin/users" },
         ],
     },
 ];
@@ -76,6 +74,7 @@ const menuGroups = [
 const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarProps) => {
     const pathname = usePathname();
     const router = useRouter();
+    const { isDark, toggleTheme } = useAdminTheme();
 
     const isActive = (href: string) => {
         if (href === "/admin/dashboard") return pathname === "/admin/dashboard" || pathname === "/admin";
@@ -83,81 +82,64 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
     };
 
     const handleLogout = async () => {
+        clearAdminSession();
         await adminDb.auth.signOut();
         router.push("/admin/login");
     };
 
     return (
         <aside className={cn(
-            "inset-y-0 left-0 z-50 w-[256px] flex flex-col bg-[linear-gradient(180deg,#06172f_0%,#0a1730_36%,#101521_100%)] text-white border-r border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.35)]",
+            "inset-y-0 left-0 z-50 w-[260px] flex flex-col bg-[#1a1e2e] text-white border-r border-white/[0.06]",
             className
         )}>
-            <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(circle_at_30%_10%,rgba(255,255,255,0.24),transparent_35%),radial-gradient(circle_at_80%_40%,rgba(211,151,70,0.28),transparent_30%)]" />
-
             {/* Brand */}
-            <div className="relative px-4 py-4 border-b border-white/10">
+            <div className="relative px-5 py-4 border-b border-white/[0.06]">
                 {onRequestClose && (
                     <button
                         type="button"
                         aria-label="Close sidebar"
                         onClick={onRequestClose}
-                        className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors lg:hidden"
+                        className="absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors lg:hidden"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 )}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-white/55 font-semibold mb-2">Control Center</p>
-                    <div className="relative h-[44px] w-[154px]">
+                <div className="flex items-center gap-3 pr-8 lg:pr-0">
+                    {/* Theme-aware logo — white version on dark bg, dark version on light bg */}
+                    <div className="relative w-36 h-10 flex-shrink-0">
                         <Image
-                            src="/images/al-nasir-logo-white.webp"
+                            src={isDark ? "/images/al-nasir-logo-white.webp" : "/images/al-nasir-logo.webp"}
                             alt="Al Nasir Motors"
                             fill
-                            className="object-contain"
-                            sizes="154px"
-                            loading="lazy"
+                            className="object-contain object-left"
+                            priority
                         />
                     </div>
-                    <p className="font-display text-base font-bold tracking-wide mt-2">Admin Workspace</p>
-                </div>
-
-                <div className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-white/80">
-                        <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                        Secure Session
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-emerald-200">LIVE</span>
                 </div>
             </div>
 
             {/* Nav */}
-            <nav
-                className="relative flex-1 py-3 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:rgba(59,130,246,0.75)_rgba(255,255,255,0.08)] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-blue-300 [&::-webkit-scrollbar-thumb]:to-blue-500 [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-white/20 [&::-webkit-scrollbar-thumb:hover]:from-blue-200 [&::-webkit-scrollbar-thumb:hover]:to-cyan-400"
-            >
+            <nav className="relative flex-1 py-4 overflow-y-auto overflow-x-hidden scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {menuGroups.map((group) => (
-                    <div key={group.label} className="mb-3">
-                        <p className="px-4 mb-2 text-[10px] uppercase tracking-[0.22em] text-white/45 font-semibold">{group.label}</p>
-                        <ul className="space-y-1 px-2.5">
+                    <div key={group.label} className="mb-4">
+                        <p className="px-5 mb-2 text-[10px] uppercase tracking-[0.2em] text-white/30 font-semibold">{group.label}</p>
+                        <ul className="space-y-0.5 px-3">
                             {group.items.map((item) => {
                                 const active = isActive(item.href);
                                 return (
-                                    <li key={item.href}>
+                                    <li key={item.href + item.label}>
                                         <Link href={item.href}
                                             onClick={onNavigate}
-                                            className={`group relative flex items-center justify-between gap-2 px-3 py-2 rounded-xl transition-all duration-200 ${active
-                                                ? "bg-gradient-to-r from-primary/90 to-primary text-white shadow-lg shadow-primary/20"
-                                                : "text-white/70 hover:text-white hover:bg-white/8"
+                                            className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${active
+                                                ? "bg-[#e07a2f]/10 text-[#e07a2f]"
+                                                : "text-white/55 hover:text-white/85 hover:bg-white/[0.04]"
                                                 }`}
-                                         prefetch={false}>
-                                            <span className="flex items-center gap-3 min-w-0">
-                                                <span className={`flex items-center justify-center w-7 h-7 rounded-lg border ${active ? "bg-white/15 border-white/20" : "bg-white/5 border-white/10 group-hover:bg-white/10"}`}>
-                                                    <item.icon className="w-4 h-4 flex-shrink-0" />
-                                                </span>
-                                                <span className="truncate text-[13px] font-medium">{item.label}</span>
-                                            </span>
-                                            <span className={`text-[10px] uppercase tracking-wide ${active ? "text-white/80" : "text-white/45 group-hover:text-white/70"}`}>
-                                                {item.hint}
-                                            </span>
+                                            prefetch={false}>
+                                            {active && (
+                                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#e07a2f]" />
+                                            )}
+                                            <item.icon className="w-[18px] h-[18px] flex-shrink-0" />
+                                            <span className="truncate text-[13px] font-medium">{item.label}</span>
                                         </Link>
                                     </li>
                                 );
@@ -167,21 +149,33 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
                 ))}
             </nav>
 
-            {/* Footer actions */}
-            <div className="relative border-t border-white/10 p-3">
-                <div className="mb-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2 flex items-center gap-2 text-xs text-white/75">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    Premium Control Mode
-                </div>
-                <div className="mb-2 rounded-xl bg-primary/20 border border-primary/30 px-3 py-2 text-xs text-primary-foreground/90 flex items-center gap-2">
-                    <Rocket className="w-3.5 h-3.5" />
-                    Ready for Live Ops
-                </div>
+            {/* Bottom actions: theme toggle + sign out */}
+            <div className="relative border-t border-white/[0.06] p-3 space-y-1">
+                {/* Dark mode toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/[0.04] transition-colors"
+                    aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                >
+                    {isDark ? (
+                        <>
+                            <Sun className="w-[18px] h-[18px] flex-shrink-0" />
+                            <span>Light Mode</span>
+                        </>
+                    ) : (
+                        <>
+                            <Moon className="w-[18px] h-[18px] flex-shrink-0" />
+                            <span>Dark Mode</span>
+                        </>
+                    )}
+                </button>
+
+                {/* Sign out */}
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded-xl text-sm font-semibold text-white/85 bg-white/8 hover:bg-white/14 border border-white/10 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-white/50 hover:text-white/80 hover:bg-white/[0.04] transition-colors"
                 >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-[18px] h-[18px]" />
                     Sign out
                 </button>
             </div>
@@ -190,4 +184,3 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 };
 
 export default AdminSidebar;
-

@@ -336,7 +336,7 @@ const AdminInquiries = () => {
         {
             header: "Product",
             accessor: (r: InquiryWithProduct) => (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-white/40">
                     {r.product?.name || "—"}
                 </span>
             ),
@@ -354,7 +354,7 @@ const AdminInquiries = () => {
         {
             header: "Date",
             accessor: (r: InquiryWithProduct) => (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-white/40">
                     {new Date(r.created_at).toLocaleDateString()}
                 </span>
             ),
@@ -386,7 +386,7 @@ const AdminInquiries = () => {
                         aria-label="Delete inquiry"
                         title="Delete"
                         disabled={deleting}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-400 hover:text-red-300"
                     >
                         <Trash2 className="w-4 h-4" />
                     </Button>
@@ -412,7 +412,7 @@ const AdminInquiries = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
                 <div className="relative flex-1 max-w-full sm:max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                     <Input
                         placeholder="Search by name, city, phone..."
                         value={search}
@@ -465,10 +465,10 @@ const AdminInquiries = () => {
 
         {/* Header */}
        {/* Header — remove the custom X button entirely */}
-<header className="border-b px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+<header className="border-b border-white/[0.06] px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
     <div>
         <h3 className="font-display text-lg sm:text-xl font-semibold">Inquiry Details</h3>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-sm text-white/40">
             Review the public reference, status, and internal notes.
         </p>
     </div>
@@ -479,14 +479,14 @@ const AdminInquiries = () => {
             <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 min-h-0">
                 {/* Reference */}
                 <div className="mb-4">
-                    <div className="inline-flex items-center gap-3 rounded-lg border bg-muted/30 px-3 py-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <div className="inline-flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
                             Reference
                         </span>
-                        <span className="font-mono text-sm font-semibold text-foreground">
+                        <span className="font-mono text-sm font-semibold text-white/85">
                             {selected.public_ref || selected.id}
                         </span>
-                        <span className="text-xs text-muted-foreground">Public tracking ID</span>
+                        <span className="text-xs text-white/30">Public tracking ID</span>
                     </div>
                 </div>
 
@@ -494,52 +494,52 @@ const AdminInquiries = () => {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                     {/* Customer Information */}
                     <div className="col-span-2">
-                        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Customer Information</h4>
+                        <h4 className="text-xs font-semibold uppercase tracking-wide text-white/40">Customer Information</h4>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Name</div>
-                        <div className="font-medium text-sm">{selected.full_name}</div>
+                        <div className="text-xs text-white/40">Name</div>
+                        <div className="font-medium text-sm text-white/85">{selected.full_name}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Phone</div>
-                        <div className="font-medium text-sm">{selected.phone}</div>
+                        <div className="text-xs text-white/40">Phone</div>
+                        <div className="font-medium text-sm text-white/85">{selected.phone}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Email</div>
-                        <div className="font-medium text-sm break-all">{selected.email || "—"}</div>
+                        <div className="text-xs text-white/40">Email</div>
+                        <div className="font-medium text-sm text-white/85 break-all">{selected.email || "—"}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">City</div>
-                        <div className="font-medium text-sm">{selected.city}</div>
+                        <div className="text-xs text-white/40">City</div>
+                        <div className="font-medium text-sm text-white/85">{selected.city}</div>
                     </div>
 
                     {/* Divider */}
-                    <div className="col-span-2 border-t mt-1 pt-3">
-                        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Inquiry Information</h4>
+                    <div className="col-span-2 border-t border-white/[0.06] mt-1 pt-3">
+                        <h4 className="text-xs font-semibold uppercase tracking-wide text-white/40">Inquiry Information</h4>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Type</div>
-                        <div className="font-medium text-sm capitalize">{selected.inquiry_type}</div>
+                        <div className="text-xs text-white/40">Type</div>
+                        <div className="font-medium text-sm capitalize text-white/85">{selected.inquiry_type}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Product</div>
-                        <div className="font-medium text-sm">{selected.product?.name || "—"}</div>
+                        <div className="text-xs text-white/40">Product</div>
+                        <div className="font-medium text-sm text-white/85">{selected.product?.name || "—"}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Source</div>
-                        <div className="font-medium text-sm capitalize">{selected.source}</div>
+                        <div className="text-xs text-white/40">Source</div>
+                        <div className="font-medium text-sm capitalize text-white/85">{selected.source}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-muted-foreground">Date</div>
-                        <div className="font-medium text-sm">{new Date(selected.created_at).toLocaleString()}</div>
+                        <div className="text-xs text-white/40">Date</div>
+                        <div className="font-medium text-sm text-white/85">{new Date(selected.created_at).toLocaleString()}</div>
                     </div>
                 </div>
 
                 {/* Message / Note */}
                 {getInquiryNote(selected.message) && (
                     <div className="mt-4">
-                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Message / Note</h4>
-                        <div className="rounded-lg bg-muted p-3 text-sm leading-6">
+                        <h4 className="text-sm font-medium text-white/40 mb-2">Message / Note</h4>
+                        <div className="rounded-lg bg-white/[0.04] p-3 text-sm leading-6 text-white/85">
                             {getInquiryNote(selected.message)}
                         </div>
                     </div>
@@ -548,7 +548,7 @@ const AdminInquiries = () => {
                 {/* Status & Notes — responsive with compact spacing */}
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium">Status</label>
+                        <label className="mb-1.5 block text-sm font-medium text-white/70">Status</label>
                         <select
                             className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                             value={draft.status}
@@ -560,7 +560,7 @@ const AdminInquiries = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium">Notes</label>
+                        <label className="mb-1.5 block text-sm font-medium text-white/70">Notes</label>
                         <textarea
                             className="h-[72px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                             value={draft.notes}
@@ -571,13 +571,13 @@ const AdminInquiries = () => {
                 </div>
 
                 {/* Internal handling */}
-                <details className="mt-4 rounded-lg border bg-muted/30 px-3 py-2">
-                    <summary className="cursor-pointer text-sm font-medium text-foreground select-none">
+                <details className="mt-4 rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2">
+                    <summary className="cursor-pointer text-sm font-medium text-white/85 select-none">
                         Internal handling
                     </summary>
                     <div className="mt-3 space-y-3">
                         <div>
-                            <label className="mb-1 block text-sm font-medium">Assigned To</label>
+                            <label className="mb-1 block text-sm font-medium text-white/70">Assigned To</label>
                             <Input
                                 value={draft.assigned_to}
                                 onChange={(e) =>
@@ -587,7 +587,7 @@ const AdminInquiries = () => {
                             />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium">Follow-up Date</label>
+                            <label className="mb-1 block text-sm font-medium text-white/70">Follow-up Date</label>
                             <Input
                                 type="date"
                                 value={draft.follow_up_date}
@@ -602,7 +602,7 @@ const AdminInquiries = () => {
         )}
 
         {/* Footer — always visible, compact and responsive */}
-        <footer className="flex-shrink-0 border-t px-4 sm:px-6 py-3 bg-background">
+        <footer className="flex-shrink-0 border-t border-white/[0.06] px-4 sm:px-6 py-3 bg-[#1e2230]">
             <div className="flex items-center justify-between gap-2">
                 <Button
                     variant="destructive"

@@ -192,10 +192,10 @@ export default function AnalyticsPage() {
     const newCount    = statusCounts["new"] || 0;
 
     const cards = [
-        { label: "Total Inquiries",   value: total,           icon: MessageSquare, color: "text-blue-600  bg-blue-50  border-blue-100"  },
-        { label: "Converted",         value: converted,       icon: TrendingUp,    color: "text-green-600 bg-green-50 border-green-100" },
-        { label: "Conversion Rate",   value: `${convRate}%`,  icon: PieIcon,       color: "text-amber-600 bg-amber-50 border-amber-100" },
-        { label: "Pending (New)",     value: newCount,        icon: Clock,         color: "text-rose-600  bg-rose-50  border-rose-100"  },
+        { label: "Total Inquiries",   value: total,           icon: MessageSquare, color: "text-blue-400  bg-blue-500/10  border-blue-500/20"  },
+        { label: "Converted",         value: converted,       icon: TrendingUp,    color: "text-green-400 bg-green-500/10 border-green-500/20" },
+        { label: "Conversion Rate",   value: `${convRate}%`,  icon: PieIcon,       color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+        { label: "Pending (New)",     value: newCount,        icon: Clock,         color: "text-rose-400  bg-rose-500/10  border-rose-500/20"  },
     ];
 
     return (
@@ -207,7 +207,7 @@ export default function AnalyticsPage() {
                 <button
                     onClick={load}
                     disabled={loading}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-60 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-[#1e2230] px-4 py-2 text-sm font-semibold text-white/85 hover:bg-[#242838] disabled:opacity-60 transition-colors"
                 >
                     <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
                     Refresh
@@ -218,16 +218,16 @@ export default function AnalyticsPage() {
 
                 {/* Range selector */}
                 <div className="flex items-center gap-3">
-                    <Filter className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm font-medium text-slate-600">Period:</span>
+                    <Filter className="w-4 h-4 text-white/40" />
+                    <span className="text-sm font-medium text-white/40">Period:</span>
                     {([30, 60, 90] as Range[]).map((r) => (
                         <button
                             key={r}
                             onClick={() => setRange(r)}
                             className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
                                 range === r
-                                    ? "bg-primary text-white border-primary shadow"
-                                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                                    ? "bg-[#e07a2f] text-white border-[#e07a2f] shadow"
+                                    : "bg-[#1e2230] text-white/60 border-white/[0.06] hover:border-white/[0.12]"
                             }`}
                         >
                             {r}d
@@ -240,14 +240,14 @@ export default function AnalyticsPage() {
                     {cards.map((c) => (
                         <div
                             key={c.label}
-                            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex items-center gap-4"
+                            className="rounded-2xl border border-white/[0.06] bg-[#1e2230] p-5 flex items-center gap-4"
                         >
                             <span className={`w-10 h-10 shrink-0 rounded-xl border flex items-center justify-center ${c.color}`}>
                                 <c.icon className="w-5 h-5" />
                             </span>
                             <div>
-                                <p className="text-xs text-slate-500 font-medium">{c.label}</p>
-                                <p className="text-2xl font-black text-slate-900 font-display leading-tight">
+                                <p className="text-xs text-white/40 font-medium">{c.label}</p>
+                                <p className="text-2xl font-black text-white/85 font-display leading-tight">
                                     {loading ? "—" : c.value}
                                 </p>
                             </div>
@@ -262,16 +262,16 @@ export default function AnalyticsPage() {
                     <ChartCard title="Inquiries Per Day" icon={TrendingUp} loading={loading}>
                         <ResponsiveContainer width="100%" height={260}>
                             <LineChart data={dailyData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                                 <XAxis
                                     dataKey="date"
-                                    tick={{ fontSize: 11, fill: "#94a3b8" }}
+                                    tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }}
                                     interval={range === 30 ? 4 : range === 60 ? 9 : 13}
                                 />
-                                <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} allowDecimals={false} />
+                                <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} allowDecimals={false} />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
-                                    labelStyle={{ fontWeight: 700, color: "#0f172a" }}
+                                    contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                                    labelStyle={{ fontWeight: 700, color: "rgba(255,255,255,0.85)" }}
                                 />
                                 <Line
                                     type="monotone"
@@ -308,12 +308,12 @@ export default function AnalyticsPage() {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
+                                    contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
                                     formatter={(v: number, name: string) => [v, name]}
                                 />
                                 <Legend
                                     formatter={(value) => (
-                                        <span style={{ fontSize: 12, color: "#475569", textTransform: "capitalize" }}>
+                                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", textTransform: "capitalize" }}>
                                             {value}
                                         </span>
                                     )}
@@ -331,12 +331,12 @@ export default function AnalyticsPage() {
                         <ResponsiveContainer width="100%" height={260}>
                             <FunnelChart>
                                 <Tooltip
-                                    contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
+                                    contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
                                 />
                                 <Funnel dataKey="value" data={funnelData} isAnimationActive>
                                     <LabelList
                                         position="right"
-                                        fill="#64748b"
+                                        fill="rgba(255,255,255,0.4)"
                                         stroke="none"
                                         dataKey="name"
                                         style={{ fontSize: 12, fontWeight: 600 }}
@@ -354,7 +354,7 @@ export default function AnalyticsPage() {
                         {/* legend */}
                         <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-1 justify-center">
                             {STATUS_ORDER.map((s) => (
-                                <span key={s} className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                                <span key={s} className="flex items-center gap-1.5 text-[11px] text-white/40 font-medium">
                                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: STATUS_COLORS[s] }} />
                                     {s.charAt(0).toUpperCase() + s.slice(1)}
                                 </span>
@@ -370,17 +370,17 @@ export default function AnalyticsPage() {
                                 layout="vertical"
                                 margin={{ top: 0, right: 12, left: 0, bottom: 0 }}
                             >
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                                <XAxis type="number" tick={{ fontSize: 11, fill: "#94a3b8" }} allowDecimals={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
+                                <XAxis type="number" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} allowDecimals={false} />
                                 <YAxis
                                     type="category"
                                     dataKey="city"
-                                    tick={{ fontSize: 11, fill: "#475569" }}
+                                    tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }}
                                     width={82}
                                 />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
-                                    cursor={{ fill: "#f8fafc" }}
+                                    contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                                    cursor={{ fill: "rgba(255,255,255,0.04)" }}
                                 />
                                 <Bar dataKey="count" name="Inquiries" radius={[0, 6, 6, 0]}>
                                     {cityData.map((_, i) => (
@@ -399,12 +399,12 @@ export default function AnalyticsPage() {
                 <ChartCard title="Status Distribution" icon={MessageSquare} loading={loading}>
                     <ResponsiveContainer width="100%" height={220}>
                         <BarChart data={statusBarData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                            <XAxis dataKey="status" tick={{ fontSize: 12, fill: "#475569" }} />
-                            <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} allowDecimals={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                            <XAxis dataKey="status" tick={{ fontSize: 12, fill: "rgba(255,255,255,0.4)" }} />
+                            <YAxis tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }} allowDecimals={false} />
                             <Tooltip
-                                contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
-                                cursor={{ fill: "#f8fafc" }}
+                                contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                                cursor={{ fill: "rgba(255,255,255,0.04)" }}
                             />
                             <Bar dataKey="count" name="Inquiries" radius={[6, 6, 0, 0]}>
                                 {statusBarData.map((entry) => (
@@ -424,34 +424,34 @@ export default function AnalyticsPage() {
                     icon={Clock}
                     loading={loading}
                 >
-                    <p className="mb-3 text-xs text-slate-500">
+                    <p className="mb-3 text-xs text-white/40">
                         Derived from created_at to the latest status update for each inquiry.
                         With the current schema, this is the safest available proxy for response timing.
                     </p>
                     <ResponsiveContainer width="100%" height={240}>
                         <BarChart data={responseTimeData} layout="vertical" margin={{ top: 0, right: 24, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
                             <XAxis
                                 type="number"
-                                tick={{ fontSize: 11, fill: "#94a3b8" }}
+                                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }}
                                 tickFormatter={(value) => `${Math.round(value)}h`}
                                 allowDecimals={false}
                             />
                             <YAxis
                                 type="category"
                                 dataKey="label"
-                                tick={{ fontSize: 11, fill: "#475569" }}
+                                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }}
                                 width={88}
                             />
                             <Tooltip
-                                contentStyle={{ borderRadius: 10, fontSize: 13, border: "1px solid #e2e8f0" }}
+                                contentStyle={{ borderRadius: 10, fontSize: 13, background: "#1e2230", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
                                 formatter={(value: number, _name, entry) => [
                                     `${formatDuration(value)} average`,
                                     `${(entry as { payload?: { count?: number } }).payload?.count || 0} inquiries`,
                                 ]}
                             />
                             <Bar dataKey="hours" name="Average response time" radius={[0, 6, 6, 0]}>
-                                <LabelList dataKey="formatted" position="right" fill="#475569" style={{ fontSize: 12, fontWeight: 600 }} />
+                                <LabelList dataKey="formatted" position="right" fill="rgba(255,255,255,0.4)" style={{ fontSize: 12, fontWeight: 600 }} />
                                 {responseTimeData.map((entry) => (
                                     <Cell
                                         key={entry.status}
@@ -478,10 +478,10 @@ function ChartCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-white/[0.06] bg-[#1e2230] p-5">
             <div className="flex items-center gap-2 mb-4">
                 <Icon className="w-4 h-4 text-primary" />
-                <h2 className="font-display text-[15px] font-bold text-slate-900">{title}</h2>
+                <h2 className="font-display text-[15px] font-bold text-white/85">{title}</h2>
             </div>
             {loading ? (
                 <div className="flex items-center justify-center h-[260px]">

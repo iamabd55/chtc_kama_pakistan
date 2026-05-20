@@ -97,7 +97,7 @@ const AdminSettings = () => {
             >
                 <div className="max-w-2xl space-y-8">
                     {/* Contact Information skeleton */}
-                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                    <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-44 mb-4" />
                         <div className="grid grid-cols-2 gap-4">
                             {Array.from({ length: 4 }).map((_, i) => (
@@ -110,7 +110,7 @@ const AdminSettings = () => {
                     </div>
 
                     {/* Location skeleton */}
-                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                    <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-24 mb-4" />
                         <div className="space-y-4">
                             <div>
@@ -125,7 +125,7 @@ const AdminSettings = () => {
                     </div>
 
                     {/* Branding skeleton */}
-                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                    <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-24 mb-4" />
                         <div className="space-y-4">
                             <div>
@@ -140,7 +140,7 @@ const AdminSettings = () => {
                     </div>
 
                     {/* Social Links skeleton */}
-                    <div className="bg-card rounded-xl border p-6 shadow-sm">
+                    <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-28 mb-4" />
                         <div className="grid grid-cols-2 gap-4">
                             {Array.from({ length: 4 }).map((_, i) => (
@@ -174,17 +174,17 @@ const AdminSettings = () => {
             <div className="max-w-2xl space-y-8">
                 {/* Contact Information */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Contact Information
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 WhatsApp Number *
                             </label>
                             <Input
@@ -195,7 +195,7 @@ const AdminSettings = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Sales Email *
                             </label>
                             <Input
@@ -206,7 +206,7 @@ const AdminSettings = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Support Email
                             </label>
                             <Input
@@ -217,7 +217,7 @@ const AdminSettings = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Office Phone
                             </label>
                             <Input
@@ -232,17 +232,17 @@ const AdminSettings = () => {
 
                 {/* Location */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Location
                     </h2>
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Office Address
                             </label>
                             <Input
@@ -253,7 +253,7 @@ const AdminSettings = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Google Maps Embed URL
                             </label>
                             <Input
@@ -268,17 +268,17 @@ const AdminSettings = () => {
 
                 {/* Branding */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Branding
                     </h2>
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium mb-1 block">
+                            <label className="text-sm font-medium mb-1 block text-white/60">
                                 Company Tagline
                             </label>
                             <Input
@@ -289,7 +289,7 @@ const AdminSettings = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-1 block">Footer Text</label>
+                            <label className="text-sm font-medium mb-1 block text-white/60">Footer Text</label>
                             <textarea
                                 className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
                                 value={settings.footer_text || ""}
@@ -303,21 +303,21 @@ const AdminSettings = () => {
 
                 {/* Announcement Banner */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.25, ease }}
                 >
                     <div className="flex items-start justify-between gap-4 mb-4">
                         <div>
-                            <h2 className="font-display text-lg font-bold text-foreground">
+                            <h2 className="font-display text-lg font-bold text-white/90">
                                 Announcement Banner
                             </h2>
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-xs text-white/40 mt-1">
                                 Show a short global notice across the public site.
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 rounded-full border px-3 py-2">
+                        <div className="flex items-center gap-3 rounded-full border border-white/[0.06] px-3 py-2">
                             <Switch
                                 checked={settings.announcement_banner_enabled ?? false}
                                 onCheckedChange={(checked) =>
@@ -333,10 +333,10 @@ const AdminSettings = () => {
                         </div>
                     </div>
                     <div>
-                        <label className="text-sm font-medium mb-1 block">
+                        <label className="text-sm font-medium mb-1 block text-white/60">
                             Banner Message
                         </label>
-                        <p className="text-xs text-muted-foreground mb-2">
+                        <p className="text-xs text-white/40 mb-2">
                             Add one message per line to create a rotating ticker.
                         </p>
                         <textarea
@@ -355,19 +355,19 @@ const AdminSettings = () => {
 
                 {/* Social Links */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.3, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Social Links
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                         {(["facebook", "instagram", "linkedin", "youtube"] as const).map(
                             (platform) => (
                                 <div key={platform}>
-                                    <label className="text-sm font-medium mb-1 block capitalize">
+                                    <label className="text-sm font-medium mb-1 block capitalize text-white/60">
                                         {platform}
                                     </label>
                                     <Input
@@ -395,15 +395,15 @@ const AdminSettings = () => {
 
                 {/* Hero Slides */}
                 <motion.div
-                    className="bg-card rounded-xl border p-6 shadow-sm"
+                    className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.4, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-foreground mb-4">
+                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Hero Slides
                     </h2>
-                    <p className="text-xs text-muted-foreground mb-3">
+                    <p className="text-xs text-white/40 mb-3">
                         JSON array with fields: imageUrl, title, subtitle, ctaText, ctaLink
                     </p>
                     <textarea

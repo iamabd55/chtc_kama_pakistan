@@ -316,7 +316,7 @@ const AdminNews = () => {
                      width={800} height={600}  loading="lazy" />
                     <div>
                         <p className="font-medium line-clamp-1">{r.title}</p>
-                        <p className="text-xs text-muted-foreground capitalize">
+                        <p className="text-xs text-white/40 capitalize">
                             {r.category.replace("-", " ")}
                         </p>
                     </div>
@@ -331,7 +331,7 @@ const AdminNews = () => {
         {
             header: "Date",
             accessor: (r: NewsPost) => (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-white/40">
                     {new Date(r.created_at).toLocaleDateString()}
                 </span>
             ),
@@ -378,7 +378,7 @@ const AdminNews = () => {
             }
         >
             <div className="mb-6 max-w-sm relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <Input
                     placeholder="Search posts..."
                     value={search}
@@ -399,7 +399,7 @@ const AdminNews = () => {
                     {editing && (
                         <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Title *</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Title *</label>
                                 <Input
                                     value={editing.title || ""}
                                     onChange={(e) => {
@@ -417,7 +417,7 @@ const AdminNews = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Slug *</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Slug *</label>
                                 <Input
                                     value={editing.slug || ""}
                                     onChange={(e) =>
@@ -426,7 +426,7 @@ const AdminNews = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Category</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Category</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.category || "news"}
@@ -445,7 +445,7 @@ const AdminNews = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Related Product (optional)</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Related Product (optional)</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.related_product_id || ""}
@@ -469,7 +469,7 @@ const AdminNews = () => {
                                 </select>
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/70">
                                     Thumbnail *
                                 </label>
                                 <input
@@ -504,20 +504,20 @@ const AdminNews = () => {
                                     }}
                                     className={`rounded-lg border-2 border-dashed p-5 transition-colors ${
                                         draggingThumb
-                                            ? "border-primary bg-primary/5"
-                                            : "border-border bg-muted/30"
+                                            ? "border-[#e07a2f] bg-[#e07a2f]/5"
+                                            : "border-white/[0.06] bg-white/[0.04]"
                                     }`}
                                 >
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-md bg-background border flex items-center justify-center">
-                                                <Upload className="w-4 h-4 text-muted-foreground" />
+                                            <div className="w-10 h-10 rounded-md bg-[#171b26] border border-white/[0.06] flex items-center justify-center">
+                                                <Upload className="w-4 h-4 text-white/40" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-foreground">
+                                                <p className="text-sm font-medium text-white/85">
                                                     Drag & drop image here
                                                 </p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-xs text-white/40">
                                                     or choose from your computer
                                                 </p>
                                             </div>
@@ -533,24 +533,24 @@ const AdminNews = () => {
                                     </div>
 
                                     {editing.thumbnail ? (
-                                        <div className="mt-4 rounded-md border bg-background p-3">
+                                        <div className="mt-4 rounded-md border border-white/[0.06] bg-[#171b26] p-3">
                                             <div className="flex items-center gap-3">
-                                                <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                                                <p className="text-xs text-muted-foreground break-all">
+                                                <ImageIcon className="w-4 h-4 text-white/40" />
+                                                <p className="text-xs text-white/40 break-all">
                                                     {editing.thumbnail}
                                                 </p>
                                             </div>
                                             <Image
                                                 src={getStorageUrl(editing.thumbnail)}
                                                 alt="News thumbnail preview"
-                                                className="mt-3 w-full max-h-52 object-cover rounded-md border bg-muted"
+                                                className="mt-3 w-full max-h-52 object-cover rounded-md border border-white/[0.06] bg-[#171b26]"
                                              width={800} height={600}  loading="lazy" />
                                         </div>
                                     ) : null}
                                 </div>
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium mb-1 block text-white/70">
                                     Content *
                                 </label>
                                 <textarea
@@ -562,7 +562,7 @@ const AdminNews = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Status</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Status</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.status || "draft"}
@@ -578,7 +578,7 @@ const AdminNews = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Author</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Author</label>
                                 <Input
                                     value={editing.author || ""}
                                     onChange={(e) =>
@@ -587,14 +587,14 @@ const AdminNews = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Tags (comma separated)</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Tags (comma separated)</label>
                                 <Input
                                     value={tagsInput}
                                     onChange={(e) => setTagsInput(e.target.value)}
                                     placeholder="launch, truck, technology"
                                 />
                             </div>
-                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
+                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
                                 <Button
                                     variant="outline"
                                     onClick={() => setDialogOpen(false)}

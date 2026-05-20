@@ -143,7 +143,7 @@ const AdminCategories = () => {
                     )}
                     <div>
                         <p className="font-medium">{r.name}</p>
-                        <p className="text-xs text-muted-foreground">{r.slug}</p>
+                        <p className="text-xs text-white/40">{r.slug}</p>
                     </div>
                 </div>
             ),
@@ -177,10 +177,10 @@ const AdminCategories = () => {
         onFile: (f: File) => void; onClear: () => void;
     }) => (
         <div>
-            <label className="text-sm font-medium mb-1 block">{label}</label>
-            {hint && <p className="text-xs text-muted-foreground mb-2">{hint}</p>}
+            <label className="text-sm font-medium mb-1 block text-white/70">{label}</label>
+            {hint && <p className="text-xs text-white/40 mb-2">{hint}</p>}
             <div
-                className={`border-2 border-dashed rounded-xl p-3 text-center cursor-pointer transition-colors ${preview || existingPath ? "border-primary/40 bg-primary/5" : "border-slate-300 hover:border-primary/50 hover:bg-slate-50"}`}
+                className={`border-2 border-dashed rounded-xl p-3 text-center cursor-pointer transition-colors ${preview || existingPath ? "border-[#e07a2f]/40 bg-[#e07a2f]/5" : "border-white/[0.06] hover:border-[#e07a2f]/50 hover:bg-white/[0.02]"}`}
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onDrop={(e) => {
                     e.preventDefault();
@@ -195,10 +195,10 @@ const AdminCategories = () => {
                 ) : existingPath ? (
                     <img src={getStorageUrl(existingPath)} alt="current" className="mx-auto max-h-36 rounded-lg object-contain" />
                 ) : (
-                    <div className="py-6 flex flex-col items-center gap-2 text-slate-400">
+                    <div className="py-6 flex flex-col items-center gap-2 text-white/30">
                         <Upload className="w-8 h-8" />
-                        <p className="text-sm font-medium text-slate-600">Drag & drop or click to browse</p>
-                        <p className="text-xs">JPG, PNG, WebP · Aim for under 300 KB</p>
+                        <p className="text-sm font-medium text-white/50">Drag & drop or click to browse</p>
+                        <p className="text-xs text-white/30">JPG, PNG, WebP · Aim for under 300 KB</p>
                     </div>
                 )}
                 <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
@@ -239,7 +239,7 @@ const AdminCategories = () => {
 
                             {/* Name */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Category Name *</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Category Name *</label>
                                 <Input
                                     placeholder="e.g. Mini Truck"
                                     value={editing.name || ""}
@@ -249,7 +249,7 @@ const AdminCategories = () => {
 
                             {/* Description */}
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Description</label>
+                                <label className="text-sm font-medium mb-1 block text-white/70">Description</label>
                                 <textarea
                                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
                                     placeholder="Brief description of this category..."
@@ -283,7 +283,7 @@ const AdminCategories = () => {
                             {/* Display order + Active */}
                             <div className="flex items-center gap-6">
                                 <div className="flex-1">
-                                    <label className="text-sm font-medium mb-1 block">Display Order</label>
+                                    <label className="text-sm font-medium mb-1 block text-white/70">Display Order</label>
                                     <Input
                                         type="number"
                                         value={editing.display_order ?? 0}
@@ -301,9 +301,9 @@ const AdminCategories = () => {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex justify-end gap-3 pt-4 border-t">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
                                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#1E3A8A] hover:bg-[#1b347c]">
+                                <Button onClick={handleSave} disabled={saving || uploading} className="font-display font-semibold bg-[#e07a2f] hover:bg-[#c96a25]">
                                     {uploading ? "Uploading..." : saving ? "Saving..." : editing.id ? "Update Category" : "Create Category"}
                                 </Button>
                             </div>

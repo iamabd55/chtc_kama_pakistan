@@ -11,24 +11,20 @@ interface StatsCardProps {
 
 const colorMap = {
     blue: {
-        shell: "border-blue-200/50 bg-[linear-gradient(155deg,#f8fbff_0%,#eef5ff_100%)]",
-        icon: "text-blue-700 bg-blue-500/10 border-blue-300/50",
-        glow: "from-blue-500/20 to-blue-500/0",
+        border: "border-l-blue-500",
+        icon: "text-blue-400 bg-blue-500/15",
     },
     gold: {
-        shell: "border-amber-200/50 bg-[linear-gradient(155deg,#fffcf5_0%,#fef6e3_100%)]",
-        icon: "text-amber-700 bg-amber-500/12 border-amber-300/50",
-        glow: "from-amber-500/20 to-amber-500/0",
+        border: "border-l-amber-500",
+        icon: "text-amber-400 bg-amber-500/15",
     },
     green: {
-        shell: "border-emerald-200/60 bg-[linear-gradient(155deg,#f6fffb_0%,#eafaf3_100%)]",
-        icon: "text-emerald-700 bg-emerald-500/12 border-emerald-300/50",
-        glow: "from-emerald-500/20 to-emerald-500/0",
+        border: "border-l-emerald-500",
+        icon: "text-emerald-400 bg-emerald-500/15",
     },
     red: {
-        shell: "border-rose-200/50 bg-[linear-gradient(155deg,#fff8f8_0%,#fff0f2_100%)]",
-        icon: "text-rose-700 bg-rose-500/12 border-rose-300/50",
-        glow: "from-rose-500/20 to-rose-500/0",
+        border: "border-l-rose-500",
+        icon: "text-rose-400 bg-rose-500/15",
     },
 };
 
@@ -43,23 +39,22 @@ const StatsCard = ({
     const theme = colorMap[color];
 
     return (
-        <div className={`group relative overflow-hidden rounded-3xl border p-3 sm:p-4 md:p-5 shadow-[0_12px_32px_rgba(13,35,67,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(13,35,67,0.13)] ${theme.shell}`}>
-            <div className={`pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-gradient-to-br ${theme.glow} blur-2xl`} />
-            <div className="relative flex items-start justify-between gap-4">
+        <div className={`group relative overflow-hidden rounded-xl border border-white/[0.06] border-l-[3px] ${theme.border} bg-[#1e2230] p-3 md:p-5 transition-all duration-200 hover:bg-[#242838]`}>
+            <div className="relative flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-[0.22em] font-semibold text-slate-500/95">{title}</p>
-                    <p className="mt-2 text-[1.5rem] sm:text-[1.75rem] md:text-[2rem] font-semibold leading-none text-slate-900 tabular-nums">
+                    <p className="text-[9px] sm:text-[11px] uppercase tracking-[0.15em] sm:tracking-[0.18em] font-semibold text-white/35 leading-tight">{title}</p>
+                    <p className="mt-1.5 md:mt-2 text-[1.5rem] md:text-[2rem] font-bold leading-none text-white tabular-nums">
                         {value}
                     </p>
                     {trend && (
-                        <span className={`inline-flex items-center gap-1.5 mt-3 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${trendUp ? "text-emerald-800 bg-emerald-100/70 border-emerald-300/70" : "text-rose-800 bg-rose-100/70 border-rose-300/70"}`}>
-                            <span className="text-[9px] leading-none">{trendUp ? "▲" : "▼"}</span>
+                        <span className={`inline-flex items-center gap-1 mt-1.5 md:mt-2 text-[10px] md:text-[11px] font-medium ${trendUp ? "text-emerald-400" : "text-rose-400"}`}>
+                            <span className="text-[9px]">{trendUp ? "▲" : "▼"}</span>
                             {trend}
                         </span>
                     )}
                 </div>
-                <div className={`h-12 w-12 shrink-0 rounded-2xl border backdrop-blur-sm flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${theme.icon}`}>
-                    <Icon className="w-5 h-5" strokeWidth={2.1} />
+                <div className={`h-9 w-9 md:h-11 md:w-11 shrink-0 rounded-xl flex items-center justify-center ${theme.icon}`}>
+                    <Icon className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.8} />
                 </div>
             </div>
         </div>
