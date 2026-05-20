@@ -267,11 +267,24 @@ export default async function RootLayout({
         <html
             lang="en"
             className={`${poppins.variable} ${rajdhani.variable} ${dmSans.variable}`}
+            suppressHydrationWarning
         >
             <head>
                 {/* Preconnect to external resources for performance */}
                 {supabaseOrigin && <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />}
                 {supabaseOrigin && <link rel="dns-prefetch" href={supabaseOrigin} />}
+                {/*
+                  Inline blocking script: reads admin-theme from localStorage and sets
+                  data-admin-theme on <html> before first paint.
+                  This prevents the white-flash when the admin panel loads in dark mode,
+                  and ensures dialog portals (which render on <body>) get the correct
+                  CSS custom properties immediately.
+                */}
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(){try{var t=localStorage.getItem('admin-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-admin-theme',t);}}catch(e){}})();`,
+                    }}
+                />
             </head>
             <body>
                 {/* Structured Data — all four schemas for maximum Google rich result coverage */}
