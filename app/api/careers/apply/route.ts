@@ -16,8 +16,18 @@ export async function POST(request: Request) {
     let cvUrl = safeTrim(form.get("cv_url"));
     const coverLetter = safeTrim(form.get("cover_letter"));
     const cvFile = form.get("cv_file");
+
+    // ── Validate required fields ──────────────────────────────────────────
+    if (!careerPostId || !applicantName || !email || !phone) {
+        return NextResponse.redirect(
+            new URL(`/careers/${careerPostId || ""}?error=1`, request.url),
+            303
+        );
+    }
+
     const supabase = await createClient();
 
+    // ── Verify the job post is still active ───────────────────────────────
     const { data: job } = await supabase
         .from("career_posts")
         .select("title, location")
@@ -26,9 +36,13 @@ export async function POST(request: Request) {
         .single();
 
     if (!job) {
-        return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?error=1`, request.url), 303);
+        return NextResponse.redirect(
+            new URL(`/careers/${careerPostId}?error=1`, request.url),
+            303
+        );
     }
 
+    // ── Duplicate check ───────────────────────────────────────────────────
     const normalizedEmail = email.toLowerCase();
     const { data: existingApplication, error: duplicateLookupError } = await supabase
         .from("job_applications")
@@ -39,17 +53,27 @@ export async function POST(request: Request) {
         .maybeSingle();
 
     if (duplicateLookupError) {
-        return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?error=1`, request.url), 303);
+        return NextResponse.redirect(
+            new URL(`/careers/${careerPostId}?error=1`, request.url),
+            303
+        );
     }
 
     if (existingApplication) {
-        return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?duplicate=1`, request.url), 303);
+        return NextResponse.redirect(
+            new URL(`/careers/${careerPostId}?duplicate=1`, request.url),
+            303
+        );
     }
 
+    // ── Upload CV file if provided ────────────────────────────────────────
     if (!cvUrl && cvFile instanceof File && cvFile.size > 0) {
         const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
         if (!serviceRoleKey) {
-            return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?error=1`, request.url), 303);
+            return NextResponse.redirect(
+                new URL(`/careers/${careerPostId}?error=1`, request.url),
+                303
+            );
         }
 
         const adminClient = createServiceClient(
@@ -70,38 +94,43 @@ export async function POST(request: Request) {
             });
 
         if (uploadError) {
-            return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?error=1`, request.url), 303);
+            return NextResponse.redirect(
+                new URL(`/careers/${careerPostId}?error=1`, request.url),
+                303
+            );
         }
 
         cvUrl = adminClient.storage.from("images").getPublicUrl(uploadPath).data.publicUrl;
     }
 
-    if (!careerPostId || !applicantName || !email || !phone || !cvUrl) {
-        return NextResponse.redirect(new URL(`/careers/${careerPostId || ""}?error=1`, request.url), 303);
-    }
-
+    // ── Insert application (cv_url is optional) ───────────────────────────
     const { error } = await supabase.from("job_applications").insert({
         career_post_id: careerPostId,
         applicant_name: applicantName,
         email,
         phone,
-        cv_url: cvUrl,
+        cv_url: cvUrl || null,
         cover_letter: coverLetter || null,
         status: "received",
     });
 
     if (error) {
-        return NextResponse.redirect(new URL(`/careers/${careerPostId}?error=1`, request.url), 303);
+        return NextResponse.redirect(
+            new URL(`/careers/${careerPostId}?error=1`, request.url),
+            303
+        );
     }
 
-    if (job) {
-        await sendCareerApplicationConfirmation({
-            applicantName,
-            applicantEmail: email,
-            jobTitle: job.title,
-            jobLocation: job.location,
-        });
-    }
+    // ── Send confirmation email ───────────────────────────────────────────
+    await sendCareerApplicationConfirmation({
+        applicantName,
+        applicantEmail: email,
+        jobTitle: job.title,
+        jobLocation: job.location,
+    });
 
-    return NextResponse.redirect(new URL(`/careers/${careerPostId}?submitted=1`, request.url), 303);
+    return NextResponse.redirect(
+        new URL(`/careers/${careerPostId}?submitted=1`, request.url),
+        303
+    );
 }

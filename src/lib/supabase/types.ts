@@ -130,7 +130,7 @@ export interface JobApplication {
     applicant_name: string;
     email: string;
     phone: string;
-    cv_url: string;
+    cv_url: string | null;
     cover_letter: string | null;
     status: "received" | "reviewed" | "shortlisted" | "rejected" | "hired";
     applied_at: string;

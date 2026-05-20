@@ -135,8 +135,13 @@
   }
 }
 
-/* ── Admin Dark Theme ── */
+/* ── Admin Dark Theme ──
+   Applied both on .admin-dark (scoped) AND on html[data-admin-theme="dark"]
+   so that Radix portals (dialogs, popovers) rendered on <body> also inherit
+   the correct CSS custom properties.
+── */
 .admin-dark,
+[data-admin-theme="dark"],
 [data-admin-theme="dark"] .admin-dark {
   --background: 228 15% 9%;
   --foreground: 220 13% 91%;
@@ -160,7 +165,14 @@
   --radius: 0.5rem;
 }
 
+/* Body background follows admin theme — prevents blank white space */
+html[data-admin-theme="dark"] body {
+  background-color: hsl(228 15% 9%);
+  color: hsl(220 13% 91%);
+}
+
 /* ── Admin Light Theme ── */
+[data-admin-theme="light"],
 [data-admin-theme="light"] .admin-dark {
   --background: 220 20% 97%;
   --foreground: 222 22% 14%;
@@ -182,6 +194,12 @@
   --input: 220 14% 88%;
   --ring: 24 75% 50%;
   --radius: 0.5rem;
+}
+
+/* Body background follows admin light theme */
+html[data-admin-theme="light"] body {
+  background-color: hsl(220 20% 97%);
+  color: hsl(222 22% 14%);
 }
 
 /* Light mode structural overrides */
@@ -246,13 +264,55 @@
   box-shadow: 0 0 0 2px hsla(24,75%,50%,0.15) !important;
 }
 
-/* Light mode dialog */
+/* Light mode: select option text inside .admin-dark */
+[data-admin-theme="light"] .admin-dark select option {
+  background-color: #ffffff !important;
+  color: #1a1e2e !important;
+}
+
+/* Light mode: hardcoded dark backgrounds inside .admin-dark (drag-drop zones etc.) */
+[data-admin-theme="light"] .admin-dark [class*="bg-[#171b26]"],
+[data-admin-theme="light"] .admin-dark [class*="bg-[#1e2230]"],
+[data-admin-theme="light"] .admin-dark [class*="bg-[#111318]"],
+[data-admin-theme="light"] .admin-dark [class*="bg-[#1a1e2e]"] {
+  background-color: #f0f2f8 !important;
+}
+
+/* Light mode: dashed drop-zone borders inside .admin-dark */
+[data-admin-theme="light"] .admin-dark .border-dashed {
+  border-color: #c8cfe0 !important;
+}
+
+/* Light mode dialog — portals land on body so target html attribute directly */
+[data-admin-theme="light"] [data-state="open"][role="dialog"],
+[data-admin-theme="light"] [data-radix-popper-content-wrapper],
 [data-admin-theme="light"] .admin-dark [data-state="open"][role="dialog"],
 [data-admin-theme="light"] .admin-dark [data-radix-popper-content-wrapper] {
   background-color: #ffffff;
   color: #1a1e2e;
   border-color: #e2e5ef;
 }
+
+/* Light mode dialog — fix text-white/* classes inside portals (outside .admin-dark) */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="text-white\/"],
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="text-white"] {
+  color: #1a1e2e !important;
+}
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="border-white\/"] {
+  border-color: #e2e5ef !important;
+}
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="bg-white\/"] {
+  background-color: #f0f2f8 !important;
+}
+
+/* Dark mode dialog — fix labels that have no color class (default to foreground) */
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] label {
+  color: hsl(220 13% 75%);
+}
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] [class*="text-white\/"] {
+  color: inherit;
+}
+
 
 /* Light mode bottom nav */
 [data-admin-theme="light"] .admin-bottom-nav {
@@ -307,10 +367,77 @@
   box-shadow: 0 0 0 2px hsla(24,75%,53%,0.15) !important;
 }
 
-/* Admin dialog overlay */
+/* Admin dialog — portals escape .admin-dark scope, so target html attribute.
+   bg-background resolves via the CSS vars set on html[data-admin-theme="dark"]. */
+[data-admin-theme="dark"] [data-state="open"][role="dialog"],
 .admin-dark [data-state="open"][role="dialog"],
+[data-admin-theme="dark"] [data-radix-popper-content-wrapper],
 .admin-dark [data-radix-popper-content-wrapper] {
   color: hsl(220 13% 91%);
+}
+
+/* Ensure dialog inputs inside dark portals are also themed */
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] input,
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] textarea,
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] select {
+  background-color: hsl(228 16% 12%) !important;
+  border-color: hsl(228 12% 22%) !important;
+  color: hsl(220 13% 91%) !important;
+}
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] input::placeholder,
+[data-admin-theme="dark"] [data-state="open"][role="dialog"] textarea::placeholder {
+  color: hsl(228 10% 45%) !important;
+}
+
+/* Light mode — dialog inputs */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] input,
+[data-admin-theme="light"] [data-state="open"][role="dialog"] textarea,
+[data-admin-theme="light"] [data-state="open"][role="dialog"] select {
+  background-color: #f8f9fc !important;
+  border-color: #d8dce8 !important;
+  color: #1a1e2e !important;
+}
+[data-admin-theme="light"] [data-state="open"][role="dialog"] input::placeholder,
+[data-admin-theme="light"] [data-state="open"][role="dialog"] textarea::placeholder {
+  color: #8e95a8 !important;
+}
+
+/* ── Light mode: select option text ── */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] select option {
+  background-color: #ffffff !important;
+  color: #1a1e2e !important;
+}
+
+/* ── Light mode: hardcoded dark backgrounds inside dialogs ──
+   Covers drag-drop zones, image previews, icon wells etc.
+   These use utility classes like bg-[#171b26] / bg-[#1e2230] that
+   don't respond to CSS custom properties.                       */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="bg-[#171b26]"],
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="bg-[#1e2230]"],
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="bg-[#111318]"],
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="bg-[#1a1e2e]"] {
+  background-color: #f0f2f8 !important;
+}
+
+/* ── Light mode: dashed drop-zone borders ── */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] .border-dashed {
+  border-color: #c8cfe0 !important;
+}
+
+/* ── Light mode: SVG icons inside dialogs (hardcoded white/dim) ── */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] svg {
+  color: #6b7280;
+}
+
+/* ── Light mode: section dividers inside dialogs ── */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] [class*="border-white/"] {
+  border-color: #e2e5ef !important;
+}
+
+/* ── Light mode: muted helper text inside dialogs ── */
+[data-admin-theme="light"] [data-state="open"][role="dialog"] p,
+[data-admin-theme="light"] [data-state="open"][role="dialog"] span {
+  color: inherit;
 }
 
 /* Admin bottom nav */
