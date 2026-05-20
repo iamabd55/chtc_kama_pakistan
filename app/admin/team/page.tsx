@@ -139,10 +139,10 @@ export default function AdminTeamPage() {
                         <Image
                             src={preferWebpUrl(row.photo_url)}
                             alt={row.name}
-                            className="h-8 w-8 rounded-full object-cover border border-slate-200"
+                            className="h-8 w-8 rounded-full object-cover border border-white/[0.06]"
                          width={800} height={600}  loading="lazy" />
                     ) : (
-                        <div className="h-8 w-8 rounded-full border border-slate-200 bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-semibold">
+                        <div className="h-8 w-8 rounded-full border border-white/[0.06] bg-white/[0.04] text-white/40 flex items-center justify-center text-xs font-semibold">
                             {row.name
                                 .split(" ")
                                 .map((part) => part.trim())
@@ -214,7 +214,7 @@ export default function AdminTeamPage() {
                     {editing && (
                         <div className="space-y-4 overflow-y-auto pr-1 pb-1 max-h-[calc(88vh-4.5rem)]">
                             <div className="space-y-2">
-                                <label htmlFor="team_id" className="text-sm font-medium">Team</label>
+                                <label htmlFor="team_id" className="text-sm font-medium text-white/70">Team</label>
                                 <select
                                     id="team_id"
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -230,39 +230,39 @@ export default function AdminTeamPage() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="member_name" className="text-sm font-medium">Member Name</label>
+                                <label htmlFor="member_name" className="text-sm font-medium text-white/70">Member Name</label>
                                 <Input id="member_name" placeholder="e.g. Muneeb Ibrahim" value={editing.name || ""} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="member_role" className="text-sm font-medium">Role / Title</label>
+                                <label htmlFor="member_role" className="text-sm font-medium text-white/70">Role / Title</label>
                                 <Input id="member_role" placeholder="e.g. CEO" value={editing.role || ""} onChange={(e) => setEditing({ ...editing, role: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="profile_photo" className="text-sm font-medium">Profile Photo</label>
+                                <label htmlFor="profile_photo" className="text-sm font-medium text-white/70">Profile Photo</label>
                                 <Input
                                     id="profile_photo"
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
                                 />
-                                <p className="text-xs text-muted-foreground">Image will be uploaded to Supabase Storage.</p>
+                                <p className="text-xs text-white/40">Image will be uploaded to Supabase Storage.</p>
                                 {(photoFile || editing.photo_url) && (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <Image
                                         src={photoFile ? URL.createObjectURL(photoFile) : preferWebpUrl(editing.photo_url || "")}
                                         alt="Member preview"
-                                        className="h-24 w-24 rounded-md object-cover border"
+                                        className="h-24 w-24 rounded-md object-cover border border-white/[0.06]"
                                      width={800} height={600}  loading="lazy" />
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="member_bio" className="text-sm font-medium">Bio</label>
+                                <label htmlFor="member_bio" className="text-sm font-medium text-white/70">Bio</label>
                                 <textarea id="member_bio" className="w-full border rounded-md px-3 py-2 text-sm" rows={4} placeholder="Short description about this member" value={editing.bio || ""} onChange={(e) => setEditing({ ...editing, bio: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="display_order" className="text-sm font-medium">Display Order</label>
+                                <label htmlFor="display_order" className="text-sm font-medium text-white/70">Display Order</label>
                                 <Input id="display_order" type="number" value={editing.display_order || 0} onChange={(e) => setEditing({ ...editing, display_order: Number.parseInt(e.target.value || "0", 10) })} />
-                                <p className="text-xs text-muted-foreground">Lower number appears first (0 = top, 1 = second, 2 = third, 3 = fourth).</p>
+                                <p className="text-xs text-white/40">Lower number appears first (0 = top, 1 = second, 2 = third, 3 = fourth).</p>
                             </div>
                             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} />Active</label>
                             <div className="flex justify-end pt-1"><Button className="w-full sm:w-auto" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</Button></div>

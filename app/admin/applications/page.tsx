@@ -121,7 +121,7 @@ const AdminApplications = () => {
         {
             header: "Applied",
             accessor: (r: ApplicationWithTitle) => (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-white/40">
                     {new Date(r.applied_at).toLocaleDateString()}
                 </span>
             ),
@@ -177,7 +177,7 @@ const AdminApplications = () => {
         >
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
                 <div className="relative max-w-sm w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                     <Input
                         placeholder="Search applicants..."
                         value={search}
@@ -220,30 +220,30 @@ const AdminApplications = () => {
                         <div className="space-y-4 mt-4">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="text-muted-foreground">Name:</span>
-                                    <p className="font-medium">{selected.applicant_name}</p>
+                                    <span className="text-white/40">Name:</span>
+                                    <p className="font-medium text-white/85">{selected.applicant_name}</p>
                                 </div>
                                 <div>
-                                    <span className="text-muted-foreground">Email:</span>
-                                    <p className="font-medium">{selected.email}</p>
+                                    <span className="text-white/40">Email:</span>
+                                    <p className="font-medium text-white/85">{selected.email}</p>
                                 </div>
                                 <div>
-                                    <span className="text-muted-foreground">Phone:</span>
-                                    <p className="font-medium">{selected.phone}</p>
+                                    <span className="text-white/40">Phone:</span>
+                                    <p className="font-medium text-white/85">{selected.phone}</p>
                                 </div>
                                 <div>
-                                    <span className="text-muted-foreground">Applied:</span>
-                                    <p className="font-medium">
+                                    <span className="text-white/40">Applied:</span>
+                                    <p className="font-medium text-white/85">
                                         {new Date(selected.applied_at).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>
                             {selected.cover_letter && (
                                 <div>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-sm text-white/40">
                                         Cover Letter:
                                     </span>
-                                    <p className="text-sm bg-muted p-3 rounded-lg mt-1">
+                                    <p className="text-sm bg-white/[0.04] p-3 rounded-lg mt-1 text-white/85">
                                         {selected.cover_letter}
                                     </p>
                                 </div>
@@ -253,12 +253,12 @@ const AdminApplications = () => {
                                     href={selected.cv_url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                    className="inline-flex items-center gap-2 text-sm text-[#e07a2f] hover:underline"
                                 >
                                     <ExternalLink className="w-4 h-4" /> View CV
                                 </a>
                             )}
-                            <div className="pt-2 border-t">
+                            <div className="pt-2 border-t border-white/[0.06]">
                                 <Button
                                     variant="destructive"
                                     onClick={() => handleDelete(selected.id)}
@@ -267,7 +267,7 @@ const AdminApplications = () => {
                                 </Button>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Status</label>
+                                <label className="text-sm font-medium mb-1 block text-white/60">Status</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={selected.status}

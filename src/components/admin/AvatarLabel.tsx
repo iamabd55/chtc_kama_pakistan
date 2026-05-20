@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface AvatarLabelProps {
     name: string;
     subtitle?: string | null;
@@ -5,34 +7,34 @@ interface AvatarLabelProps {
     className?: string;
 }
 
-const getInitials = (name: string) =>
-    name
+const AvatarLabel = ({ name, subtitle, size = "md", className }: AvatarLabelProps) => {
+    const initials = name
         .split(" ")
-        .map((part) => part.trim())
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() || "")
-        .join("") || "U";
-
-export default function AvatarLabel({
-    name,
-    subtitle,
-    size = "md",
-    className = "",
-}: AvatarLabelProps) {
-    const avatarSize = size === "sm" ? "h-7 w-7 text-[10px]" : "h-8 w-8 text-xs";
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
 
     return (
-        <div className={`flex items-center gap-2.5 ${className}`}>
-            <div className={`${avatarSize} rounded-full border border-slate-200 bg-slate-100 text-slate-600 flex items-center justify-center font-semibold`}>
-                {getInitials(name)}
+        <div className={cn("flex items-center gap-3 min-w-0", className)}>
+            <div
+                className={cn(
+                    "shrink-0 rounded-full bg-[#e07a2f]/15 border border-[#e07a2f]/30 flex items-center justify-center text-[#e07a2f] font-semibold",
+                    size === "sm" ? "h-7 w-7 text-[10px]" : "h-8 w-8 text-xs"
+                )}
+            >
+                {initials}
             </div>
-            <div>
-                <p className="font-medium">{name}</p>
-                {subtitle !== undefined && (
-                    <p className="text-xs text-muted-foreground">{subtitle || "—"}</p>
+            <div className="min-w-0">
+                <p className={cn("font-medium truncate text-white/85", size === "sm" ? "text-xs" : "text-sm")}>
+                    {name}
+                </p>
+                {subtitle && (
+                    <p className="text-[11px] text-white/40 truncate">{subtitle}</p>
                 )}
             </div>
         </div>
     );
-}
+};
+
+export default AvatarLabel;

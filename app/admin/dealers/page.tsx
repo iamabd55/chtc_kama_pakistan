@@ -190,7 +190,7 @@ const AdminDealers = () => {
             accessor: (r: Dealer) => (
                 <div>
                     <p className="font-medium">{r.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-white/40">
                         {r.city}, {r.province}
                     </p>
                 </div>
@@ -257,7 +257,7 @@ const AdminDealers = () => {
             }
         >
             <div className="mb-6 max-w-sm relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <Input
                     placeholder="Search dealers..."
                     value={search}
@@ -278,7 +278,7 @@ const AdminDealers = () => {
                     {editing && (
                         <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Name *</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Name *</label>
                                 <Input
                                     value={editing.name || ""}
                                     onChange={(e) =>
@@ -287,7 +287,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">City *</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">City *</label>
                                 <Input
                                     value={editing.city || ""}
                                     onChange={(e) =>
@@ -296,7 +296,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Province</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Province</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.province || "Punjab"}
@@ -315,7 +315,7 @@ const AdminDealers = () => {
                                 </select>
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium text-white/70 mb-1 block">
                                     Address *
                                 </label>
                                 <Input
@@ -326,7 +326,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Phone *</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Phone *</label>
                                 <Input
                                     value={editing.phone || ""}
                                     onChange={(e) =>
@@ -335,7 +335,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">WhatsApp</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">WhatsApp</label>
                                 <Input
                                     value={editing.whatsapp || ""}
                                     onChange={(e) =>
@@ -344,7 +344,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Email</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Email</label>
                                 <Input
                                     value={editing.email || ""}
                                     onChange={(e) =>
@@ -353,7 +353,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Google Maps URL</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Google Maps URL</label>
                                 <Input
                                     value={editing.google_maps_url || ""}
                                     onChange={(e) => {
@@ -369,12 +369,12 @@ const AdminDealers = () => {
                                     }}
                                     placeholder="https://www.google.com/maps/place/..."
                                 />
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-xs text-white/40 mt-1">
                                     If this URL contains coordinates, latitude and longitude will auto-fill.
                                 </p>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Type</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Type</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editing.dealer_type || "both"}
@@ -393,7 +393,7 @@ const AdminDealers = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Latitude</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Latitude</label>
                                 <Input
                                     type="number"
                                     step="any"
@@ -407,7 +407,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">Longitude</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Longitude</label>
                                 <Input
                                     type="number"
                                     step="any"
@@ -421,7 +421,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-sm font-medium mb-1 block">Brands (comma separated)</label>
+                                <label className="text-sm font-medium text-white/70 mb-1 block">Brands (comma separated)</label>
                                 <Input
                                     value={serializeBrands(editing.brands)}
                                     onChange={(e) =>
@@ -431,7 +431,7 @@ const AdminDealers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-1 block">
+                                <label className="text-sm font-medium text-white/70 mb-1 block">
                                     Working Hours
                                 </label>
                                 <Input
@@ -453,7 +453,7 @@ const AdminDealers = () => {
                                     Active
                                 </label>
                             </div>
-                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
+                            <div className="col-span-2 flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
                                 <Button
                                     variant="outline"
                                     onClick={() => setDialogOpen(false)}

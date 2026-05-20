@@ -215,7 +215,7 @@ export default function AdminUsersPage() {
                             <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={editing.role || "editor"} onChange={(e) => setEditing({ ...editing, role: e.target.value as AdminProfile["role"] })}>
                                 {roles.map((role) => <option key={role} value={role}>{role}</option>)}
                             </select>
-                            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} />Active</label>
+                            <label className="flex items-center gap-2 text-sm text-white/60"><input type="checkbox" checked={editing.is_active ?? true} onChange={(e) => setEditing({ ...editing, is_active: e.target.checked })} />Active</label>
                             <div className="flex justify-end"><Button onClick={saveEdit}>Save</Button></div>
                         </div>
                     )}

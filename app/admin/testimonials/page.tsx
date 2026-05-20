@@ -149,7 +149,7 @@ export default function AdminTestimonialsPage() {
                 <div>
                     <p className="font-medium text-sm">{row.customer_name}</p>
                     {(row.customer_title || row.company) && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-white/40">
                             {[row.customer_title, row.company].filter(Boolean).join(" · ")}
                         </p>
                     )}
@@ -159,16 +159,16 @@ export default function AdminTestimonialsPage() {
         {
             header: "Review",
             accessor: (row: Testimonial) => (
-                <p className="text-sm text-muted-foreground line-clamp-2 max-w-md">{row.content}</p>
+                <p className="text-sm text-white/40 line-clamp-2 max-w-md">{row.content}</p>
             ),
         },
         {
             header: "Rating",
             accessor: (row: Testimonial) =>
                 row.rating ? (
-                    <span className="text-sm font-semibold text-amber-600">{row.rating}/5</span>
+                    <span className="text-sm font-semibold text-amber-400">{row.rating}/5</span>
                 ) : (
-                    <span className="text-muted-foreground text-sm">—</span>
+                    <span className="text-white/30 text-sm">—</span>
                 ),
         },
         {
@@ -252,7 +252,7 @@ export default function AdminTestimonialsPage() {
         >
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
                 <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                     <Input
                         placeholder="Search name, company, review…"
                         value={search}
@@ -270,7 +270,7 @@ export default function AdminTestimonialsPage() {
                         >
                             {filter.label}
                             {filter.value === "pending" && pendingCount > 0 && (
-                                <span className="ml-1.5 rounded-full bg-amber-500/20 px-1.5 text-[10px]">
+                                <span className="ml-1.5 rounded-full bg-amber-500/20 text-amber-300 px-1.5 text-[10px]">
                                     {pendingCount}
                                 </span>
                             )}
@@ -319,7 +319,7 @@ export default function AdminTestimonialsPage() {
                             />
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-xs text-muted-foreground mb-1 block">
+                                    <label className="text-xs text-white/40 mb-1 block">
                                         Rating (1–5)
                                     </label>
                                     <Input
@@ -338,7 +338,7 @@ export default function AdminTestimonialsPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-muted-foreground mb-1 block">
+                                    <label className="text-xs text-white/40 mb-1 block">
                                         Display order
                                     </label>
                                     <Input
@@ -356,14 +356,14 @@ export default function AdminTestimonialsPage() {
                                         }
                                     />
                                     {!editing.id && (
-                                        <p className="text-[10px] text-muted-foreground mt-1">
+                                        <p className="text-[10px] text-white/40 mt-1">
                                             Leave empty to append after existing reviews.
                                         </p>
                                     )}
                                 </div>
                             </div>
                             <div>
-                                <label className="text-xs text-muted-foreground mb-1 block">
+                                <label className="text-xs text-white/40 mb-1 block">
                                     Status
                                 </label>
                                 <select
