@@ -37,6 +37,19 @@ export default function ConditionalLayout({
     const { data: siteSettings } = useSiteSettings(initialSettings, !isAdmin);
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        if (!isAdmin) {
+            document.documentElement.removeAttribute("data-admin-theme");
+        } else {
+            const stored = localStorage.getItem("admin-theme") || "light";
+            if (stored === "light" || stored === "dark") {
+                document.documentElement.setAttribute("data-admin-theme", stored);
+            }
+        }
+    }, [isAdmin]);
+
+    useEffect(() => {
         if (typeof window === "undefined" || isAdmin) {
             return;
         }

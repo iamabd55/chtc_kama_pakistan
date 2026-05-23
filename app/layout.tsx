@@ -280,11 +280,7 @@ export default async function RootLayout({
                   and ensures dialog portals (which render on <body>) get the correct
                   CSS custom properties immediately.
                 */}
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `(function(){try{var t=localStorage.getItem('admin-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-admin-theme',t);}}catch(e){}})();`,
-                    }}
-                />
+
             </head>
             <body>
                 {/* Structured Data — all four schemas for maximum Google rich result coverage */}

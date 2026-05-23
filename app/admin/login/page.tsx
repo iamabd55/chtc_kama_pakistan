@@ -41,7 +41,7 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="admin-dark min-h-screen lg:min-h-[111.12vh] flex items-center justify-center bg-[#111318] relative overflow-hidden">
+        <div data-admin-theme="dark" className="admin-dark min-h-screen lg:min-h-[111.12vh] flex items-center justify-center bg-[#111318] relative overflow-hidden">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-[0.02]">
                 <div

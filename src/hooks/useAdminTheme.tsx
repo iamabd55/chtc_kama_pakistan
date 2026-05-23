@@ -12,13 +12,13 @@ interface AdminThemeContextValue {
 }
 
 const AdminThemeContext = createContext<AdminThemeContextValue>({
-    theme: "dark",
-    isDark: true,
+    theme: "light",
+    isDark: false,
     toggleTheme: () => {},
 });
 
 export function AdminThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<AdminTheme>("dark");
+    const [theme, setTheme] = useState<AdminTheme>("light");
     const [mounted, setMounted] = useState(false);
 
     // Read from localStorage once on mount

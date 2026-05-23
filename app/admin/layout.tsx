@@ -21,5 +21,14 @@ export default function AdminAreaLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <>{children}</>;
+    return (
+        <>
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `(function(){try{var t=localStorage.getItem('admin-theme')||'light';if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-admin-theme',t);}}catch(e){}})();`,
+                }}
+            />
+            {children}
+        </>
+    );
 }
