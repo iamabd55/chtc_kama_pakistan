@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Category } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
+import { deleteCategoryStorage } from "@/lib/supabase/storage-cleanup";
 
 const toSlug = (value: string): string =>
     value.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
@@ -53,7 +54,7 @@ const AdminCategories = () => {
 
     const uploadFile = async (file: File, slug: string, suffix: string): Promise<string> => {
         const ext = file.name.split(".").pop() ?? "jpg";
-        const path = `categories/${slug}-${suffix}-${Date.now()}.${ext}`;
+        const path = `categories/${slug}/${suffix}-${Date.now()}.${ext}`;
         const { error } = await adminDb.storage.from("images").upload(path, file, { upsert: true, contentType: file.type });
         if (error) throw new Error(error.message);
         return path;
@@ -107,10 +108,30 @@ const AdminCategories = () => {
             is_active: editing.is_active ?? true,
         };
 
+        const previousSlug = editing.id
+            ? categories.find((c) => c.id === editing.id)?.slug
+            : undefined;
+
         if (editing.id) {
             const { error } = await adminDb.from("categories").update(payload).eq("id", editing.id);
             if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-            else { toast({ title: "Category updated" }); resetUpload(); }
+            else {
+                if (previousSlug && previousSlug !== slug) {
+                    const storageError = await deleteCategoryStorage(adminDb, { slug: previousSlug });
+                    if (storageError) {
+                        toast({
+                            title: "Category updated",
+                            description: `Slug changed, but old storage folder may remain: ${storageError}`,
+                            variant: "destructive",
+                        });
+                    } else {
+                        toast({ title: "Category updated" });
+                    }
+                } else {
+                    toast({ title: "Category updated" });
+                }
+                resetUpload();
+            }
         } else {
             const { error } = await adminDb.from("categories").insert(payload);
             if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -123,6 +144,24 @@ const AdminCategories = () => {
 
     const handleDelete = async (id: string) => {
         if (!confirm("Delete this category?")) return;
+
+        const category = categories.find((c) => c.id === id);
+        if (!category) return;
+
+        const storageError = await deleteCategoryStorage(adminDb, {
+            slug: category.slug,
+            image: category.image,
+            hover_image: category.hover_image,
+        });
+        if (storageError) {
+            toast({
+                title: "Storage cleanup failed",
+                description: storageError,
+                variant: "destructive",
+            });
+            return;
+        }
+
         const { error } = await adminDb.from("categories").delete().eq("id", id);
         if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
         else { toast({ title: "Category deleted" }); fetchData(); }
@@ -173,7 +212,7 @@ const AdminCategories = () => {
         label, hint, preview, existingPath, inputRef, onFile, onClear,
     }: {
         label: string; hint?: string; preview: string; existingPath: string;
-        inputRef: React.RefObject<HTMLInputElement>;
+        inputRef: React.RefObject<HTMLInputElement | null>;
         onFile: (f: File) => void; onClear: () => void;
     }) => (
         <div>

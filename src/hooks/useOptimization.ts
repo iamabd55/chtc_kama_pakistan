@@ -15,7 +15,7 @@ export function useStableMemo<T>(
   deps: DependencyList,
   compareFn: (a: T, b: T) => boolean = shallowEqual
 ): T {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
   const prevDepsRef = useRef<DependencyList>(deps);
 
   const memoized = useMemo(() => {
@@ -51,7 +51,7 @@ export function useStableCallback<T extends (...args: any[]) => any>(
  * Useful for detecting changes
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
 
   useEffect(() => {
     ref.current = value;
@@ -111,7 +111,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number = 500
 ): T {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
 
   const debouncedCallback = useCallback(
     (...args: Parameters<T>) => {

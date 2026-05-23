@@ -16,6 +16,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import type { Dealer } from "@/lib/supabase/types";
+import { revalidateDealerPages } from "@/lib/revalidate-dealers";
 
 const provinces = [
     "Punjab",
@@ -161,12 +162,18 @@ const AdminDealers = () => {
                 .eq("id", editing.id);
             if (error)
                 toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Dealer updated" });
+            else {
+                await revalidateDealerPages();
+                toast({ title: "Dealer updated" });
+            }
         } else {
             const { error } = await adminDb.from("dealers").insert(payload);
             if (error)
                 toast({ title: "Error", description: error.message, variant: "destructive" });
-            else toast({ title: "Dealer created" });
+            else {
+                await revalidateDealerPages();
+                toast({ title: "Dealer created" });
+            }
         }
         setSaving(false);
         setDialogOpen(false);
@@ -179,6 +186,7 @@ const AdminDealers = () => {
         if (error)
             toast({ title: "Error", description: error.message, variant: "destructive" });
         else {
+            await revalidateDealerPages();
             toast({ title: "Deleted" });
             fetchData();
         }

@@ -62,7 +62,8 @@ const AdminLogin = () => {
                             width={120}
                             height={56}
                             className="h-14 w-auto mx-auto mb-4"
-                         loading="lazy" />
+                            priority
+                        />
                         <h1 className="font-display text-2xl font-bold text-white/85">
                             Admin Panel
                         </h1>
