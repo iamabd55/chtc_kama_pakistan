@@ -89,7 +89,7 @@ const AdminSidebar = ({ className, onNavigate, onRequestClose }: AdminSidebarPro
 
     return (
         <aside className={cn(
-            "inset-y-0 left-0 z-50 w-[260px] flex flex-col bg-[#1a1e2e] text-white border-r border-white/[0.06]",
+            "inset-y-0 left-0 z-50 w-[260px] flex flex-col bg-[#1a1e2e] text-white border-r border-white/[0.06] admin-sidebar",
             className
         )}>
             {/* Brand */}

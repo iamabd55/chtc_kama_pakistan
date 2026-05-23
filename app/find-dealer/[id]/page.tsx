@@ -6,7 +6,7 @@ import type { Dealer } from "@/lib/supabase/types";
 import { buildPageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface PageProps {
     params: Promise<{ id: string }>;

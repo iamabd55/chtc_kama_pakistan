@@ -219,6 +219,8 @@ const Header = ({ settings, navProducts }: HeaderProps) => {
             sizes="(max-width: 768px) 220px, (max-width: 1280px) 300px, 360px"
             className="h-16 md:h-[4.5rem] lg:h-20 w-auto"
             priority
+            loading="eager"
+            fetchPriority="high"
           />
         </Link>
 

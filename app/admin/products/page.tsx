@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Product, Category } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
+import { deleteProductStorage } from "@/lib/supabase/storage-cleanup";
 import Link from "next/link";
 
 const brands = ["kama", "kinwin", "joylong", "chtc"] as const;
@@ -270,10 +271,30 @@ const AdminProducts = () => {
             meta_title: autoMeta,
             meta_desc: editingProduct.short_description || autoMeta,
         };
+        const previousSlug = editingProduct.id
+            ? products.find((p) => p.id === editingProduct.id)?.slug
+            : undefined;
+
         if (editingProduct.id) {
             const { error } = await adminDb.from("products").update(payload).eq("id", editingProduct.id);
             if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-            else { toast({ title: "Product updated" }); resetUpload(); }
+            else {
+                if (previousSlug && previousSlug !== payload.slug) {
+                    const storageError = await deleteProductStorage(adminDb, { slug: previousSlug });
+                    if (storageError) {
+                        toast({
+                            title: "Product updated",
+                            description: `Slug changed, but old storage folder may remain: ${storageError}`,
+                            variant: "destructive",
+                        });
+                    } else {
+                        toast({ title: "Product updated" });
+                    }
+                } else {
+                    toast({ title: "Product updated" });
+                }
+                resetUpload();
+            }
         } else {
             const { error } = await adminDb.from("products").insert(payload);
             if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -284,6 +305,24 @@ const AdminProducts = () => {
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this product?")) return;
+
+        const product = products.find((p) => p.id === id);
+        if (!product) return;
+
+        const storageError = await deleteProductStorage(adminDb, {
+            slug: product.slug,
+            thumbnail: product.thumbnail,
+            images: product.images,
+        });
+        if (storageError) {
+            toast({
+                title: "Storage cleanup failed",
+                description: storageError,
+                variant: "destructive",
+            });
+            return;
+        }
+
         const { error } = await adminDb.from("products").delete().eq("id", id);
         if (error)
             toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -347,6 +386,23 @@ const AdminProducts = () => {
     const bulkDelete = async () => {
         if (selectedIds.length === 0) return;
         if (!confirm(`Delete ${selectedIds.length} selected product(s)?`)) return;
+
+        const toDelete = products.filter((p) => selectedIds.includes(p.id));
+        for (const product of toDelete) {
+            const storageError = await deleteProductStorage(adminDb, {
+                slug: product.slug,
+                thumbnail: product.thumbnail,
+                images: product.images,
+            });
+            if (storageError) {
+                toast({
+                    title: "Storage cleanup failed",
+                    description: `${product.name}: ${storageError}`,
+                    variant: "destructive",
+                });
+                return;
+            }
+        }
 
         const { error } = await adminDb.from("products").delete().in("id", selectedIds);
         if (error) {

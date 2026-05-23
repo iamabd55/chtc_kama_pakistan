@@ -2,7 +2,8 @@ import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { Dealer } from "@/lib/supabase/types";
 import DealerDirectory from "@/components/find-dealer/DealerDirectory";
 
-export const revalidate = 60;
+// Always fetch fresh dealer list (admin changes must show immediately).
+export const dynamic = "force-dynamic";
 
 export default async function FindDealerPage() {
     const supabase = createPublicServerClient();
