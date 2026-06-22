@@ -39,6 +39,10 @@ type HeroSlideSettingsItem = {
 
 const resolveHeroImage = (value: string) => {
     if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/")) {
+        // Auto-apply Cloudinary optimization if it's a Cloudinary URL
+        if (value.includes("res.cloudinary.com") && !value.includes("/f_auto") && !value.includes("/q_auto")) {
+            return value.replace("/upload/", "/upload/f_auto,q_auto/");
+        }
         return value;
     }
     return getStorageUrl(value);

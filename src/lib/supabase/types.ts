@@ -96,7 +96,10 @@ export interface NewsPost {
     content: string;
     excerpt: string | null;
     category: "news" | "event" | "product-launch" | "press-release";
+    /** Cover image path (Supabase Storage). Optional when video_url is set. */
     thumbnail: string;
+    /** Cloudinary secure_url for video posts. Null for image-only posts. */
+    video_url: string | null;
     author: string;
     tags: string[];
     related_product_id: string | null;

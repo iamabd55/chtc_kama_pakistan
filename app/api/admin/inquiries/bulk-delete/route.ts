@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
         typeof body?.filterStatus === "string"
             ? body.filterStatus
             : typeof body?.status === "string"
-              ? body.status
-              : null;
+                ? body.status
+                : null;
 
     if (scope === "filtered") {
         if (!statusFilter) {

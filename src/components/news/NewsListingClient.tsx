@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Calendar, MessageCircle } from "lucide-react";
+import { ArrowRight, Calendar, MessageCircle, Play } from "lucide-react";
 import { getStorageUrl } from "@/lib/supabase/storage";
 
 type NewsCategory = "news" | "event" | "product-launch" | "press-release";
@@ -14,6 +14,7 @@ type NewsItem = {
     slug: string;
     content: string;
     thumbnail: string;
+    video_url?: string | null;
     category: NewsCategory;
     author: string;
     published_at: string | null;
@@ -67,9 +68,32 @@ const excerpt = (content: string, max = 170) => {
     return compact.length > max ? `${compact.slice(0, max)}...` : compact;
 };
 
-const getShareUrl = (slug: string) => {
-    return `${SITE_BASE}/news/${slug}`;
-};
+const getShareUrl = (slug: string) => `${SITE_BASE}/news/${slug}`;
+
+// ─── Thumbnail helpers ────────────────────────────────────────────────────────
+/** Returns a Cloudinary URL for the video's first frame at given dimensions */
+function cloudinaryVideoThumbnail(videoUrl: string, width = 800, height = 450): string {
+    try {
+        // e.g. https://res.cloudinary.com/cloud/video/upload/v123/folder/file.mp4
+        // → https://res.cloudinary.com/cloud/video/upload/c_fill,w_800,h_450,so_0/v123/folder/file.jpg
+        return videoUrl
+            .replace("/video/upload/", `/video/upload/c_fill,w_${width},h_${height},so_0/`)
+            .replace(/\.(mp4|mov|webm|avi)$/i, ".jpg");
+    } catch {
+        return videoUrl;
+    }
+}
+
+/** VideoOverlay — play button icon shown over video-post thumbnails */
+function VideoPlayBadge() {
+    return (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-all group-hover:bg-black/50">
+            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-transform group-hover:scale-110">
+                <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+            </div>
+        </div>
+    );
+}
 
 export default function NewsListingClient({ items }: NewsListingClientProps) {
     const [selectedCategory, setSelectedCategory] = useState<(typeof NEWS_CATEGORIES)[number]>("all");
@@ -78,7 +102,6 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
 
     const filtered = useMemo(() => {
         const normalizedSearch = search.trim().toLowerCase();
-
         return items.filter((item) => {
             const categoryMatch = selectedCategory === "all" || item.category === selectedCategory;
             const titleMatch = !normalizedSearch || item.title.toLowerCase().includes(normalizedSearch);
@@ -137,18 +160,39 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                 </div>
             ) : (
                 <>
+                    {/* ── Featured post ── */}
                     <article className="bg-card border rounded-lg p-5 sm:p-8">
                         <div className="space-y-4">
-                            <div className="relative rounded-lg overflow-hidden bg-muted h-[220px] md:h-[320px]">
-                                <Image
-                                    src={getStorageUrl(featured.thumbnail)}
-                                    alt={featured.title}
-                                    fill
-                                    sizes="(max-width: 1024px) 100vw, 896px"
-                                    className="object-cover"
-                                    priority
-                                />
-                            </div>
+                            <Link href={`/news/${featured.slug}`} prefetch={false} className="block group">
+                                <div className="relative rounded-lg overflow-hidden bg-muted h-[220px] md:h-[320px]">
+                                    {featured.video_url ? (
+                                        <>
+                                            <Image
+                                                src={featured.thumbnail
+                                                    ? getStorageUrl(featured.thumbnail)
+                                                    : cloudinaryVideoThumbnail(featured.video_url, 896, 320)
+                                                }
+                                                alt={featured.title}
+                                                fill
+                                                sizes="(max-width: 1024px) 100vw, 896px"
+                                                className="object-cover"
+                                                priority
+                                                unoptimized={!featured.thumbnail}
+                                            />
+                                            <VideoPlayBadge />
+                                        </>
+                                    ) : (
+                                        <Image
+                                            src={getStorageUrl(featured.thumbnail)}
+                                            alt={featured.title}
+                                            fill
+                                            sizes="(max-width: 1024px) 100vw, 896px"
+                                            className="object-cover"
+                                            priority
+                                        />
+                                    )}
+                                </div>
+                            </Link>
 
                             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar className="w-4 h-4" />
@@ -159,6 +203,11 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                                 >
                                     {featured.category.replace("-", " ")}
                                 </span>
+                                {featured.video_url && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium bg-orange-100 text-orange-700 border-orange-200">
+                                        <Play className="w-3 h-3 fill-orange-700" /> Video
+                                    </span>
+                                )}
                             </div>
 
                             <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground">
@@ -167,10 +216,12 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                             <p className="text-muted-foreground leading-relaxed">{excerpt(featured.content, 240)}</p>
 
                             <div className="flex items-center gap-3">
-                                <Link href={`/news/${featured.slug}`}
+                                <Link
+                                    href={`/news/${featured.slug}`}
                                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-kama-blue-dark transition-colors"
-                                 prefetch={false}>
-                                    Read More
+                                    prefetch={false}
+                                >
+                                    {featured.video_url ? "Watch Video" : "Read More"}
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <a
@@ -187,22 +238,43 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                         </div>
                     </article>
 
+                    {/* ── Regular posts ── */}
                     {visibleRegular.map((item) => (
                         <article
                             key={item.id}
                             className={`bg-card border border-l-4 rounded-lg p-5 sm:p-8 hover:shadow-lg transition-shadow ${categoryStyles[item.category].border}`}
                         >
                             <div className="grid sm:grid-cols-[180px_1fr] gap-5 items-start">
-                                <div className="aspect-video overflow-hidden rounded-md bg-muted relative">
-                                    <Image
-                                        src={getStorageUrl(item.thumbnail)}
-                                        alt={item.title}
-                                        fill
-                                        sizes="(max-width: 640px) 100vw, 180px"
-                                        className="object-cover"
-                                        loading="lazy"
-                                    />
-                                </div>
+                                <Link href={`/news/${item.slug}`} prefetch={false} className="block group">
+                                    <div className="aspect-video overflow-hidden rounded-md bg-muted relative">
+                                        {item.video_url ? (
+                                            <>
+                                                <Image
+                                                    src={item.thumbnail
+                                                        ? getStorageUrl(item.thumbnail)
+                                                        : cloudinaryVideoThumbnail(item.video_url, 360, 202)
+                                                    }
+                                                    alt={item.title}
+                                                    fill
+                                                    sizes="(max-width: 640px) 100vw, 180px"
+                                                    className="object-cover"
+                                                    loading="lazy"
+                                                    unoptimized={!item.thumbnail}
+                                                />
+                                                <VideoPlayBadge />
+                                            </>
+                                        ) : (
+                                            <Image
+                                                src={getStorageUrl(item.thumbnail)}
+                                                alt={item.title}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, 180px"
+                                                className="object-cover"
+                                                loading="lazy"
+                                            />
+                                        )}
+                                    </div>
+                                </Link>
 
                                 <div>
                                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-3">
@@ -214,14 +286,21 @@ export default function NewsListingClient({ items }: NewsListingClientProps) {
                                         >
                                             {item.category.replace("-", " ")}
                                         </span>
+                                        {item.video_url && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium bg-orange-100 text-orange-700 border-orange-200">
+                                                <Play className="w-3 h-3 fill-orange-700" /> Video
+                                            </span>
+                                        )}
                                     </div>
                                     <h3 className="font-display font-bold text-xl text-foreground mb-2">{item.title}</h3>
                                     <p className="text-muted-foreground mb-4">{excerpt(item.content, 140)}</p>
                                     <div className="flex items-center gap-3">
-                                        <Link href={`/news/${item.slug}`}
+                                        <Link
+                                            href={`/news/${item.slug}`}
                                             className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-kama-blue-dark transition-colors"
-                                         prefetch={false}>
-                                            Read More
+                                            prefetch={false}
+                                        >
+                                            {item.video_url ? "Watch Video" : "Read More"}
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
                                         <a
