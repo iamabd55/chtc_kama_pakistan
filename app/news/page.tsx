@@ -50,13 +50,13 @@ async function NewsLoader() {
     const supabase = createPublicServerClient();
     const { data } = await supabase
         .from("news_posts")
-        .select("id, title, slug, content, thumbnail, category, author, published_at, created_at")
+        .select("id, title, slug, content, thumbnail, video_url, category, author, published_at, created_at")
         .eq("status", "published")
         .order("published_at", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
 
     const newsItems = (data ?? []) as Array<
-        Pick<NewsPost, "id" | "title" | "slug" | "thumbnail" | "category" | "author" | "published_at" | "created_at"> & {
+        Pick<NewsPost, "id" | "title" | "slug" | "thumbnail" | "video_url" | "category" | "author" | "published_at" | "created_at"> & {
             content: string;
         }
     >;

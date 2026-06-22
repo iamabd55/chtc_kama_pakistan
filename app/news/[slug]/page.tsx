@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Clock3, Share2, User } from "lucide-react";
+import { ArrowLeft, Calendar, Clock3, Share2, User, Play } from "lucide-react";
 import { createPublicServerClient } from "@/lib/supabase/publicServer";
 import type { NewsPost } from "@/lib/supabase/types";
 import { getStorageUrl } from "@/lib/supabase/storage";
@@ -176,16 +176,36 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
             <section className="py-12 md:py-16">
                 <div className="container max-w-4xl">
-                    <div className="h-[260px] sm:h-[360px] md:h-[520px] rounded-xl overflow-hidden border bg-muted mb-8 relative">
-                        <Image
-                            src={getStorageUrl(post.thumbnail)}
-                            alt={post.title}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 896px"
-                            className="object-contain"
-                            priority
-                         loading="eager" />
-                    </div>
+                    {/* ── Media: video player OR static thumbnail ── */}
+                    {post.video_url ? (
+                        <div className="rounded-xl overflow-hidden border bg-black mb-8">
+                            <video
+                                src={post.video_url}
+                                poster={post.thumbnail ? getStorageUrl(post.thumbnail) : undefined}
+                                controls
+                                preload="metadata"
+                                playsInline
+                                className="w-full max-h-[520px] outline-none"
+                            />
+                            {/* Play-hint bar */}
+                            <div className="px-4 py-2.5 bg-neutral-900 flex items-center gap-2 border-t border-white/5">
+                                <Play className="w-3.5 h-3.5 text-[#e07a2f] fill-[#e07a2f]" />
+                                <span className="text-xs text-white/40">Video • Al Nasir Motors Pakistan</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="h-[260px] sm:h-[360px] md:h-[520px] rounded-xl overflow-hidden border bg-muted mb-8 relative">
+                            <Image
+                                src={getStorageUrl(post.thumbnail)}
+                                alt={post.title}
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 896px"
+                                className="object-contain"
+                                priority
+                                loading="eager"
+                            />
+                        </div>
+                    )}
 
                     <article className="bg-card border rounded-xl p-6 md:p-8 whitespace-pre-wrap leading-relaxed text-foreground">
                         {post.content}

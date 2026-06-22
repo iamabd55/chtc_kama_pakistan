@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { adminDb } from "@/lib/supabase/adminClient";
 import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import HeroSlidesManager from "@/components/admin/HeroSlidesManager";
+import type { HeroSlide } from "@/components/admin/HeroSlidesManager";
 import type { SiteSettings } from "@/lib/supabase/types";
 
 const ease = [0.25, 0.4, 0, 1] as const;
@@ -18,7 +20,7 @@ const AdminSettings = () => {
     const [settings, setSettings] = useState<Partial<SiteSettings>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [heroSlidesJson, setHeroSlidesJson] = useState("[]");
+    const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -30,7 +32,15 @@ const AdminSettings = () => {
             if (data) {
                 const typed = data as SiteSettings;
                 setSettings(typed);
-                setHeroSlidesJson(JSON.stringify(typed.hero_slides ?? [], null, 2));
+                setHeroSlides(
+                    (typed.hero_slides ?? []).map((s) => ({
+                        imageUrl: s.imageUrl || "",
+                        title: s.title || "",
+                        subtitle: s.subtitle || "",
+                        ctaText: s.ctaText || "",
+                        ctaLink: s.ctaLink || "",
+                    }))
+                );
             }
             setLoading(false);
         };
@@ -38,21 +48,6 @@ const AdminSettings = () => {
     }, []);
 
     const handleSave = async () => {
-        let parsedHeroSlides: SiteSettings["hero_slides"] = [];
-        try {
-            parsedHeroSlides = JSON.parse(heroSlidesJson || "[]");
-            if (!Array.isArray(parsedHeroSlides)) {
-                throw new Error("Hero slides must be a JSON array");
-            }
-        } catch {
-            toast({
-                title: "Invalid Hero Slides JSON",
-                description: "Please provide a valid JSON array for hero slides.",
-                variant: "destructive",
-            });
-            return;
-        }
-
         setSaving(true);
         const payload = {
             whatsapp_number: settings.whatsapp_number || "",
@@ -62,7 +57,7 @@ const AdminSettings = () => {
             office_address: settings.office_address || null,
             google_maps_embed: settings.google_maps_embed || null,
             social_links: settings.social_links || {},
-            hero_slides: parsedHeroSlides,
+            hero_slides: heroSlides.filter((s) => s.imageUrl),
             announcement_banner_enabled: settings.announcement_banner_enabled ?? false,
             announcement_banner_message: settings.announcement_banner_message || null,
             company_tagline: settings.company_tagline || null,
@@ -99,7 +94,7 @@ const AdminSettings = () => {
                     {/* Contact Information skeleton */}
                     <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-44 mb-4" />
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {Array.from({ length: 4 }).map((_, i) => (
                                 <div key={i}>
                                     <Skeleton className="h-4 w-28 mb-1" />
@@ -142,7 +137,7 @@ const AdminSettings = () => {
                     {/* Social Links skeleton */}
                     <div className="bg-[#1e2230] rounded-xl border border-white/[0.06] p-6">
                         <Skeleton className="h-6 w-28 mb-4" />
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {Array.from({ length: 4 }).map((_, i) => (
                                 <div key={i}>
                                     <Skeleton className="h-4 w-20 mb-1" />
@@ -182,7 +177,7 @@ const AdminSettings = () => {
                     <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Contact Information
                     </h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="text-sm font-medium mb-1 block text-white/60">
                                 WhatsApp Number *
@@ -363,7 +358,7 @@ const AdminSettings = () => {
                     <h2 className="font-display text-lg font-bold text-white/90 mb-4">
                         Social Links
                     </h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {(["facebook", "instagram", "linkedin", "youtube"] as const).map(
                             (platform) => (
                                 <div key={platform}>
@@ -400,16 +395,17 @@ const AdminSettings = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.4, ease }}
                 >
-                    <h2 className="font-display text-lg font-bold text-white/90 mb-4">
-                        Hero Slides
-                    </h2>
-                    <p className="text-xs text-white/40 mb-3">
-                        JSON array with fields: imageUrl, title, subtitle, ctaText, ctaLink
-                    </p>
-                    <textarea
-                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[220px] font-mono"
-                        value={heroSlidesJson}
-                        onChange={(e) => setHeroSlidesJson(e.target.value)}
+                    <div className="mb-4">
+                        <h2 className="font-display text-lg font-bold text-white/90">
+                            Hero Slides
+                        </h2>
+                        <p className="text-xs text-white/40 mt-1">
+                            Upload and manage homepage hero images. They auto-upload to Cloudinary CDN with optimization.
+                        </p>
+                    </div>
+                    <HeroSlidesManager
+                        slides={heroSlides}
+                        onChange={setHeroSlides}
                     />
                 </motion.div>
             </div>

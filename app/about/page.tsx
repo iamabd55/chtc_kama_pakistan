@@ -103,7 +103,7 @@ export default function AboutPage() {
 
                     <div className="bg-card border rounded-lg p-7 md:p-10">
                         <h2 className="font-display font-bold text-3xl text-foreground mb-6">Leadership Spotlight</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <article className="rounded-xl border bg-background p-5">
                                 <Image
                                     src="/images/al-bcf/core-team/founder.webp"
@@ -118,6 +118,22 @@ export default function AboutPage() {
                                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
                                     A pioneer in Pakistan&apos;s automotive dealership ecosystem whose long-standing market reputation,
                                     disciplined expansion strategy, and customer-first approach shaped the foundation of Al-Bashir Group.
+                                </p>
+                            </article>
+
+                            <article className="rounded-xl border bg-background p-5">
+                                <Image
+                                    src="/images/al-bcf/core-team/chairman.webp"
+                                    alt="Zaheer Ud Din Malik, Chairman"
+                                    width={280}
+                                    height={350}
+                                    sizes="(max-width: 640px) 100vw, 280px"
+                                    className="w-full max-w-[280px] aspect-[4/5] object-cover rounded-lg mb-4"
+                                 loading="lazy" />
+                                <h3 className="font-display font-bold text-xl text-foreground">Zaheer Ud Din Malik</h3>
+                                <p className="text-sm text-primary font-semibold mt-1">Chairman</p>
+                                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+                                    Leads strategic direction and long-term growth of Al Nasir Motors Pakistan operations.
                                 </p>
                             </article>
 
